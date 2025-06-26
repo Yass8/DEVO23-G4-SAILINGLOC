@@ -2,11 +2,10 @@ import CarouselCategories from "../components/CarouselCategories";
 import CarouselProducts from "../components/CarouselProducts";
 import FormSearch from "../components/FormSearch";
 
-
 function Home() {
   return (
     <>
-        <FormSearch />
+      <FormSearch />
 
         {/* About Section */}
         <div className="container lg:flex lg:justify-center w-full sm:w-10/12 lg:w-8/12 mx-auto mt-5 lg:mb-0 pt-5">
