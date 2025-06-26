@@ -1,10 +1,5 @@
-import {
-  EnvelopeIcon,
-  MapPinIcon,
-  ClockIcon,
-  PhoneIcon
-} from '@heroicons/react/24/outline';
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEnvelope, faMapMarkerAlt, faClock, faPhone } from '@fortawesome/free-solid-svg-icons';
 
 export default function Contact() {
   return (
@@ -13,7 +8,8 @@ export default function Contact() {
       {/* Hero */}
       <header
         className="hero-section text-center text-black py-16 bg-cover bg-center relative"
-        style={{ backgroundImage: "url('public/images/hero.jpeg')" }}>
+        style={{ backgroundImage: "url('/images/hero.jpeg')" }}
+      >
         <div className="container mx-auto">
           <h6 className="text-sm uppercase tracking-widest">ENTRER EN CONTACT AVEC NOUS</h6>
           <h1 className="text-3xl font-bold mt-2">CONTACT</h1>
@@ -24,22 +20,22 @@ export default function Contact() {
       <section className="container mx-auto py-8 px-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-center">
           <div className="border p-6 rounded-lg bg-white hover:shadow-lg transition">
-            <EnvelopeIcon className="h-6 w-6 mx-auto text-gray-700 mb-2" />
+            <FontAwesomeIcon icon={faEnvelope} className="text-gray-700 text-2xl mb-2" />
             <p className="font-bold mb-1">Envoyez-nous un mail</p>
             <p>info@sailingloc.com</p>
           </div>
           <div className="border p-6 rounded-lg bg-white hover:shadow-lg transition">
-            <MapPinIcon className="h-6 w-6 mx-auto text-gray-700 mb-2" />
+            <FontAwesomeIcon icon={faMapMarkerAlt} className="text-gray-700 text-2xl mb-2" />
             <p className="font-bold mb-1">Notre adresse</p>
             <p>123, Quai des Navigateurs, 75000 Paris</p>
           </div>
           <div className="border p-6 rounded-lg bg-white hover:shadow-lg transition">
-            <ClockIcon className="h-6 w-6 mx-auto text-gray-700 mb-2" />
+            <FontAwesomeIcon icon={faClock} className="text-gray-700 text-2xl mb-2" />
             <p className="font-bold mb-1">Heures d’ouverture</p>
             <p>Lun-Dim : 8:00 - 19:00</p>
           </div>
           <div className="border p-6 rounded-lg bg-white hover:shadow-lg transition">
-            <PhoneIcon className="h-6 w-6 mx-auto text-gray-700 mb-2" />
+            <FontAwesomeIcon icon={faPhone} className="text-gray-700 text-2xl mb-2" />
             <p className="font-bold mb-1">Appelez-nous</p>
             <p>+33 0601020304</p>
           </div>
@@ -82,7 +78,6 @@ export default function Contact() {
           </div>
         </div>
       </section>
-
     </div>
   );
 }
