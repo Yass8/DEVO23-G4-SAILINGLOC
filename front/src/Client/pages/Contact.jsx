@@ -3,11 +3,11 @@ import { faEnvelope, faMapMarkerAlt, faClock, faPhone } from '@fortawesome/free-
 
 export default function Contact() {
   return (
-    <div className="bg-[#f5f0e9]">
+    <div className="relative bg-[#f5f0e9]">
 
       {/* Hero */}
       <header
-        className="hero-section text-center text-black py-16 bg-cover bg-center relative"
+        className="hero-section text-center text-black py-16 bg-cover bg-center absolute w-full h-96 top-[-16rem]"
         style={{ backgroundImage: "url('/images/hero.jpeg')" }}
       >
         <div className="container mx-auto">
@@ -17,7 +17,7 @@ export default function Contact() {
       </header>
 
       {/* Contact Info */}
-      <section className="container mx-auto py-8 px-4">
+      <section className="relative z-10 mt-64 container mx-auto max-w-7xl py-8 px-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-center">
           <div className="border p-6 rounded-lg bg-white hover:shadow-lg transition">
             <FontAwesomeIcon icon={faEnvelope} className="text-gray-700 text-2xl mb-2" />
@@ -43,7 +43,7 @@ export default function Contact() {
       </section>
 
       {/* Form + Map */}
-      <section className="container mx-auto px-4 pb-12">
+      <section className="relative z-10 container mx-auto max-w-7xl px-4 pb-12">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
           {/* Form */}
           <div>
