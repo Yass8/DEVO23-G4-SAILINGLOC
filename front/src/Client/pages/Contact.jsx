@@ -19,23 +19,23 @@ export default function Contact() {
       {/* Contact Info */}
       <section className="relative z-10 mt-64 container mx-auto max-w-7xl py-8 px-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-center">
-          <div className="border p-6 rounded-lg bg-white hover:shadow-lg transition">
-            <FontAwesomeIcon icon={faEnvelope} className="text-gray-700 text-2xl mb-2" />
+          <div className="border p-6 rounded-lg bg-white hover:shadow-lg hover:bg-[#f5f0e9] transition">
+            <FontAwesomeIcon icon={faEnvelope} className="text-[#AD7C59] text-2xl mb-2" />
             <p className="font-bold mb-1">Envoyez-nous un mail</p>
             <p>info@sailingloc.com</p>
           </div>
-          <div className="border p-6 rounded-lg bg-white hover:shadow-lg transition">
-            <FontAwesomeIcon icon={faMapMarkerAlt} className="text-gray-700 text-2xl mb-2" />
+          <div className="border p-6 rounded-lg bg-white hover:shadow-lg hover:bg-[#f5f0e9] transition">
+            <FontAwesomeIcon icon={faMapMarkerAlt} className="text-[#AD7C59] text-2xl mb-2" />
             <p className="font-bold mb-1">Notre adresse</p>
             <p>123, Quai des Navigateurs, 75000 Paris</p>
           </div>
-          <div className="border p-6 rounded-lg bg-white hover:shadow-lg transition">
-            <FontAwesomeIcon icon={faClock} className="text-gray-700 text-2xl mb-2" />
+          <div className="border p-6 rounded-lg bg-white hover:shadow-lg hover:bg-[#f5f0e9] transition">
+            <FontAwesomeIcon icon={faClock} className="text-[#AD7C59] text-2xl mb-2" />
             <p className="font-bold mb-1">Heures d’ouverture</p>
             <p>Lun-Dim : 8:00 - 19:00</p>
           </div>
-          <div className="border p-6 rounded-lg bg-white hover:shadow-lg transition">
-            <FontAwesomeIcon icon={faPhone} className="text-gray-700 text-2xl mb-2" />
+          <div className="border p-6 rounded-lg bg-white hover:shadow-lg hover:bg-[#f5f0e9] transition">
+            <FontAwesomeIcon icon={faPhone} className="text-[#AD7C59] text-2xl mb-2" />
             <p className="font-bold mb-1">Appelez-nous</p>
             <p>+33 0601020304</p>
           </div>
