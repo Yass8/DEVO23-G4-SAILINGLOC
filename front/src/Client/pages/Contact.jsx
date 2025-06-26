@@ -1,88 +1,88 @@
 import {
-    EnvelopeIcon,
-    MapPinIcon,
-    ClockIcon,
-    PhoneIcon
+  EnvelopeIcon,
+  MapPinIcon,
+  ClockIcon,
+  PhoneIcon
 } from '@heroicons/react/24/outline';
 
 
 export default function Contact() {
-    return (
-        <div className="bg-[#f5f0e9]">
+  return (
+    <div className="bg-[#f5f0e9]">
 
-            {/* Hero */}
-            <header
-                className="hero-section text-center text-black py-16 bg-cover bg-center relative"
-                style={{ backgroundImage: "url('public/images/hero.jpeg')" }}>
-                <div className="container mx-auto">
-                    <h6 className="text-sm uppercase tracking-widest">ENTRER EN CONTACT AVEC NOUS</h6>
-                    <h1 className="text-3xl font-bold mt-2">CONTACT</h1>
-                </div>
-            </header>
-
-            {/* Contact Info */}
-            <section className="container mx-auto py-8 px-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-center">
-                    <div className="border p-6 rounded-lg bg-white hover:shadow-lg transition">
-                        <EnvelopeIcon className="h-6 w-6 mx-auto text-gray-700 mb-2" />
-                        <p className="font-bold mb-1">Envoyez-nous un mail</p>
-                        <p>info@sailingloc.com</p>
-                    </div>
-                    <div className="border p-6 rounded-lg bg-white hover:shadow-lg transition">
-                        <MapPinIcon className="h-6 w-6 mx-auto text-gray-700 mb-2" />
-                        <p className="font-bold mb-1">Notre adresse</p>
-                        <p>123, Quai des Navigateurs, 75000 Paris</p>
-                    </div>
-                    <div className="border p-6 rounded-lg bg-white hover:shadow-lg transition">
-                        <ClockIcon className="h-6 w-6 mx-auto text-gray-700 mb-2" />
-                        <p className="font-bold mb-1">Heures d’ouverture</p>
-                        <p>Lun-Dim : 8:00 - 19:00</p>
-                    </div>
-                    <div className="border p-6 rounded-lg bg-white hover:shadow-lg transition">
-                        <PhoneIcon className="h-6 w-6 mx-auto text-gray-700 mb-2" />
-                        <p className="font-bold mb-1">Appelez-nous</p>
-                        <p>+33 0601020304</p>
-                    </div>
-                </div>
-            </section>
-
-            {/* Form + Map */}
-            <section className="container mx-auto px-4 pb-12">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                    {/* Form */}
-                    <div>
-                        <h5 className="text-xl font-bold mb-4">Entrer en contact avec nous</h5>
-                        <form className="space-y-4">
-                            <input type="text" placeholder="Votre Nom*" required className="w-full border border-gray-400 p-3 rounded" />
-                            <input type="email" placeholder="Votre Mail*" required className="w-full border border-gray-400 p-3 rounded" />
-                            <input type="text" placeholder="Votre Numéro*" required className="w-full border border-gray-400 p-3 rounded" />
-                            <input type="text" placeholder="Sujet*" required className="w-full border border-gray-400 p-3 rounded" />
-                            <textarea rows="5" placeholder="Message*" required className="w-full border border-gray-400 p-3 rounded resize-none"></textarea>
-                            <button type="submit" className="bg-[#b47b56] text-white py-3 px-6 rounded w-full hover:bg-[#a06a49] transition">
-                                Envoyez votre message
-                            </button>
-                        </form>
-                    </div>
-
-                    {/* Map */}
-                    <div>
-                        <h5 className="text-xl font-bold mb-4">Localisation</h5>
-                        <div className="w-full h-96">
-                            <iframe
-                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2624.7382713622317!2d2.4320944156733535!3d48.8474690792864!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47e612df9f01555f%3A0x6de2efb9b2c4d1d4!2s22%20Rue%20des%20Vignerons%2C%2094300%20Vincennes%2C%20France!5e0!3m2!1sfr!2sfr!4v1719320372831!5m2!1sfr!2sfr"
-                                width="100%"
-                                height="100%"
-                                style={{ border: 0 }}
-                                allowFullScreen=""
-                                loading="lazy"
-                                referrerPolicy="no-referrer-when-downgrade"
-                                title="Google Map"
-                            ></iframe>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
+      {/* Hero */}
+      <header
+        className="hero-section text-center text-black py-16 bg-cover bg-center relative"
+        style={{ backgroundImage: "url('public/images/hero.jpeg')" }}>
+        <div className="container mx-auto">
+          <h6 className="text-sm uppercase tracking-widest">ENTRER EN CONTACT AVEC NOUS</h6>
+          <h1 className="text-3xl font-bold mt-2">CONTACT</h1>
         </div>
-    );
+      </header>
+
+      {/* Contact Info */}
+      <section className="container mx-auto py-8 px-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-center">
+          <div className="border p-6 rounded-lg bg-white hover:shadow-lg transition">
+            <EnvelopeIcon className="h-6 w-6 mx-auto text-gray-700 mb-2" />
+            <p className="font-bold mb-1">Envoyez-nous un mail</p>
+            <p>info@sailingloc.com</p>
+          </div>
+          <div className="border p-6 rounded-lg bg-white hover:shadow-lg transition">
+            <MapPinIcon className="h-6 w-6 mx-auto text-gray-700 mb-2" />
+            <p className="font-bold mb-1">Notre adresse</p>
+            <p>123, Quai des Navigateurs, 75000 Paris</p>
+          </div>
+          <div className="border p-6 rounded-lg bg-white hover:shadow-lg transition">
+            <ClockIcon className="h-6 w-6 mx-auto text-gray-700 mb-2" />
+            <p className="font-bold mb-1">Heures d’ouverture</p>
+            <p>Lun-Dim : 8:00 - 19:00</p>
+          </div>
+          <div className="border p-6 rounded-lg bg-white hover:shadow-lg transition">
+            <PhoneIcon className="h-6 w-6 mx-auto text-gray-700 mb-2" />
+            <p className="font-bold mb-1">Appelez-nous</p>
+            <p>+33 0601020304</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Form + Map */}
+      <section className="container mx-auto px-4 pb-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+          {/* Form */}
+          <div>
+            <h5 className="text-xl font-bold mb-4">Entrer en contact avec nous</h5>
+            <form className="space-y-4">
+              <input type="text" placeholder="Votre Nom*" required className="w-full border border-gray-400 p-3 rounded" />
+              <input type="email" placeholder="Votre Mail*" required className="w-full border border-gray-400 p-3 rounded" />
+              <input type="text" placeholder="Votre Numéro*" required className="w-full border border-gray-400 p-3 rounded" />
+              <input type="text" placeholder="Sujet*" required className="w-full border border-gray-400 p-3 rounded" />
+              <textarea rows="5" placeholder="Message*" required className="w-full border border-gray-400 p-3 rounded resize-none"></textarea>
+              <button type="submit" className="bg-[#b47b56] text-white py-3 px-6 rounded w-full hover:bg-[#a06a49] transition">
+                Envoyez votre message
+              </button>
+            </form>
+          </div>
+
+          {/* Map */}
+          <div>
+            <h5 className="text-xl font-bold mb-4">Localisation</h5>
+            <div className="w-full h-96">
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2624.7382713622317!2d2.4320944156733535!3d48.8474690792864!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47e612df9f01555f%3A0x6de2efb9b2c4d1d4!2s22%20Rue%20des%20Vignerons%2C%2094300%20Vincennes%2C%20France!5e0!3m2!1sfr!2sfr!4v1719320372831!5m2!1sfr!2sfr"
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen=""
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title="Google Map"
+              ></iframe>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  );
 }
