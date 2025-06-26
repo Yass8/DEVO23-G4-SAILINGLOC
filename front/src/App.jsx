@@ -10,7 +10,7 @@ import Contact from './Client/pages/Contact.jsx';
 function App() {
   return (
     <Router>
-      <Header /> {/* Ton header sera visible partout */}
+      <Header /> 
 
       <Routes>
         <Route path="/" element={<Navigate to="/home" replace />} />
