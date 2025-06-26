@@ -36,12 +36,6 @@ const Footer = () => {
               placeholder="Votre email"
               className="p-1 text-xs rounded text-black flex-1"
             />
-            <button
-              type="submit"
-              className="bg-orange-500 hover:bg-orange-600 transition text-white px-3 py-1 rounded text-xs"
-            >
-              S'inscrire
-            </button>
           </form>
         </div>
       </div>
