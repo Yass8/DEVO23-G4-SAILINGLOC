@@ -10,20 +10,20 @@ import Contact from './Client/pages/Contact.jsx';
 function App() {
 
   return (
-    <Router>
+   <Router>
       <Routes>
         {/* Clients page */}
-        <Route path="/" element={<Navigate to="/home" replace />} />
+        { <Route path="/" element={<Navigate to="/home" replace />} /> }
         <Route path="/home" element={<Home/>} />
         <Route path="/about" element={<About />} />
         <Route path="/category" element={<Category />} />
         <Route path="/boats" element={<Boats />} />
         <Route path="/details" element={<Details />} />
         <Route path="/contact" element={<Contact />} />
-
+        
         <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </Router>
+      </Routes>   
+      </Router>
   );
 }
 
