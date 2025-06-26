@@ -1,4 +1,5 @@
 import Header from "../components/Header";
+import Banner from "../components/Banner";
 
 const categories = [
   { label: "Voilier", img: "/voilier.png" },
@@ -12,7 +13,9 @@ const categories = [
 const Category = () => {
   return (
     <div className="flex flex-col min-h-screen bg-white">
+
       <Header />
+      <Banner />
 
       <main className="flex-grow py-14 px-6">
         <div className="text-center mb-12">
