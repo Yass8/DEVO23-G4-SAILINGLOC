@@ -1,10 +1,8 @@
 import FormSearch from "../components/FormSearch";
-import Header from "../components/Header";
-
 
 function Home() {
   return (
-    <Header>
+    <>
       <FormSearch />
 
       {/* About Section */}
@@ -22,7 +20,7 @@ function Home() {
         <div className="bg-[url('/images/sailBoat.jpeg')] lg:w-6/12 bg-cover rounded-sm p-4 shadow-sm lg:h-auto h-80">
         </div>
       </div>
-    </Header>
+    </>
   );
 }
 
