@@ -5,14 +5,14 @@ function FormSearch(){
     return (
         <>
             {/* Research Form F5F1EB  AD7C59 4B6A88 */}
-        <h1 className="mb-3 text-center text-2xl mt-4">Louer maintenant</h1>
-        <h2 className="mb-3 text-center">Réserver une location de bateau</h2>
+        <h2 className="text-center">Louer maintenant</h2>
+        <h3 className="text-center">Réserver une location de bateau</h3>
 
         <div className="container w-full sm:w-10/12 lg:w-8/12 mx-auto p-4 rounded-[6px] bg-[#4B6A88] shadow">
             <form className="lg:flex flex-col justify-around lg:flex-row lg:flex-wrap ">
 
                 {/* Input : Lien de départ */}
-                <div className="relative z-0 w-full lg:w-2/12">
+                <div className="relative z-0 w-full lg:w-2/12 my-5 lg:my-0">
                 <input
                     type="text"
                     id="port"
@@ -33,7 +33,7 @@ function FormSearch(){
                 </div>
 
                 {/* Input : Date de départ */}
-                <div className="relative z-0 w-full lg:w-2/12">
+                <div className="relative z-0 w-full lg:w-2/12 my-5 lg:my-0">
                 <input
                     type="text"
                     id="departure-date"
@@ -56,7 +56,7 @@ function FormSearch(){
                 </div>
 
                 {/* Input : Date de fin */}
-                <div className="relative z-0 w-full lg:w-2/12">
+                <div className="relative z-0 w-full lg:w-2/12 my-5 lg:my-0">
                 <input
                     type="text"
                     id="end-date"
@@ -79,7 +79,7 @@ function FormSearch(){
                 </div>
 
                 {/* Select : Type de bateau */}
-                <div className="relative z-0 w-full lg:w-2/12">
+                <div className="relative z-0 w-full lg:w-2/12 my-5 lg:my-0">
                 <select
                     id="boat-type"
                     defaultValue=""
@@ -104,7 +104,7 @@ function FormSearch(){
                 </div>
 
                 {/* Submit Button */}
-                <div className="lg:w-2/12 flex justify-center">
+                <div className="lg:w-2/12 flex justify-center my-5 lg:my-0">
                 <button
                     type="submit"
                     className="py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-[#F5F1EB] bg-[#AD7C59] focus:outline-none"
@@ -118,6 +118,7 @@ function FormSearch(){
 
         </>
     );
+    
 
 }
 
