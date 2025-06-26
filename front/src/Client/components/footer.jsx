@@ -12,6 +12,7 @@ const Footer = () => {
             <a href="#"><img src="/linkedin-icon.png" alt="LinkedIn" className="h-4" /></a>
           </div>
         </div>
+        
  
         <div>
           <h2 className="text-base font-bold mb-1">Liens Rapides</h2>
