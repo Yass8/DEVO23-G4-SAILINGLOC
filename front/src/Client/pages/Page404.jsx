@@ -20,19 +20,15 @@ export default function Page404() {
   }
 
   return (
-    <div className="relative bg-[#f5f0e9]">
+    <div className="bg-[#f5f0e9] text-black min-h-screen flex flex-col">
       <ScrollToTop />
 
       {/* Header Banner */}
-      <header
-        className="text-center text-black py-16 bg-cover bg-center relative w-full h-96"
-        style={{ backgroundImage: "url('/images/hero.jpeg')" }}
-      >
-        <div className="container mx-auto">
-          <h1 className="text-3xl font-bold mt-2">Page introuvable</h1>
-        </div>
+      <section className="h-[60vh] bg-cover bg-center flex flex-col justify-center items-center text-center relative" style={{ backgroundImage: "url('/images/hero.jpeg')" }}>
         <div className="absolute inset-0 bg-black/60"></div>
-      </header>
+        <h6 className="text-lg text-white font-semibold z-10">SAILINGLOC</h6>
+        <h1 className="text-4xl text-white font-bold z-10">Page <span className="text-[#b47b56]">introuvable</span></h1>
+      </section>
 
       {/* Divider */}
       <div className="flex justify-center my-6">
