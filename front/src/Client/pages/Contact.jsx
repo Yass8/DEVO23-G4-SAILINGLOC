@@ -29,7 +29,7 @@ export default function Contact() {
       >
           {/* <div className="absolute inset-0 bg-black/50"></div> */}
           <h6 className="text-lg text-black font-semibold z-10">ENTRER EN CONTACT AVEC NOUS</h6>
-          <h1 className="text-4xl text-black font-bold z-10">CONTACT</h1>
+          <h1 className="text-4xl text-black font-bold z-10">Contact</h1>
       </section>
 
       {/* Contact Info */}
