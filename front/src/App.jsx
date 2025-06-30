@@ -6,12 +6,13 @@ import Category from './Client/pages/Category.jsx';
 import Boats from './Client/pages/Boats.jsx';
 import Details from './Client/pages/Details.jsx';
 import Contact from './Client/pages/Contact.jsx';
-import Footer from './Client/components/Footer'; 
+// import Footer from './Client/components/Footer'; 
+import './App.css';
 
 function App() {
   return (
     <Router>
-      <Header /> {/* Ton header sera visible partout */}
+      {/* <Header /> Ton header sera visible partout */}
 
       <Routes>
         <Route path="/" element={<Navigate to="/home" replace />} />
@@ -23,7 +24,7 @@ function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-      <Footer />
+      {/* <Footer /> */}
     </Router>
   );
 }
