@@ -5,9 +5,11 @@ import logo from "/images/logo.png";
 const Header = () => {
   const location = useLocation();
   const [activeLink, setActiveLink] = useState(location.pathname);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const handleClick = (href) => {
     setActiveLink(href);
+    setMenuOpen(false);
   };
 
   const navLinks = [
@@ -22,9 +24,11 @@ const Header = () => {
   return (
     <header className="bg-white shadow-md sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+     
         <div className="flex items-center">
           <img src={logo} alt="SailingLoc" className="h-10 mr-3" />
         </div>
+
 
         <nav className="hidden md:flex text-sm font-medium text-gray-700">
           <ul className="flex space-x-6">
@@ -44,7 +48,8 @@ const Header = () => {
           </ul>
         </nav>
 
-        <div className="flex items-center space-x-3">
+   
+        <div className="hidden md:flex items-center space-x-3">
           <select className="border text-sm px-2 py-1 rounded">
             <option value="fr">FR</option>
             <option value="en">EN</option>
@@ -62,7 +67,55 @@ const Header = () => {
             Se connecter
           </Link>
         </div>
+
+        
+        <button
+          className="md:hidden text-2xl text-gray-700 focus:outline-none"
+          onClick={() => setMenuOpen(!menuOpen)}
+        >
+          {menuOpen ? "✕" : "☰"}
+        </button>
       </div>
+
+    
+      {menuOpen && (
+        <div className="md:hidden px-4 pb-3">
+          <ul className="flex flex-col space-y-2 text-sm font-medium text-gray-700">
+            {navLinks.map(({ href, label }) => (
+              <li key={href}>
+                <Link
+                  to={href}
+                  onClick={() => handleClick(href)}
+                  className={`block py-1 ${
+                    activeLink === href ? "text-[#AD7C59] font-bold" : ""
+                  }`}
+                >
+                  {label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+
+          <div className="mt-3 space-y-2">
+            <select className="border text-sm px-2 py-1 rounded w-full">
+              <option value="fr">FR</option>
+              <option value="en">EN</option>
+            </select>
+            <Link
+              to="/register"
+              className="block border-none px-3 py-1 rounded text-sm text-gray-700 hover:bg-gray-100"
+            >
+              Enregistrer votre bateau
+            </Link>
+            <Link
+              to="/login"
+              className="block border border-[#AD7C59] text-[#AD7C59] px-3 py-1 rounded text-sm hover:bg-[#AD7C59] hover:text-white transition"
+            >
+              Se connecter
+            </Link>
+          </div>
+        </div>
+      )}
     </header>
   );
 };
