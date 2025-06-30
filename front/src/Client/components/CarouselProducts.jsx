@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faRulerHorizontal, faUsers, faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import CardProduct from './cards/CardProduct';
 
 const products = [
   {
@@ -42,9 +43,9 @@ const products = [
 
 const CarouselProducts = () => {
   const getItemsPerPage = () => {
-    if (window.innerWidth < 768) return 1;     // smartphone
-    if (window.innerWidth < 1024) return 2;    // tablette
-    return 3;                                  // desktop
+    if (window.innerWidth < 768) return 1;
+    if (window.innerWidth < 1024) return 2;
+    return 3;
   };
 
   const [itemsPerPage, setItemsPerPage] = useState(getItemsPerPage());
@@ -90,26 +91,14 @@ const CarouselProducts = () => {
 
         <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6`}>
           {visibleItems.map((product, index) => (
-            <div key={index} className="bg-white border border-gray-200 rounded-lg shadow-sm">
-              <a href="#">
-                <img src={product.image} alt={product.name} className="rounded-t-lg w-full h-48 object-cover" />
-              </a>
-              <div className="p-5">
-                <div className="flex justify-between items-center">
-                  <a href="#"><h4 className="font-bold">{product.name}</h4></a>
-                  <p className="font-bold">
-                    <span className="text-[#AD7C59] text-2xl font-bold">{product.price}</span> /jour
-                  </p>
-                </div>
-                <p className="mt-2">
-                  <FontAwesomeIcon icon={faRulerHorizontal} className='text-[#AD7C59]' /> <span className="ml-1">{product.length}</span>
-                  <FontAwesomeIcon icon={faUsers} className='text-[#AD7C59] ml-4' /> <span className="ml-1">{product.capacity} passengers</span>
-                </p>
-                <div className="text-center">
-                  <button className="custom-button mt-4">Voir ce bateau</button>
-                </div>
-              </div>
-            </div>
+            <CardProduct
+              key={index}
+              name={product.name}
+              image={product.image}
+              length={product.length}
+              capacity={product.capacity}
+              price={product.price}
+            />
           ))}
         </div>
 
@@ -123,8 +112,7 @@ const CarouselProducts = () => {
       <div className='flex justify-center my-4'>
         <button className="custom-button">
           Voir tous les bateaux
-
-          </button>
+        </button>
       </div>
     </div>
   );
