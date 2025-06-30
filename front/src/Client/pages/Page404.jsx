@@ -25,9 +25,9 @@ export default function Page404() {
 
       {/* Header Banner */}
       <section className="h-[60vh] bg-cover bg-center flex flex-col justify-center items-center text-center relative" style={{ backgroundImage: "url('/images/hero.jpeg')" }}>
-        <div className="absolute inset-0 bg-black/60"></div>
+        {/* <div className="absolute inset-0 bg-black/60"></div> */}
         <h6 className="text-lg text-white font-semibold z-10">SAILINGLOC</h6>
-        <h1 className="text-4xl text-white font-bold z-10">Page <span className="text-[#b47b56]">introuvable</span></h1>
+        <h1 className="text-4xl text-white font-bold z-10">Page introuvable</h1>
       </section>
 
       {/* Divider */}
