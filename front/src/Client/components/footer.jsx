@@ -1,3 +1,7 @@
+import React from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faInstagram, faFacebookF, faLinkedinIn } from '@fortawesome/free-brands-svg-icons';
+
 const Footer = () => {
   return (
     <footer className="text-white py-3 px-4" style={{ backgroundColor: '#4B6A88' }}>
@@ -6,14 +10,20 @@ const Footer = () => {
         <div>
           <h2 className="text-base font-bold mb-1">SAILINGLOC</h2>
           <p className="text-xs">Suivez-nous sur les réseaux sociaux et plongez dans l'univers SailingLoc.</p>
-          <div className="flex gap-2 mt-2">
-            <a href="#"><img src="/instagram-icon.png" alt="Instagram" className="h-4" /></a>
-            <a href="#"><img src="/facebook-icon.png" alt="Facebook" className="h-4" /></a>
-            <a href="#"><img src="/linkedin-icon.png" alt="LinkedIn" className="h-4" /></a>
-          </div>
+         <div className="flex gap-2 mt-2">
+  <a href="#" className="w-10 h-10 flex items-center justify-center rounded-full border border-[#AD7C59]">
+    <FontAwesomeIcon icon={faInstagram} className="text-white text-2xl" />
+  </a>
+  <a href="#" className="w-10 h-10 flex items-center justify-center rounded-full border border-[#AD7C59]">
+    <FontAwesomeIcon icon={faFacebookF} className="text-white text-2xl" />
+  </a>
+  <a href="#" className="w-10 h-10 flex items-center justify-center rounded-full border border-[#AD7C59]">
+    <FontAwesomeIcon icon={faLinkedinIn} className="text-white text-2xl" />
+  </a>
+</div>
+
         </div>
         
- 
         <div>
           <h2 className="text-base font-bold mb-1">Liens Rapides</h2>
           <ul className="space-y-0.5 text-xs">
@@ -27,7 +37,6 @@ const Footer = () => {
           </ul>
         </div>
 
-   
         <div>
           <h2 className="text-base font-bold mb-1">Ne manquez rien</h2>
           <p className="text-xs">Recevez nos meilleures offres par email.</p>
