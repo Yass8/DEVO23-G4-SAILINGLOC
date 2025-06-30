@@ -1,3 +1,4 @@
+
 const Footer = () => {
   return (
     <footer className="text-white py-3 px-4" style={{ backgroundColor: '#4B6A88' }}>
@@ -8,7 +9,7 @@ const Footer = () => {
           <p className="text-xs">Suivez-nous sur les réseaux sociaux et plongez dans l'univers SailingLoc.</p>
           <div className="flex gap-2 mt-2">
             <a href="#"><img src="/instagram-icon.png" alt="Instagram" className="h-4" /></a>
-            <a href="#"><img src="/facebook-icon.png" alt="Facebook" className="h-4" /></a>
+            <a href="#"><FontAwesomeIcon icon="fa-brands fa-facebook-f" /></a>
             <a href="#"><img src="/linkedin-icon.png" alt="LinkedIn" className="h-4" /></a>
           </div>
         </div>
