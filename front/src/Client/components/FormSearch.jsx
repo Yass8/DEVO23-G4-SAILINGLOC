@@ -86,6 +86,7 @@ function FormSearch() {
               className="border-b-2 lg:border-b-0 lg:border-r-2 border-[#F5F1EB] text-sm"
               styles={customSelectStyles}
               theme={customSelectTheme}
+              menuPortalTarget={document.body}
             />
           </div>
 
@@ -130,6 +131,7 @@ function FormSearch() {
               className="border-b-2 lg:border-b-0 lg:border-r-2 border-[#F5F1EB] text-sm"
               styles={customSelectStyles}
               theme={customSelectTheme}
+              menuPortalTarget={document.body}
             />
           </div>
 

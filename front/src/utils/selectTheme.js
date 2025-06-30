@@ -25,6 +25,11 @@ export const customSelectStyles = {
     opacity: 1,
     position: 'relative', // ou 'absolute' selon ton layout
     }),
+    menuPortal: (base) => ({
+    ...base,
+    zIndex: 9999,
+    }),
+
   option: (base, state) => ({
     ...base,
     backgroundColor: state.isFocused ? '#AD7C59' : 'transparent',
