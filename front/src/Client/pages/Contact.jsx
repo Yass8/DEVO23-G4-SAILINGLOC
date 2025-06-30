@@ -22,17 +22,15 @@ export default function Contact() {
   return (
     <div className="relative bg-[#f5f0e9] ">
       <ScrollToTop />
-      
-      {/* Hero */}
-      <header
-        className="text-center text-black py-16 bg-cover bg-center absolute w-full h-96 top-[-16rem]"
+      {/* Header Banner */}
+      <section
+        className="text-center py-16 bg-cover bg-center flex flex-col justify-center items-center absolute w-full h-[60vh] top-[-16rem]"
         style={{ backgroundImage: "url('/images/hero.jpeg')" }}
       >
-        <div className="container mx-auto">
-          <h6 className="text-sm uppercase tracking-widest">ENTRER EN CONTACT AVEC NOUS</h6>
-          <h1 className="text-3xl font-bold mt-2">CONTACT</h1>
-        </div>
-      </header>
+          {/* <div className="absolute inset-0 bg-black/50"></div> */}
+          <h6 className="text-lg text-black font-semibold z-10">ENTRER EN CONTACT AVEC NOUS</h6>
+          <h1 className="text-4xl text-black font-bold z-10">CONTACT</h1>
+      </section>
 
       {/* Contact Info */}
       <section className="relative z-10 mt-64 container mx-auto max-w-7xl py-8 px-4">
