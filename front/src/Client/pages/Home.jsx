@@ -8,6 +8,7 @@ import { faCircleInfo } from '@fortawesome/free-solid-svg-icons';
 function Home() {
   return (
     <>
+      
       <FormSearch />
 
       {/* About Section */}
