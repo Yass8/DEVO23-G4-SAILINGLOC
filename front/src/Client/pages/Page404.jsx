@@ -13,32 +13,28 @@ export default function Page404() {
 
   if (loading) {
     return (
-      <div className="fixed inset-0 bg-black flex items-center justify-center z-50">
+      <div className="fixed inset-0 bg-white flex items-center justify-center z-50">
         <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#b47b56]"></div>
       </div>
     );
   }
 
   return (
-    <div className="relative bg-[#f5f0e9]">
+    <div className="bg-[#f5f0e9] text-black min-h-screen flex flex-col">
       <ScrollToTop />
 
       {/* Header Banner */}
-      <header
-        className="text-center text-black py-16 bg-cover bg-center relative w-full h-96"
-        style={{ backgroundImage: "url('/images/hero.jpeg')" }}
-      >
-        <div className="container mx-auto">
-          <h1 className="text-3xl font-bold mt-2">Page introuvable</h1>
-        </div>
+      <section className="h-[60vh] bg-cover bg-center flex flex-col justify-center items-center text-center relative" style={{ backgroundImage: "url('/images/hero.jpeg')" }}>
         <div className="absolute inset-0 bg-black/60"></div>
-      </header>
+        <h6 className="text-lg text-[#b47b56] regular z-10">SAILINGLOC</h6>
+        <h1 className="text-4xl text-white font-bold z-10">Page introuvable</h1>
+      </section>
 
       {/* Divider */}
-      <div className="flex justify-center my-6">
-        <div className="w-px h-10 bg-[#b47b56]"></div>
+      <div className="relative">
+        <div className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 w-px h-10 bg-[#b47b56]"></div>
       </div>
-
+      <br /><br />
       {/* Not Found Section */}
       <section className="flex-grow flex flex-col justify-center items-center text-center px-4">
         <h1 className="text-8xl font-bold text-gray-700">404</h1>
