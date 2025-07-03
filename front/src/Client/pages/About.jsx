@@ -13,7 +13,7 @@ export default function About() {
 
   if (loading) {
     return (
-      <div className="fixed inset-0 bg-black flex items-center justify-center z-50">
+      <div className="fixed inset-0 bg-white flex items-center justify-center z-50">
         <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#b47b56]"></div>
       </div>
     );
@@ -25,9 +25,9 @@ export default function About() {
 
       {/* Header Banner */}
       <section className="h-[60vh] bg-cover bg-center flex flex-col justify-center items-center text-center relative" style={{ backgroundImage: "url('/images/hero.jpeg')" }}>
-        {/* <div className="absolute inset-0 bg-black/50"></div> */}
-        <h6 className="text-lg text-black font-semibold z-10">SAILINGLOC</h6>
-        <h1 className="text-4xl text-black font-bold z-10">A Propos de Nous</h1>
+        <div className="absolute inset-0 bg-black/20"></div>
+        <h6 className="text-lg text-white z-10">SAILINGLOC</h6>
+        <h1 className="text-4xl text-white font-bold z-10">A Propos de Nous</h1>
       </section>
 
       {/* About Section */}
