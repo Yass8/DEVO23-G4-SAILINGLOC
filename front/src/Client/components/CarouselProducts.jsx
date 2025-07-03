@@ -1,45 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import CardProduct from './cards/CardProduct';
-
-const products = [
-  {
-    name: 'Bavaria cruiser 46',
-    image: '/images/bavaria46cruiser.jpg',
-    length: '14.27 m',
-    capacity: 16,
-    price: '616 €',
-  },
-  {
-    name: 'Sun Odyssey 410',
-    image: '/images/sunodyssey410.jpg',
-    length: '12.35 m',
-    capacity: 10,
-    price: '542 €',
-  },
-  {
-    name: 'Lagoon 42',
-    image: '/images/lagoon42.jpg',
-    length: '13.10 m',
-    capacity: 12,
-    price: '750 €',
-  },
-  {
-    name: 'Beneteau Oceanis 38',
-    image: '/images/oceanis38.jpg',
-    length: '11.50 m',
-    capacity: 8,
-    price: '510 €',
-  },
-  {
-    name: 'Dufour 530',
-    image: '/images/dufour530.jpg',
-    length: '16.35 m',
-    capacity: 14,
-    price: '680 €',
-  },
-];
+import { getBoats } from '../../services/boatServices';
 
 const CarouselProducts = () => {
   const getItemsPerPage = () => {
@@ -51,6 +15,8 @@ const CarouselProducts = () => {
   const [itemsPerPage, setItemsPerPage] = useState(getItemsPerPage());
   const [currentIndex, setCurrentIndex] = useState(0);
 
+  const [boats, setBoats] = useState([]);
+
   useEffect(() => {
     const handleResize = () => {
       setItemsPerPage(getItemsPerPage());
@@ -60,11 +26,22 @@ const CarouselProducts = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const totalPages = Math.ceil(products.length / itemsPerPage);
-  const visibleItems = products.slice(
+  useEffect(() => {
+    getBoats().then((data) => {
+      setBoats(data);
+    });
+  }, []);
+
+  const totalPages = Math.ceil(boats.length / itemsPerPage);
+  let visibleItems = boats.slice(
     currentIndex * itemsPerPage,
     currentIndex * itemsPerPage + itemsPerPage
   );
+
+  if (visibleItems.length < itemsPerPage && boats.length > 0) {
+    const itemsToAdd = itemsPerPage - visibleItems.length;
+    visibleItems = visibleItems.concat(boats.slice(0, itemsToAdd));
+  }
 
   const prevSlide = () => {
     setCurrentIndex((prev) => (prev - 1 + totalPages) % totalPages);
@@ -111,7 +88,7 @@ const CarouselProducts = () => {
       </div>
       <div className='flex justify-center my-4'>
         <button className="custom-button">
-          Voir tous les bateaux
+          <Link to="/boats">Voir tous les bateaux</Link>
         </button>
       </div>
     </div>

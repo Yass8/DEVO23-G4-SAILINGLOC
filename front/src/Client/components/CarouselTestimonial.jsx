@@ -62,10 +62,15 @@ const CarouselTestimonial = () => {
 
   const totalPages = Math.ceil(boatTestimonials.length / itemsPerPage);
   const startIndex = currentPage * itemsPerPage;
-  const visibleItems = boatTestimonials.slice(
+  let visibleItems = boatTestimonials.slice(
     startIndex,
     startIndex + itemsPerPage
   );
+
+  if (visibleItems.length < itemsPerPage && boatTestimonials.length > 0) {
+    const itemsToAdd = itemsPerPage - visibleItems.length;
+    visibleItems = visibleItems.concat(boatTestimonials.slice(0, itemsToAdd));
+  }
 
   return (
     <div className="w-full max-w-6xl mx-auto py-10 px-4">

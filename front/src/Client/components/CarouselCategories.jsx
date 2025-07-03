@@ -29,7 +29,12 @@ const CarouselCategories = () => {
 
   const totalPages = Math.ceil(boatCategories.length / itemsPerPage);
   const startIndex = currentPage * itemsPerPage;
-  const visibleItems = boatCategories.slice(startIndex, startIndex + itemsPerPage);
+  let visibleItems = boatCategories.slice(startIndex, startIndex + itemsPerPage);
+
+  if (visibleItems.length < itemsPerPage && boatCategories.length > 0) {
+    const itemsToAdd = itemsPerPage - visibleItems.length;
+    visibleItems = visibleItems.concat(boatCategories.slice(0, itemsToAdd));
+  }
 
   return (
     <div className="w-full max-w-6xl mx-auto py-10 px-4">
