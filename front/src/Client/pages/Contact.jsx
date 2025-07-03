@@ -27,9 +27,9 @@ export default function Contact() {
         className="text-center py-16 bg-cover bg-center flex flex-col justify-center items-center absolute w-full h-[60vh] top-[-16rem]"
         style={{ backgroundImage: "url('/images/hero.jpeg')" }}
       >
-          {/* <div className="absolute inset-0 bg-black/50"></div> */}
-          <h6 className="text-lg text-black font-semibold z-10">ENTRER EN CONTACT AVEC NOUS</h6>
-          <h1 className="text-4xl text-black font-bold z-10">Contact</h1>
+          <div className="absolute inset-0 bg-black/50"></div>
+          <h6 className="text-lg text-white regular z-10">ENTRER EN CONTACT AVEC NOUS</h6>
+          <h1 className="text-4xl text-white font-bold z-10">Contact</h1>
       </section>
 
       {/* Contact Info */}
