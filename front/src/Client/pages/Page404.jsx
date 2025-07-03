@@ -25,16 +25,16 @@ export default function Page404() {
 
       {/* Header Banner */}
       <section className="h-[60vh] bg-cover bg-center flex flex-col justify-center items-center text-center relative" style={{ backgroundImage: "url('/images/hero.jpeg')" }}>
-        {/* <div className="absolute inset-0 bg-black/60"></div> */}
-        <h6 className="text-lg text-black font-semibold z-10">SAILINGLOC</h6>
-        <h1 className="text-4xl text-black font-bold z-10">Page introuvable</h1>
+        <div className="absolute inset-0 bg-black/60"></div>
+        <h6 className="text-lg text-[#b47b56] regular z-10">SAILINGLOC</h6>
+        <h1 className="text-4xl text-white font-bold z-10">Page introuvable</h1>
       </section>
 
       {/* Divider */}
-      <div className="flex justify-center my-6">
-        <div className="w-px h-10 bg-[#b47b56]"></div>
+      <div className="relative">
+        <div className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 w-px h-10 bg-[#b47b56]"></div>
       </div>
-
+      <br /><br />
       {/* Not Found Section */}
       <section className="flex-grow flex flex-col justify-center items-center text-center px-4">
         <h1 className="text-8xl font-bold text-gray-700">404</h1>
