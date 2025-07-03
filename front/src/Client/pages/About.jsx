@@ -1,26 +1,13 @@
 import { useEffect, useState } from 'react';
+import Preloader from '../components/Preloader';
 import ScrollToTop from '../components/ScrollToTop';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
 
 export default function About() {
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 1000);
-    return () => clearTimeout(timer);
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="fixed inset-0 bg-white flex items-center justify-center z-50">
-        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#b47b56]"></div>
-      </div>
-    );
-  }
-
   return (
     <div className="bg-[#f5f0e9] text-black min-h-screen flex flex-col">
+      <Preloader />
       <ScrollToTop />
 
       {/* Header Banner */}

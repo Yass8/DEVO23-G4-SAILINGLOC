@@ -1,26 +1,13 @@
+import Preloader from '../components/Preloader';
 import ScrollToTop from '../components/ScrollToTop.jsx';
 import { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope, faMapMarkerAlt, faClock, faPhone } from '@fortawesome/free-solid-svg-icons';
 
 export default function Contact() {
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 1000);
-    return () => clearTimeout(timer);
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="fixed inset-0 bg-white flex items-center justify-center z-50">
-        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-[#b47b56]"></div>
-      </div>
-    );
-  }
-
   return (
     <div className="relative bg-[#f5f0e9] ">
+      <Preloader />
       <ScrollToTop />
       {/* Header Banner */}
       <section
