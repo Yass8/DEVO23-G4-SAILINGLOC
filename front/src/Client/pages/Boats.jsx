@@ -106,17 +106,17 @@ function Boats() {
                 pageRangeDisplayed={2}
                 onPageChange={handlePageClick}
                 forcePage={currentPage}
-                containerClassName="inline-flex rounded-md shadow-sm text-sm mt-6"
-                pageClassName="inline-block" // 💡 ceci est indispensable
-                pageLinkClassName="px-3 py-2 border-t border-b border-gray-300 bg-white text-gray-700 hover:bg-gray-100 transition"
-                previousClassName="inline-block" // au cas où
-                previousLinkClassName="px-3 py-2 rounded-l-md border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 transition"
+                containerClassName="inline-flex text-sm mt-6"
+                pageClassName="inline-block"
+                pageLinkClassName="px-3 py-2 text-gray-700 hover:cursor-pointer transition"
+                previousClassName="inline-block"
+                previousLinkClassName="px-3 py-2 rounded-l-md text-gray-700 hover:cursor-pointer transition"
                 nextClassName="inline-block"
-                nextLinkClassName="px-3 py-2 rounded-r-md border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 transition"
+                nextLinkClassName="px-3 py-2 text-gray-700 hover:cursor-pointer transition"
                 breakClassName="inline-block"
-                breakLinkClassName="px-3 py-2 border-t border-b border-gray-300 bg-white text-gray-400 cursor-default"
-                activeClassName="bg-red-500" // ✅ ici ça s’applique à <li>
-                activeLinkClassName="text-blue-500 font-extrabold pointer-events-none"
+                breakLinkClassName="px-3 py-2 text-gray-400 cursor-default"
+                activeClassName=""
+                activeLinkClassName="font-extrabold underline text-yellow-700 pointer-events-none"
                 disabledClassName="opacity-50 cursor-not-allowed"
               />
             )}
