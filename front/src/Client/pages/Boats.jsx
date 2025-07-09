@@ -51,11 +51,11 @@ function Boats() {
       <div className="relative bottom-27">
         <div className="lg:flex lg:items-start">
           <div className="w-full sm:w-8/12 lg:w-3/12 mx-auto">
-            <div className="block m-4 pt-1 bg-[#4B6A88] text-[#F5F1EB] rounded-sm">
+            <div className="block m-4 pt-1 bg-slate-blue text-sand rounded-sm">
               <div className="search m-4">
                 {/* form de recherche */}
                 <form className="flex flex-col">
-                  <div className="flex justify-items-center bg-[#F5F1EB] p-2 rounded">
+                  <div className="flex justify-items-center bg-sand p-2 rounded">
                     <input
                       type="text"
                       placeholder="Rechercher un bateau..."
@@ -63,7 +63,7 @@ function Boats() {
                     />
                     <button
                       type="submit"
-                      className="bg-[#4B6A88] text-center text-[#F5F1EB] p-2 rounded hover:bg-[#8B5A3E]"
+                      className="bg-slate-blue text-center text-sand p-2 rounded hover:bg-[#8B5A3E]"
                     >
                       <FontAwesomeIcon
                         icon={faMagnifyingGlass}

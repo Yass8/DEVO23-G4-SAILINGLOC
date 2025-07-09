@@ -45,14 +45,14 @@ const DateInput = ({ selected, onChange, placeholder, minDate, isStart, startDat
       minDate={minDate}
       dateFormat="dd/MM/yyyy"
       placeholderText={placeholder}
-      className="w-full text-sm text-[#F5F1EB] placeholder:text-[#F5F1EB] bg-transparent focus:outline-none"
+      className="w-full text-sm text-sand placeholder:text-sand bg-transparent focus:outline-none"
       calendarClassName="custom-datepicker"
     />
     <div
       className="absolute inset-y-0 right-0 flex items-center pe-3.5 lg:pe-2 cursor-pointer"
       onClick={() => datepickerRef.current?.setOpen(true)}
     >
-      <FontAwesomeIcon icon={faCalendar} className="text-[#F5F1EB] w-4 h-4" />
+      <FontAwesomeIcon icon={faCalendar} className="text-sand w-4 h-4" />
     </div>
   </div>
 );
@@ -139,7 +139,7 @@ function FormSearch() {
           <div className="lg:w-2.5/12 flex justify-center my-5 lg:my-0">
             <button
               type="submit"
-              className="py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-[#F5F1EB] bg-[#AD7C59] focus:outline-none"
+              className="py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-sand bg-mocha focus:outline-none"
             >
               Rechercher
             </button>

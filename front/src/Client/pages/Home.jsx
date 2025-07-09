@@ -29,7 +29,7 @@ function Home() {
             simple, sécurisée et conviviale. Découvrez une nouvelle façon de
             naviguer, avec une communauté qui partage la même passion.
           </p>
-          <button className="mt-4 px-6 py-2 bg-[#AD7C59] text-[#F5F1EB] rounded-lg shadow transition duration-300 mb-3 lg:mb-0">
+          <button className="mt-4 px-6 py-2 bg-mocha text-sand rounded-lg shadow transition duration-300 mb-3 lg:mb-0">
             En savoir plus
           </button>
         </div>
@@ -42,14 +42,14 @@ function Home() {
       <CarouselProducts />
 
       {/* Section aide */}
-      <section className="bg-[#C1D0C4] py-5">
+      <section className="bg-sage-green py-5">
         <div className="text-center">
           <h2>Louer votre bateau en 3 étapes </h2>
           <h3>Simple, rapide et sécurisé</h3>
         </div>
         <div className="container mx-auto flex flex-col lg:flex-row items-center justify-center mt-10">
           <div className="text-center mb-8 lg:mb-0 lg:mx-6 lg:w-3/12 sm:w-6/12 w-10/12">
-            <span className="text-2xl text-[#AD7C59] border-2 border-dashed rounded-full p-3 px-5 font-bold">
+            <span className="text-2xl text-mocha border-2 border-dashed rounded-full p-3 px-5 font-bold">
               1
             </span>
             <h4 className="font-bold mt-5">Choisir votre bateau</h4>
@@ -60,7 +60,7 @@ function Home() {
           </div>
 
           <div className="text-center mb-8 lg:mb-0 lg:mx-6 lg:w-3/12 sm:w-6/12 w-10/12">
-            <span className="text-2xl text-[#AD7C59] border-2 border-dashed rounded-full p-3 px-5 font-bold">
+            <span className="text-2xl text-mocha border-2 border-dashed rounded-full p-3 px-5 font-bold">
               2
             </span>
             <h4 className="font-bold mt-5">Réservez en ligne</h4>
@@ -71,7 +71,7 @@ function Home() {
           </div>
 
           <div className="text-center lg:mx-6 lg:w-3/12 sm:w-6/12 w-10/12">
-            <span className="text-2xl text-[#AD7C59] border-2 border-dashed rounded-full p-3 px-5 font-bold">
+            <span className="text-2xl text-mocha border-2 border-dashed rounded-full p-3 px-5 font-bold">
               3
             </span>
             <h4 className="font-bold mt-5">Embarquer et profiter</h4>
@@ -86,7 +86,7 @@ function Home() {
           <p className="text-center">
             <FontAwesomeIcon
               icon={faCircleInfo}
-              className="text-[#AD7C59] ml-4"
+              className="text-mocha ml-4"
             />{" "}
             Si vous n’avez jamais loué un bateau auparavant, nous vous guiderons
             à chaque étapes du processus.

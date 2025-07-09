@@ -24,8 +24,8 @@ const CardProduct = ({
         </p>
       </div>
       <p className="mt-2">
-        <FontAwesomeIcon icon={faRulerHorizontal} className='text-[#AD7C59]' /> <span className="ml-1">{length}</span>
-        <FontAwesomeIcon icon={faUsers} className='text-[#AD7C59] ml-4' /> <span className="ml-1">{capacity} passagers</span>
+        <FontAwesomeIcon icon={faRulerHorizontal} className='text-mocha' /> <span className="ml-1">{length}</span>
+        <FontAwesomeIcon icon={faUsers} className='text-mocha ml-4' /> <span className="ml-1">{capacity} passagers</span>
       </p>
       {showButton && (
         <div className="text-center">

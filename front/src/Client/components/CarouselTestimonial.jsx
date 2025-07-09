@@ -99,7 +99,7 @@ const CarouselTestimonial = () => {
                     <FontAwesomeIcon
                       key={i}
                       icon={i < boat.rating ? faStar : faRegularStar}
-                      className="text-[#AD7C59] w-3 h-3"
+                      className="text-mocha w-3 h-3"
                     />
                   ))}
                 </div>
@@ -115,7 +115,7 @@ const CarouselTestimonial = () => {
             key={index}
             onClick={() => setCurrentPage(index)}
             className={`w-3 h-3 rounded-full cursor-pointer transition ${
-              currentPage === index ? "bg-[#4B6A88]" : "bg-gray-300"
+              currentPage === index ? "bg-slate-blue" : "bg-gray-300"
             }`}
           ></span>
         ))}

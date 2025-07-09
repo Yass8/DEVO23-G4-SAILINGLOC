@@ -86,7 +86,7 @@ const handleResetFormFilter = (e) => {
               name="boatType"
               value="all"
               defaultChecked
-              className="mr-2 text-[#AD7C59] accent-[#AD7C59]"
+              className="mr-2 text-mocha accent-[#AD7C59]"
             />
             Tous
           </label>
@@ -96,7 +96,7 @@ const handleResetFormFilter = (e) => {
                 type="radio"
                 name="boatType"
                 value={type.value}
-                className="mr-2 text-[#AD7C59] accent-[#AD7C59]"
+                className="mr-2 text-mocha accent-[#AD7C59]"
               />
               {type.label}
             </label>
@@ -170,10 +170,10 @@ const handleResetFormFilter = (e) => {
         </div>
         {/* Boutons plus de filtres et Réinitialisez */}
         <div className="flex justify-between mt-5">
-          <button type="button" onClick={openOtherFilter} className="btn-show-other-filters text-sm text-[#F5F1EB] hover:text-[#8B5A3E]">
+          <button type="button" onClick={openOtherFilter} className="btn-show-other-filters text-sm text-sand hover:text-[#8B5A3E]">
             {btnShowOtherFilters}
           </button>
-          <button type="reset" onClick={handleResetFormFilter}  className="text-sm text-[#F5F1EB] hover:text-[#8B5A3E]">
+          <button type="reset" onClick={handleResetFormFilter}  className="text-sm text-sand hover:text-[#8B5A3E]">
             Réinitialiser
           </button>
         </div>

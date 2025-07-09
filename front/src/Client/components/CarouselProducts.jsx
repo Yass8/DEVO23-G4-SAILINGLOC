@@ -61,7 +61,7 @@ const CarouselProducts = () => {
       <div className="relative">
         <button
           onClick={prevSlide}
-          className="absolute -left-4 top-1/2 -translate-y-1/2 z-10 p-2 px-3  bg-[#AD7C59] rounded-[100%] shadow hover:bg-[#4B6A88] text-white transition duration-300"
+          className="absolute -left-4 top-1/2 -translate-y-1/2 z-10 p-2 px-3  bg-mocha rounded-[100%] shadow hover:bg-slate-blue text-white transition duration-300"
         >
           <FontAwesomeIcon icon={faArrowLeft} />
         </button>
@@ -81,7 +81,7 @@ const CarouselProducts = () => {
 
         <button
           onClick={nextSlide}
-          className="absolute -right-4 top-1/2 -translate-y-1/2 z-10 p-2 px-3  bg-[#AD7C59] rounded-[100%] shadow hover:bg-[#4B6A88] text-white transition duration-300"
+          className="absolute -right-4 top-1/2 -translate-y-1/2 z-10 p-2 px-3  bg-mocha rounded-[100%] shadow hover:bg-slate-blue text-white transition duration-300"
         >
           <FontAwesomeIcon icon={faArrowRight} />
         </button>
