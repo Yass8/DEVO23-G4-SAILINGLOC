@@ -1,5 +1,14 @@
 @import "tailwindcss";
 
+@theme {
+  --color-mocha: #AD7C59;
+  --color-sand: #F5F1EB;
+  --color-slate-blue: #4B6A88;
+  --color-pale-blue: #87CEEB;
+  --color-sage-green: #C1D0C4;
+
+}
+
 .custom-datepicker {
   background-color: #F5F1EB;
   color: #191817;

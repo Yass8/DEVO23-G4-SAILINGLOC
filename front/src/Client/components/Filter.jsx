@@ -39,6 +39,27 @@ function Filter(){
     setBtnShowOtherFilters((prev) => prev === "Plus de filtres" ? "Moins de filtres" : "Plus de filtres");
   }
 
+const handleResetFormFilter = (e) => {
+  e.preventDefault();
+  setSelectedPort(null);
+  setLength(20);
+  setCapacity(20);
+  setPrice(2000);
+
+  const radios = document.getElementsByName("boatType");
+  radios.forEach(radio => {
+    if (radio.value === "all") radio.checked = true;
+    else radio.checked = false;
+  });
+
+  const checkboxes = document.getElementsByName("equipment");
+  checkboxes.forEach(checkbox => {
+    checkbox.checked = false;
+  });
+};
+
+
+
   return (
     <>
       <h4 className="font-bold">Filtrez les résultats <FontAwesomeIcon icon={faFilter}/></h4>
@@ -152,7 +173,7 @@ function Filter(){
           <button type="button" onClick={openOtherFilter} className="btn-show-other-filters text-sm text-[#F5F1EB] hover:text-[#8B5A3E]">
             {btnShowOtherFilters}
           </button>
-          <button type="reset" className="text-sm text-[#F5F1EB] hover:text-[#8B5A3E]">
+          <button type="reset" onClick={handleResetFormFilter}  className="text-sm text-[#F5F1EB] hover:text-[#8B5A3E]">
             Réinitialiser
           </button>
         </div>

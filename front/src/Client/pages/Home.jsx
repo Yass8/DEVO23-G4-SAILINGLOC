@@ -3,13 +3,17 @@ import CarouselCategories from "../components/CarouselCategories";
 import CarouselProducts from "../components/CarouselProducts";
 import CarouselTestimonial from "../components/CarouselTestimonial";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCircleInfo } from '@fortawesome/free-solid-svg-icons';
-
+import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
+import Preloader from "../components/Preloader";
+import ScrollToTop from "../components/ScrollToTop";
+import Banner from "../components/Banner";
 
 function Home() {
   return (
     <>
-      
+      <Preloader />
+      <ScrollToTop />
+      <Banner/>
       <FormSearch />
 
       {/* About Section */}
@@ -77,9 +81,16 @@ function Home() {
             </p>
           </div>
         </div>
-        
+
         <div className="text-center mt-10">
-          <p className="text-center"><FontAwesomeIcon icon={faCircleInfo} className='text-[#AD7C59] ml-4' /> Si vous n’avez jamais loué un bateau auparavant, nous vous guiderons à chaque étapes du processus.</p>
+          <p className="text-center">
+            <FontAwesomeIcon
+              icon={faCircleInfo}
+              className="text-[#AD7C59] ml-4"
+            />{" "}
+            Si vous n’avez jamais loué un bateau auparavant, nous vous guiderons
+            à chaque étapes du processus.
+          </p>
         </div>
       </section>
 
@@ -92,11 +103,12 @@ function Home() {
           <h2>Devenez propriétaire sur SailingLoc</h2>
           <h3>Rentabilisez votre bateau en toute simplicité</h3>
           <p className="mt-5 w-full sm:w-10/12 lg:w-8/12 mx-auto">
-            Mettez votre bateau en location et rejoignez une communauté de passionnés. SailingLoc vous permet de gérer vos disponibilités, sécuriser vos transactions et maximiser vos revenus en toute sérénité.
+            Mettez votre bateau en location et rejoignez une communauté de
+            passionnés. SailingLoc vous permet de gérer vos disponibilités,
+            sécuriser vos transactions et maximiser vos revenus en toute
+            sérénité.
           </p>
-          <button className="custom-button">
-            Enregistrer votre bateau
-          </button>
+          <button className="custom-button">Enregistrer votre bateau</button>
         </div>
       </section>
     </>

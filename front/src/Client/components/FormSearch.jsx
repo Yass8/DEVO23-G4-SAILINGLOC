@@ -71,7 +71,7 @@ function FormSearch() {
       <h2 className="text-center">Louer maintenant</h2>
       <h3 className="text-center">Réserver une location de bateau</h3>
 
-      <div className="container w-full sm:w-10/12 lg:w-8/12 mx-auto p-4 rounded-[6px] bg-[#4B6A88] shadow">
+      <div className="container w-full sm:w-10/12 lg:w-8/12 mx-auto p-4 rounded-[6px] bg-slate-blue shadow">
         <form className="lg:flex flex-col justify-around lg:flex-row lg:flex-wrap">
           {/* Select : Lieu de départ */}
           <div className="relative z-0 w-full lg:w-2/12 my-5 lg:my-0">

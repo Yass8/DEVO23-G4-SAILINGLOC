@@ -20,7 +20,7 @@ const CardProduct = ({
       <div className="flex justify-between items-center">
         <a href="#"><h4 className="font-bold">{name}</h4></a>
         <p className="font-bold">
-          <span className="text-[#AD7C59] text-2xl font-bold">{price}</span> /jour
+          <span className="text-mocha text-2xl font-bold">{price}</span> /jour
         </p>
       </div>
       <p className="mt-2">
