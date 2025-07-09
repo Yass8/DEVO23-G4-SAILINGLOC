@@ -3,13 +3,10 @@ const create = async (req, res) => {};
 const show = async (req, res) => {};
 const update = async (req, res) => {};
 const remove = async (req, res) => {};
-const getUserBoats = async (req, res) => {};
-const getUserReservations = async (req, res) => {};
-const getUserMessages = async (req, res) => {};
+const getBoatReviews = async (req, res) => {};
 const getUserReviews = async (req, res) => {};
-const getUserDocuments = async (req, res) => {};
 
 export default {
   index, create, show, update, remove,
-  getUserBoats, getUserReservations, getUserMessages, getUserReviews, getUserDocuments
+  getBoatReviews, getUserReviews
 };

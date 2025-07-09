@@ -1,11 +1,19 @@
-import express from 'express'
-import dotenv from 'dotenv'
+import express from 'express';
+import dotenv from 'dotenv';
 
-dotenv.config()
+
+import routes from './routes/routes.js';
+
+dotenv.config();
 
 const app = express();
+app.use(express.json());
 
-app.listen(process.env.PORT, ()=>{
-    console.log('App is running on port 3000');  
+app.use('/api/v1', routes)
+
+
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+    console.log(`App is running on port ${PORT}`);
 });
-
