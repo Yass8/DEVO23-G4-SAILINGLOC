@@ -19,7 +19,7 @@ const router = express.Router();
 
 
 router.use('/users', userRoutes);
-router.use('/users/documents', userDocumentRoutes);
+router.use('/users-documents', userDocumentRoutes);
 router.use('/ports', portRoutes);
 router.use('/boat-types', boatTypeRoutes);
 router.use('/boats', boatRoutes);
