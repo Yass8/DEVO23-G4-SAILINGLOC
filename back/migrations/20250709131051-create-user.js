@@ -10,12 +10,10 @@ export default {
         type: Sequelize.BIGINT
       },
       firstname: {
-        type: Sequelize.STRING,
-        allowNull: false
+        type: Sequelize.STRING
       },
       lasttname: {
-        type: Sequelize.STRING,
-        allowNull: false
+        type: Sequelize.STRING
       },
       email: {
         type: Sequelize.STRING,
@@ -23,8 +21,7 @@ export default {
         unique: true
       },
       password: {
-        type: Sequelize.STRING,
-        allowNull: false
+        type: Sequelize.STRING
       },
       roles: {
         type: Sequelize.ARRAY(Sequelize.STRING),
@@ -32,20 +29,16 @@ export default {
         defaultValue: ['locataire']
       },
       phone: {
-        type: Sequelize.STRING,
-        allowNull: true
+        type: Sequelize.STRING
       },
       payment_method: {
-        type: Sequelize.STRING,
-        allowNull: true
+        type: Sequelize.STRING
       },
       photo: {
-        type: Sequelize.STRING,
-        allowNull: true
+        type: Sequelize.STRING
       },
       address: {
-        type: Sequelize.STRING,
-        allowNull: true
+        type: Sequelize.STRING
       },
       createdAt: {
         allowNull: false,
