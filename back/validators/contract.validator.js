@@ -4,6 +4,10 @@ export const validateContractId = [
   param('id').isInt().withMessage('L\'ID doit être un entier')
 ];
 
+export const validateReservationId = [
+  param('reservation_id').isInt().withMessage('L\'ID du réservation doit être un entier.')
+];
+
 export const validateCreateContract = [
   body('reservation_id').isInt().withMessage('L\'ID de réservation doit être un entier'),
   body('contract_url').isURL().withMessage('L\'URL du contrat doit être valide')

@@ -4,6 +4,10 @@ export const validateBoatEquipmentId = [
   param('id').isInt().withMessage('L\'ID doit être un entier')
 ];
 
+export const validateBoatId = [
+    param('boat_id').isInt().withMessage('L\'ID du bateau doit être un entier.')
+];
+
 export const validateCreateBoatEquipment = [
   body('boat_id').isInt().withMessage('L\'ID du bateau doit être un entier'),
   body('equipment_name').isString().isLength({ max: 255 })
