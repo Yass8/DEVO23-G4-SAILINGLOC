@@ -1,41 +1,46 @@
-import db from '../models/index.js';
-const { User_document } = db;
+import db from "../models/index.js";
+const { User_document: UserDocument, User } = db;
 
 const getAllUserDocuments = async () => {
-  return await User_document.findAll();
+    return await UserDocument.findAll({
+        include: User
+    });
 };
 
 const createUserDocument = async (data) => {
-  return await User_document.create(data);
+    return await UserDocument.create(data);
 };
 
 const getUserDocumentById = async (id) => {
-  return await User_document.findByPk(id);
+    return await UserDocument.findByPk(id, {
+        include: User
+    });
 };
 
 const updateUserDocument = async (id, data) => {
-  const userDocument = await User_document.findByPk(id);
-  if (!userDocument) return null;
-  await User_document.update(data);
-  return userDocument;
+    const document = await UserDocument.findByPk(id);
+    if (!document) return null;
+    return await document.update(data);
 };
 
 const deleteUserDocument = async (id) => {
-  const userDocument = await User_document.findByPk(id);
-  if (!userDocument) return null;
-  await User_document.destroy();
-  return userDocument;
+    const document = await UserDocument.findByPk(id);
+    if (!document) return null;
+    await document.destroy();
+    return true;
 };
 
 const getUserDocuments = async (userId) => {
-  return await User_document.findAll({ where: { userId } });
+    return await UserDocument.findAll({
+        where: { user_id: userId }
+    });
 };
 
 export default {
-  getAllUserDocuments,
-  createUserDocument,
-  getUserDocumentById,
-  updateUserDocument,
-  deleteUserDocument,
-  getUserDocuments
+    getAllUserDocuments,
+    createUserDocument,
+    getUserDocumentById,
+    updateUserDocument,
+    deleteUserDocument,
+    getUserDocuments
 };
