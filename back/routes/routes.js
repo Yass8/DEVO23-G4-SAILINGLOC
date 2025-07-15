@@ -13,7 +13,7 @@ import paymentRoutes from './payment.routes.js';
 import contractRoutes from './contract.routes.js';
 import reviewRoutes from './review.routes.js';
 import messageRoutes from './message.routes.js';
-
+import authRoutes from './auth.routes.js';
 
 const router = express.Router();
 
@@ -31,7 +31,7 @@ router.use('/payments', paymentRoutes);
 router.use('/contracts', contractRoutes);
 router.use('/reviews', reviewRoutes);
 router.use('/messages', messageRoutes);
-
+router.use('/auth', authRoutes);
 
 
 export default router;
