@@ -31,7 +31,9 @@ router.use('/payments', paymentRoutes);
 router.use('/contracts', contractRoutes);
 router.use('/reviews', reviewRoutes);
 router.use('/messages', messageRoutes);
-router.use('/auth', authRoutes);
+router.get('/', (req, res) => {
+  res.status(200).json({ message: 'Welcome to the SailingLoc API' });
+});
 
 
 export default router;
