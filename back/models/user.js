@@ -4,8 +4,17 @@ import { Model } from "sequelize";
 export default (sequelize, DataTypes) => {
   class User extends Model {
     static associate(models) {
+      // Relation avec Boat (un utilisateur peut posséder plusieurs bateaux)
+      User.hasMany(models.Boat, {
+        foreignKey: 'user_id',
+        as: 'boats'
+      });
 
-      // define association here
+      // Relation avec Review (un utilisateur peut avoir plusieurs avis)
+      User.hasMany(models.Review, {
+        foreignKey: 'user_id',
+        as: 'reviews'
+      });
     }
     checkPassword(plainPassword) {
       return bcrypt.compareSync(plainPassword, this.password);

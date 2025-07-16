@@ -37,9 +37,7 @@ export default (sequelize, DataTypes) => {
     sequelize,
     modelName: 'Port',
     tableName: 'Ports',
-    timestamps: true,
-    createdAt: 'created_at',
-    updatedAt: 'updated_at'
+    timestamps: true
   });
   return Port;
 };

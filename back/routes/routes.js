@@ -13,7 +13,7 @@ import paymentRoutes from './payment.routes.js';
 import contractRoutes from './contract.routes.js';
 import reviewRoutes from './review.routes.js';
 import messageRoutes from './message.routes.js';
-
+import authRoutes from './auth.routes.js';
 
 const router = express.Router();
 
