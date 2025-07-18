@@ -9,7 +9,7 @@ const Header = () => {
 
   const handleClick = (href) => {
     setActiveLink(href);
-    setMenuOpen(false); // Ferme le menu après un clic sur un lien
+    setMenuOpen(false); // Fermer le menu après clic
   };
 
   const navLinks = [
@@ -29,7 +29,7 @@ const Header = () => {
           <img src={logo} alt="SailingLoc" className="h-10 mr-3" />
         </div>
 
-        {/* Navigation desktop */}
+        {/* Menu desktop */}
         <nav className="hidden md:flex text-sm font-medium text-gray-700">
           <ul className="flex space-x-6">
             {navLinks.map(({ href, label }) => (
@@ -51,8 +51,8 @@ const Header = () => {
         {/* Actions desktop */}
         <div className="hidden md:flex items-center space-x-3">
           <select className="border text-sm px-2 py-1 rounded">
-            <option value="fr">🇫🇷 Français</option>
-            <option value="en">🇬🇧 English</option>
+            <option value="fr">FR</option>
+            <option value="en">EN</option>
           </select>
           <Link
             to="/register"
@@ -72,7 +72,6 @@ const Header = () => {
         <button
           onClick={() => setMenuOpen(!menuOpen)}
           className="md:hidden text-2xl text-gray-700 focus:outline-none"
-          aria-label="Menu mobile"
         >
           {menuOpen ? "✖" : "☰"}
         </button>
@@ -99,10 +98,9 @@ const Header = () => {
 
           <div className="pt-4 flex flex-col space-y-2">
             <select className="border text-sm px-2 py-1 rounded">
-              <option value="fr">🇫🇷 Français</option>
-              <option value="en">🇬🇧 English</option>
+              <option value="fr">FR</option>
+              <option value="en">EN</option>
             </select>
-
             <Link
               to="/register"
               onClick={() => setMenuOpen(false)}
