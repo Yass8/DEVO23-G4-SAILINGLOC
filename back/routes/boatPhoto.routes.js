@@ -7,14 +7,14 @@ import {
   validateUpdateBoatPhoto
 } from "../validators/boatPhoto.validator.js";
 import { validate } from "../middlewares/validate.js";
-
+import { isAuthenticated, authorizeUser } from "../middlewares/auth/authorize.js";
 const router = express.Router();
 
 router.get("/", boatPhotoController.index);
 router.post("/new", validateCreateBoatPhoto, validate, boatPhotoController.create);
 router.get("/:id/show", validateBoatPhotoId, validate, boatPhotoController.show);
-router.put("/:id/edit", validateBoatPhotoId, validateUpdateBoatPhoto, validate, boatPhotoController.update);
-router.delete("/:id/delete", validateBoatPhotoId, validate, boatPhotoController.remove);
+router.put("/:id/edit", isAuthenticated, authorizeUser(['admin','owner']), validateBoatPhotoId, validateUpdateBoatPhoto, validate, boatPhotoController.update);
+router.delete("/:id/delete", isAuthenticated, authorizeUser(['admin','owner']), validateBoatPhotoId, validate, boatPhotoController.remove);
 router.get("/boat/:boatId", validateBoatId, validate, boatPhotoController.getBoatPhotos);
 
 export default router;

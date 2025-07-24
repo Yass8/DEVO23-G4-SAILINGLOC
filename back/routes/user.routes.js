@@ -6,7 +6,6 @@ import {
   validateUpdateUser
 } from "../validators/user.validator.js";
 import { validate } from "../middlewares/validate.js";
-
 const router = express.Router();
 
 router.get("/", userController.index);

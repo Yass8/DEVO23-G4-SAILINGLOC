@@ -8,16 +8,15 @@ import {
     validateCreateAvailability,
     validateUpdateAvailability
 } from '../validators/availability.validator.js';
-
+import { isAuthenticated, authorizeUser } from "../middlewares/auth/authorize.js";
 const router = express.Router();
 
 router.get("/", availabilityController.index);
 router.post("/new", validateCreateAvailability, validate, availabilityController.create);
 router.get("/:id/show", validateAvailabilityId, validate, validateAvailabilityId, validate, availabilityController.show);
-router.put("/:id/edit", validateUpdateAvailability, validate, availabilityController.update);
-router.delete("/:id/delete", validateAvailabilityId, validate, availabilityController.remove);
+router.put("/:id/edit", isAuthenticated, validateUpdateAvailability, validate, availabilityController.update);
+router.delete("/:id/delete", isAuthenticated, authorizeUser(['admin','owner']), validateAvailabilityId, validate, availabilityController.remove);
 
-// Route spécifique
 router.get("/boat/:boatId", validateBoatId, validate, availabilityController.getBoatAvailabilities);
 
 export default router;
