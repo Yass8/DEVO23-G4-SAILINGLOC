@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import logo from "/images/logo.png";
 
@@ -7,9 +7,14 @@ const Header = () => {
   const [activeLink, setActiveLink] = useState(location.pathname);
   const [menuOpen, setMenuOpen] = useState(false);
 
+  // Met à jour activeLink quand l'url change
+  useEffect(() => {
+    setActiveLink(location.pathname);
+  }, [location.pathname]);
+
   const handleClick = (href) => {
     setActiveLink(href);
-    setMenuOpen(false); // Fermer le menu après clic
+    setMenuOpen(false); // Fermer le menu mobile après clic
   };
 
   const navLinks = [
@@ -30,16 +35,16 @@ const Header = () => {
         </div>
 
         {/* Menu desktop */}
-        <nav className="hidden md:flex text-sm font-medium text-gray-700">
-          <ul className="flex space-x-6">
+        <nav className="hidden md:flex text-sm font-medium text-gray-700 flex-1">
+          <ul className="flex space-x-6 justify-center">
             {navLinks.map(({ href, label }) => (
               <li key={href}>
                 <Link
                   to={href}
                   onClick={() => handleClick(href)}
                   className={`nav-link ${
-                    activeLink === href ? "text-[#AD7C59] font-bold" : ""
-                  }`}
+                    activeLink === href ? "text-[#AD7C59] font-bold" : "hover:text-[#AD7C59]"
+                  } transition-colors`}
                 >
                   {label}
                 </Link>
@@ -50,13 +55,13 @@ const Header = () => {
 
         {/* Actions desktop */}
         <div className="hidden md:flex items-center space-x-3">
-          <select className="border text-sm px-2 py-1 rounded">
+          <select className="border text-sm px-2 py-1 rounded focus:outline-none focus:ring-2 focus:ring-[#AD7C59]">
             <option value="fr">FR</option>
             <option value="en">EN</option>
           </select>
           <Link
             to="/register"
-            className="border-none px-3 py-1 rounded text-sm text-gray-700 hover:bg-gray-100"
+            className="px-3 py-1 rounded text-sm text-gray-700 hover:bg-gray-100 transition"
           >
             Enregistrer votre bateau
           </Link>
@@ -71,7 +76,8 @@ const Header = () => {
         {/* Bouton menu mobile */}
         <button
           onClick={() => setMenuOpen(!menuOpen)}
-          className="md:hidden text-2xl text-gray-700 focus:outline-none"
+          className="md:hidden text-3xl text-gray-700 focus:outline-none"
+          aria-label="Toggle menu"
         >
           {menuOpen ? "✖" : "☰"}
         </button>
@@ -79,16 +85,16 @@ const Header = () => {
 
       {/* Menu mobile */}
       {menuOpen && (
-        <div className="md:hidden bg-white px-4 pb-4 space-y-4 shadow">
-          <ul className="flex flex-col space-y-2 text-sm font-medium text-gray-700">
+        <div className="md:hidden bg-white px-6 pb-6 shadow-lg border-t border-gray-200">
+          <ul className="flex flex-col space-y-4 text-base font-medium text-gray-700">
             {navLinks.map(({ href, label }) => (
               <li key={href}>
                 <Link
                   to={href}
                   onClick={() => handleClick(href)}
-                  className={`block ${
-                    activeLink === href ? "text-[#AD7C59] font-bold" : ""
-                  }`}
+                  className={`block px-2 py-1 rounded ${
+                    activeLink === href ? "text-[#AD7C59] font-bold" : "hover:text-[#AD7C59]"
+                  } transition-colors`}
                 >
                   {label}
                 </Link>
@@ -96,22 +102,22 @@ const Header = () => {
             ))}
           </ul>
 
-          <div className="pt-4 flex flex-col space-y-2">
-            <select className="border text-sm px-2 py-1 rounded">
-              <option value="fr">FR</option>
-              <option value="en">EN</option>
-            </select>
+          <div className="pt-6 flex flex-col space-y-4">
+         <select className="border text-base px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-[#AD7C59] w-20 sm:w-24 md:w-32">
+  <option value="fr">FR</option>
+  <option value="en">EN</option>
+</select>
             <Link
               to="/register"
               onClick={() => setMenuOpen(false)}
-              className="text-gray-700 text-sm hover:underline"
+              className="text-gray-700 text-base hover:underline px-2 py-1 rounded"
             >
               Enregistrer votre bateau
             </Link>
             <Link
               to="/login"
               onClick={() => setMenuOpen(false)}
-              className="text-[#AD7C59] text-sm font-medium hover:underline"
+              className="text-[#AD7C59] text-base font-semibold hover:underline px-2 py-1 rounded"
             >
               Se connecter
             </Link>
