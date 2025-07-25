@@ -14,6 +14,7 @@ import contractRoutes from './contract.routes.js';
 import reviewRoutes from './review.routes.js';
 import messageRoutes from './message.routes.js';
 import authRoutes from './auth.routes.js';
+import contactRoutes from './contact.routes.js';
 import { isAuthenticated } from '../middlewares/auth/authorize.js';
 const router = express.Router();
 
@@ -32,6 +33,7 @@ router.use('/contracts', isAuthenticated, contractRoutes);
 router.use('/reviews', reviewRoutes);
 router.use('/messages', isAuthenticated, messageRoutes);
 router.use('/auth', authRoutes);
+router.use('/contact', contactRoutes);
 
 router.get('/', (req, res) => {
   res.status(200).json({ message: 'Welcome to the SailingLoc API' });

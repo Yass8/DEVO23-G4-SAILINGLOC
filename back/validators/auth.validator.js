@@ -20,3 +20,6 @@ export const validateChangePassword = [
 export const validateForgotPassword = [
     body("email").isEmail().withMessage("L'email doit être valide")
 ];
+export const validateResetPassword = [
+    body("password").isLength({ min: 6 }).withMessage("Le nouveau mot de passe doit contenir au moins 6 caractères")
+];
