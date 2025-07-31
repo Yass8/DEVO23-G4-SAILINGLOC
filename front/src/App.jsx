@@ -9,6 +9,13 @@ import Contact from './Client/pages/Contact.jsx';
 import Page404 from './Client/pages/Page404.jsx';
 // import Footer from './Client/components/Footer'; 
 import './App.css';
+import Customer from "./pages/client/Customer.jsx";
+import MesReservations from "./pages/client/locataire/MesReservations.jsx.jsx";
+import Dashboard from "./components/client/Dashboard.jsx";
+import Messages from "./components/client/Message.jsx";
+import MesBateaux from "./components/client/proprietaire/MesBateaux.jsx";
+import VoirBateau from "./components/client/proprietaire/ViewBoat.jsx";
+import CreateBoat from "./components/client/proprietaire/CreatBoat.jsx";
 
 function App() {
   return (
@@ -24,8 +31,21 @@ function App() {
         <Route path="/details" element={<Details />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/404" element={<Page404 />} />
+        
+        <Route path="/my-space" element={<Customer />}>
+          <Route index element={<Navigate to="dashboard" replace />} />
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="messages" element={<Messages />} />
+          <Route path="boats" element={<MesBateaux />} />
+          <Route path="boats/new" element={<CreateBoat />} />
+          <Route path="boats/:id" element={<VoirBateau />} />
+          <Route path="reservations" element={<MesReservations />} />
+          {/* <Route path="boats" element={<MesBateaux />} />
+          <Route path="profil" element={<MonProfil />} /> */}
+          {/* Ajoute ici toutes les autres sous-pages */}
+        </Route>
 
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<Navigate to="/404" replace />} />
       </Routes>
       {/* <Footer /> */}
     </Router>
