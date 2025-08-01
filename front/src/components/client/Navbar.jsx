@@ -7,6 +7,7 @@ import {
   faBars,
   faTimes
 } from "@fortawesome/free-solid-svg-icons";
+import { getInitials } from "../../utils/initials";
 
 export default function Navbar({ sidebarOpen, setSidebarOpen }) {
   const [profileOpen, setProfileOpen] = useState(false);
@@ -27,9 +28,6 @@ export default function Navbar({ sidebarOpen, setSidebarOpen }) {
         {/* Droite */}
         <div className="flex items-center space-x-4">
           <button className="p-2 text-gray-500 rounded-lg hover:bg-gray-100">
-            <FontAwesomeIcon icon={faBell} className="w-5 h-5" />
-          </button>
-          <button className="p-2 text-gray-500 rounded-lg hover:bg-gray-100">
             <FontAwesomeIcon icon={faEnvelope} className="w-5 h-5" />
           </button>
 
@@ -39,7 +37,7 @@ export default function Navbar({ sidebarOpen, setSidebarOpen }) {
               onClick={() => setProfileOpen(!profileOpen)}
               className="flex items-center space-x-2 cursor-pointer"
             >
-              <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-medium">JD</div>
+              <div className="w-8 h-8 rounded-full bg-slate-blue flex items-center justify-center text-white font-medium">{ getInitials("Ali","Yassir") }</div>
               <span className="hidden md:inline-block text-sm font-medium">John Doe</span>
             </button>
 

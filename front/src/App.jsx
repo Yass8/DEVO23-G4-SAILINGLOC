@@ -16,6 +16,9 @@ import Messages from "./components/client/Message.jsx";
 import MesBateaux from "./components/client/proprietaire/MesBateaux.jsx";
 import VoirBateau from "./components/client/proprietaire/ViewBoat.jsx";
 import CreateBoat from "./components/client/proprietaire/CreatBoat.jsx";
+import EditBoat from "./pages/client/proprietaire/EditBoat.jsx";
+import AvailabilitiesManagement from "./pages/client/proprietaire/AvailabilitiesManagement.jsx";
+import RevenusStats from "./pages/client/proprietaire/RevenusStats.jsx";
 
 function App() {
   return (
@@ -39,7 +42,10 @@ function App() {
           <Route path="boats" element={<MesBateaux />} />
           <Route path="boats/new" element={<CreateBoat />} />
           <Route path="boats/:id" element={<VoirBateau />} />
+          <Route path="boats/:id/edit" element={<EditBoat />} />
           <Route path="reservations" element={<MesReservations />} />
+          <Route path="boats/:id/availabilities" element={<AvailabilitiesManagement />} />
+          <Route path="revenus" element={<RevenusStats />} />
           {/* <Route path="boats" element={<MesBateaux />} />
           <Route path="profil" element={<MonProfil />} /> */}
           {/* Ajoute ici toutes les autres sous-pages */}

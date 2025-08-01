@@ -33,7 +33,9 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, openDropdown, tog
         </div>
 
         <div className="pt-2 pb-2 mb-4 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-800 px-3">SailingLoc</h2>
+          <Link to="/" >
+            <img src="/images/logo.png" alt="Logo" className="w-32 mx-auto" />
+          </Link>
         </div>
 
         <ul className="space-y-2 font-medium text-sm">

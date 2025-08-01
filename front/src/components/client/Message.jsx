@@ -149,7 +149,7 @@ export default function Messages() {
                   <div
                     className={`max-w-xs lg:max-w-md px-4 py-2 rounded-xl text-sm ${
                       msg.sender_id === userId
-                        ? "bg-blue-600 text-white"
+                        ? "bg-mocha text-sand"
                         : "bg-gray-200 text-gray-800"
                     }`}
                   >
@@ -169,12 +169,12 @@ export default function Messages() {
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
                 placeholder="Écrire un message..."
-                className="flex-1 border rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="flex-1 border rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-mocha"
                 onKeyDown={(e) => e.key === "Enter" && handleSend()}
               />
               <button
                 onClick={handleSend}
-                className="bg-blue-600 text-white rounded-full p-2 hover:bg-blue-700"
+                className="bg-mocha text-white rounded-full p-2 hover:bg-mocha/90 transition"
               >
                 <FontAwesomeIcon icon={faPaperPlane} />
               </button>
