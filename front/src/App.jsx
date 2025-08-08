@@ -23,6 +23,8 @@ import ReservationDetail from "./pages/client/locataire/ReservationDetails.jsx";
 import ReservationChat from "./pages/client/locataire/ReservationChat.jsx";
 import Profile from "./pages/common/Profil.jsx";
 import Documents from "./pages/common/Documents.jsx";
+import Parameters from "./pages/common/Parameters.jsx";
+import ReservationReview from "./pages/client/proprietaire/ReservationReview.jsx";
 
 function App() {
   return (
@@ -45,7 +47,8 @@ function App() {
           <Route path="messages" element={<Messages />} />
           <Route path="profil" element={<Profile />} />
           <Route path="documents" element={<Documents />} />
-
+          <Route path="parametres" element={<Parameters />} />
+          <Route path="reservations/:id/review" element={<ReservationReview />} />
           {/* Propriétaire routes */}
           <Route path="boats" element={<MesBateaux />} />
           <Route path="boats/new" element={<CreateBoat />} />
