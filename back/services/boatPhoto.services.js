@@ -1,5 +1,6 @@
 import db from "../models/index.js";
 const { BoatPhoto, Boat } = db;
+import uploadFile from "../utils/uploadFile.js";
 
 const getAllBoatPhotos = async () => {
     return await BoatPhoto.findAll({
@@ -7,9 +8,24 @@ const getAllBoatPhotos = async () => {
     });
 };
 
-const createBoatPhoto = async (data) => {
+const createBoatPhoto = async (data, files) => {
+    if (files && files.photo_url) {
+        const file = files.photo_url;
+        const filePath = await uploadFile.saveFile(
+            'boat',
+            file.data,
+            file.name,
+            `boats/${data.boat_id}/photos`,
+            ['.jpg', '.jpeg', '.png', '.gif'],
+            2
+        );
+
+        data.photo_url = filePath;
+    }
+
     return await BoatPhoto.create(data);
 };
+
 
 const getBoatPhotoById = async (id) => {
     return await BoatPhoto.findByPk(id, {

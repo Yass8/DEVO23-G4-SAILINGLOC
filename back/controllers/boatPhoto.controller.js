@@ -11,12 +11,13 @@ const index = async (req, res) => {
 
 const create = async (req, res) => {
   try {
-    const result = await boatPhotoService.createBoatPhoto(req.body);
+    const result = await boatPhotoService.createBoatPhoto(req.body, req.files);
     res.status(201).json(result);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
+
 
 const show = async (req, res) => {
   try {
