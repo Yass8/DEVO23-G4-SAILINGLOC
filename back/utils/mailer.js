@@ -28,19 +28,19 @@ const sendEmail = async (to, subject, html) => {
 }
 
 export const sendConfirmationEmail = async (username, email, token) => {
-  sendEmail({
-    to: email,
-    subject: "Confirmation de votre compte SailingLoc",
-    html: confirmationEmailHtml(username, `${URL}/auth/confirmation/${token}`)
-  });
+  sendEmail(
+    email,
+    "Confirmation de votre compte SailingLoc",
+    confirmationEmailHtml(username, `${URL}/auth/confirmation/${token}`)
+  );
 }
 
 export const sendResetPasswordEmail = async (username, email, token) => {
-  sendEmail({
-    to: email,
-    subject: "Réinitialisation de votre mot de passe SailingLoc",
-    html: resetPasswordEmailHtml(username, `${URL}/auth/reset-password/${token}`)
-  });
+  sendEmail(
+    email,
+    "Réinitialisation de votre mot de passe SailingLoc",
+    resetPasswordEmailHtml(username, `${URL}/auth/reset-password/${token}`)
+  );
 }
 
 
