@@ -24,12 +24,14 @@ import ReservationDetail from "./pages/client/locataire/ReservationDetails.jsx";
 import ReservationChat from "./pages/client/locataire/ReservationChat.jsx";
 import Profile from "./pages/common/Profil.jsx";
 import Documents from "./pages/common/Documents.jsx";
+import AdminLayout from './pages/admin/AdminLayout.jsx';
 
 function AppContent() {
   const location = useLocation();
   const showFooter = !location.pathname.includes('/login') && 
                     !location.pathname.includes('/register') && 
-                    !location.pathname.includes('/my-space');
+                    !location.pathname.includes('/my-space') &&
+                    !location.pathname.includes('/admin');
 
   return (
     <>
@@ -67,6 +69,9 @@ function AppContent() {
           <Route path="reservations/:id/chat" element={<ReservationChat />} />
         </Route>
 
+        {/* Routes pour l'administration */}
+        <Route path="/admin/sl/*" element={<AdminLayout />} />
+        
         <Route path="*" element={<Navigate to="/404" replace />} />
       </Routes>
       {showFooter && <Footer />}
