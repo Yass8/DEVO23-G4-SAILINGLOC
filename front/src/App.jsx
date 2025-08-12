@@ -8,11 +8,8 @@ import Details from './Client/pages/Details.jsx';
 import Contact from './Client/pages/Contact.jsx';
 import Login from './Client/pages/Login.jsx';
 import Register from './Client/pages/Register.jsx';
-import ForgotPassword from './Client/pages/ForgotPassword.jsx';
 import Footer from './Client/components/Footer'; 
 import Page404 from './Client/pages/Page404.jsx';
-
-// Pages client
 import Customer from "./pages/client/Customer.jsx";
 import Dashboard from "./components/client/Dashboard.jsx";
 import Messages from "./components/client/Message.jsx";
@@ -27,22 +24,18 @@ import ReservationDetail from "./pages/client/locataire/ReservationDetails.jsx";
 import ReservationChat from "./pages/client/locataire/ReservationChat.jsx";
 import Profile from "./pages/common/Profil.jsx";
 import Documents from "./pages/common/Documents.jsx";
-
-// Page admin
-import UsersAdmin from "./pages/admin/UsersAdmin.jsx";
+import AdminLayout from './pages/admin/AdminLayout.jsx';
 
 function AppContent() {
   const location = useLocation();
   const showFooter = !location.pathname.includes('/login') && 
                     !location.pathname.includes('/register') && 
-                    !location.pathname.includes('/forgot-password') &&
                     !location.pathname.includes('/my-space') &&
                     !location.pathname.includes('/admin');
 
   return (
     <>
       <Routes>
-        {/* Routes principales */}
         <Route path="/" element={<Navigate to="/home" replace />} />
         <Route path="/home" element={<Home />} />
         <Route path="/about" element={<About />} />
@@ -50,11 +43,9 @@ function AppContent() {
         <Route path="/boats" element={<Boats />} />
         <Route path="/details" element={<Details />} />
         <Route path="/contact" element={<Contact />} />
-        
-        {/* Routes d'authentification */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/404" element={<Page404 />} />
         
         {/* Routes pour l'espace client */}
         <Route path="/my-space" element={<Customer />}>
@@ -78,11 +69,11 @@ function AppContent() {
           <Route path="reservations/:id/chat" element={<ReservationChat />} />
         </Route>
 
-        {/* Route admin - Gestion des utilisateurs */}
-        <Route path="/admin/sl/users" element={<UsersAdmin />} />
+        {/* Routes pour l'administration */}
+        <Route path="/admin/sl/*" element={<AdminLayout />} />
+        
 
-        {/* Page 404 */}
-        <Route path="/404" element={<Page404 />} />
+        
         <Route path="*" element={<Navigate to="/404" replace />} />
       </Routes>
       {showFooter && <Footer />}

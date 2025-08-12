@@ -1,444 +1,666 @@
-import React, { useState, useEffect } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { 
-  faUser, faSearch, faTrash, faEdit, faTimes, faKey, faEye, faPause, faEnvelope, faFileExport, 
-  faDownload, faFilter, faSort, faCheck, faBan, faShieldAlt,
-  faPhone, faIdCard, faCalendarAlt, faClock, faExclamationTriangle,
-  faUserLock, faUserCog,
-  faChartBar, faUsers,
-  faBell, faLock, faUnlock, faEyeSlash, faCheckCircle
-} from "@fortawesome/free-solid-svg-icons";
-
-// Service pour récupérer les utilisateurs (simulé)
-const fetchUsers = async () => {
-  // Données simulées
-  return [
-    { id: 1, name: 'Jean Dupont', email: 'jean@example.com', role: 'admin', status: 'active', createdAt: '2024-01-01', phone: '+33 6 12 34 56 78', lastLogin: '2024-01-15' },
-    { id: 2, name: 'Marie Martin', email: 'marie@example.com', role: 'locataire', status: 'active', createdAt: '2024-01-02', phone: '+33 6 23 45 67 89', lastLogin: '2024-01-14' },
-    { id: 3, name: 'Pierre Durand', email: 'pierre@example.com', role: 'proprietaire', status: 'inactive', createdAt: '2024-01-03', phone: '+33 6 34 56 78 90', lastLogin: '2024-01-10' },
-    { id: 4, name: 'Sophie Bernard', email: 'sophie@example.com', role: 'locataire', status: 'active', createdAt: '2024-01-04', phone: '+33 6 45 67 89 01', lastLogin: '2024-01-15' },
-    { id: 5, name: 'Lucas Moreau', email: 'lucas@example.com', role: 'proprietaire', status: 'active', createdAt: '2024-01-05', phone: '+33 6 56 78 90 12', lastLogin: '2024-01-13' }
-  ];
-};
-
-const updateUser = async (id, data) => {
-  console.log('Mise à jour de l\'utilisateur:', id, data);
-  return { success: true, message: 'Utilisateur mis à jour avec succès' };
-};
-
-const deleteUser = async (id) => {
-  console.log('Suppression de l\'utilisateur:', id);
-  return true;
-};
-
-const exportUsersToCSV = (users) => {
-  const csv = [
-    ['ID', 'Nom', 'Email', 'Téléphone', 'Rôle', 'Statut', 'Date d\'inscription', 'Dernière connexion'],
-    ...users.map(u => [
-      u.id,
-      u.name,
-      u.email,
-      u.phone || 'N/A',
-      u.role,
-      u.status,
-      new Date(u.createdAt).toLocaleDateString('fr-FR'),
-      u.lastLogin ? new Date(u.lastLogin).toLocaleDateString('fr-FR') : 'N/A'
-    ])
-  ].map(row => row.join(';')).join('\n');
-  
-  const blob = new Blob([csv], { type: 'text/csv' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'utilisateurs.csv';
-  a.click();
-  URL.revokeObjectURL(url);
-};
+import React, { useState, useEffect } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faUsers,
+  faSearch,
+  faFilter,
+  faEye,
+  faEdit,
+  faTrash,
+  faCheckCircle,
+  faTimesCircle,
+  faExclamationTriangle,
+  faSpinner,
+  faDownload,
+  faPlus,
+  faUser,
+  faShip,
+  faCalendar,
+  faEnvelope,
+  faPhone,
+  faMapMarkerAlt,
+  faClock,
+  faTimes,
+  faBan,
+  faCheck,
+  faFileAlt,
+  faShieldAlt,
+  faGavel,
+  faUserCheck,
+  faUserTimes,
+  faUserCog,
+  faIdCard
+} from '@fortawesome/free-solid-svg-icons';
 
 const UsersAdmin = () => {
   const [users, setUsers] = useState([]);
-  const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
-  const [actionLoading, setActionLoading] = useState({});
-  const [editUser, setEditUser] = useState(null);
-  const [editForm, setEditForm] = useState({ 
-    name: '', 
-    email: '', 
-    phone: '', 
-    role: 'locataire',
-    status: 'active',
-    notes: ''
-  });
-  const [editLoading, setEditLoading] = useState(false);
-  const [detailUser, setDetailUser] = useState(null);
-  const [suspendUserModal, setSuspendUserModal] = useState(null);
-  const [suspendReason, setSuspendReason] = useState('');
-  const [messageUserModal, setMessageUserModal] = useState(null);
-  const [messageText, setMessageText] = useState('');
-  const [resetPasswordModal, setResetPasswordModal] = useState(null);
-  const [filterStatus, setFilterStatus] = useState('all');
+  const [searchTerm, setSearchTerm] = useState('');
   const [filterRole, setFilterRole] = useState('all');
-  const [sortBy, setSortBy] = useState('date');
-  const [sortOrder, setSortOrder] = useState('desc');
-  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  const [filterStatus, setFilterStatus] = useState('all');
+  const [filterVerified, setFilterVerified] = useState('all');
+  const [selectedUsers, setSelectedUsers] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [modalUser, setModalUser] = useState(null);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingUser, setEditingUser] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [usersPerPage] = useState(10);
 
+  // Données simulées
   useEffect(() => {
-    loadUsers();
+    const mockUsers = [
+      {
+        id: 1,
+        firstName: 'Marie',
+        lastName: 'Martin',
+        email: 'marie.martin@email.com',
+        phone: '+33 6 98 76 54 32',
+        role: 'client',
+        status: 'active',
+        verified: true,
+        createdAt: '2024-01-15',
+        lastLogin: '2024-02-10',
+        avatar: '/images/profil/1.jpg',
+        address: '123 Rue de la Paix, 75001 Paris',
+        boats: 2,
+        reservations: 5,
+        totalSpent: 1200,
+        documents: ['cni.pdf', 'permis_bateau.pdf']
+      },
+      {
+        id: 2,
+        firstName: 'Jean',
+        lastName: 'Dupont',
+        email: 'jean.dupont@email.com',
+        phone: '+33 6 12 34 56 78',
+        role: 'owner',
+        status: 'active',
+        verified: true,
+        createdAt: '2024-01-10',
+        lastLogin: '2024-02-12',
+        avatar: '/images/profil/2.jpg',
+        address: '456 Avenue des Champs, 75008 Paris',
+        boats: 3,
+        reservations: 0,
+        totalEarned: 2500,
+        documents: ['cni.pdf', 'certificat_proprietaire.pdf']
+      },
+      {
+        id: 3,
+        firstName: 'Pierre',
+        lastName: 'Bernard',
+        email: 'pierre.bernard@email.com',
+        phone: '+33 6 11 22 33 44',
+        role: 'client',
+        status: 'pending',
+        verified: false,
+        createdAt: '2024-02-01',
+        lastLogin: '2024-02-01',
+        avatar: '/images/profil/3.jpg',
+        address: '789 Boulevard Saint-Germain, 75006 Paris',
+        boats: 0,
+        reservations: 1,
+        totalSpent: 300,
+        documents: ['cni.pdf']
+      },
+      {
+        id: 4,
+        firstName: 'Sophie',
+        lastName: 'Petit',
+        email: 'sophie.petit@email.com',
+        phone: '+33 6 55 66 77 88',
+        role: 'owner',
+        status: 'active',
+        verified: true,
+        createdAt: '2024-01-20',
+        lastLogin: '2024-02-11',
+        avatar: '/images/profil/4.jpg',
+        address: '321 Rue de Rivoli, 75001 Paris',
+        boats: 1,
+        reservations: 0,
+        totalEarned: 800,
+        documents: ['cni.pdf', 'assurance.pdf']
+      }
+    ];
+
+    setTimeout(() => {
+      setUsers(mockUsers);
+      setLoading(false);
+    }, 1000);
   }, []);
 
-  const loadUsers = async () => {
-    try {
-      setLoading(true);
-      const data = await fetchUsers();
-      setUsers(data);
-    } catch (error) {
-      console.error('Erreur lors du chargement des utilisateurs:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleEdit = (user) => {
-    setEditUser(user);
-    setEditForm({
-      name: user.name,
-      email: user.email,
-      phone: user.phone || '',
-      role: user.role,
-      status: user.status,
-      notes: ''
-    });
-  };
-
-  const handleSaveEdit = async () => {
-    if (!editUser) return;
-    
-    setEditLoading(true);
-    try {
-      await updateUser(editUser.id, editForm);
-      setUsers(users.map(u => u.id === editUser.id ? { ...u, ...editForm } : u));
-      setEditUser(null);
-      setEditForm({ name: '', email: '', phone: '', role: 'locataire', status: 'active', notes: '' });
-    } catch (error) {
-      console.error('Erreur lors de la mise à jour:', error);
-    } finally {
-      setEditLoading(false);
-    }
-  };
-
-  const handleDelete = async (userId) => {
-    if (!window.confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')) return;
-    
-    setActionLoading(prev => ({ ...prev, [userId]: true }));
-    try {
-      await deleteUser(userId);
-      setUsers(users.filter(u => u.id !== userId));
-    } catch (error) {
-      console.error('Erreur lors de la suppression:', error);
-    } finally {
-      setActionLoading(prev => ({ ...prev, [userId]: false }));
-    }
-  };
-
-  const handleSuspend = async (userId) => {
-    if (!suspendReason.trim()) return;
-    
-    setActionLoading(prev => ({ ...prev, [userId]: true }));
-    try {
-      // TODO: Appel API pour suspendre l'utilisateur
-      setUsers(users.map(u => u.id === userId ? { ...u, status: 'suspended' } : u));
-      setSuspendUserModal(null);
-      setSuspendReason('');
-    } catch (error) {
-      console.error('Erreur lors de la suspension:', error);
-    } finally {
-      setActionLoading(prev => ({ ...prev, [userId]: false }));
-    }
-  };
-
-  const handleResetPassword = async (userId) => {
-    setActionLoading(prev => ({ ...prev, [userId]: true }));
-    try {
-      // TODO: Appel API pour réinitialiser le mot de passe
-      alert('Un email de réinitialisation a été envoyé à l\'utilisateur');
-      setResetPasswordModal(null);
-    } catch (error) {
-      console.error('Erreur lors de la réinitialisation:', error);
-    } finally {
-      setActionLoading(prev => ({ ...prev, [userId]: false }));
-    }
-  };
-
+  // Filtrage des utilisateurs
   const filteredUsers = users.filter(user => {
-    const matchesSearch = user.name.toLowerCase().includes(search.toLowerCase()) || 
-                         user.email.toLowerCase().includes(search.toLowerCase());
-    const matchesStatus = filterStatus === 'all' || user.status === filterStatus;
+    const matchesSearch = `${user.firstName} ${user.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         user.email.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesRole = filterRole === 'all' || user.role === filterRole;
+    const matchesStatus = filterStatus === 'all' || user.status === filterStatus;
+    const matchesVerified = filterVerified === 'all' || user.verified === (filterVerified === 'true');
     
-    return matchesSearch && matchesStatus && matchesRole;
+    return matchesSearch && matchesRole && matchesStatus && matchesVerified;
   });
 
-  const sortedUsers = [...filteredUsers].sort((a, b) => {
-    if (sortBy === 'date') {
-      return sortOrder === 'desc' ? 
-        new Date(b.createdAt) - new Date(a.createdAt) : 
-        new Date(a.createdAt) - new Date(b.createdAt);
-    }
-    if (sortBy === 'name') {
-      return sortOrder === 'desc' ? 
-        b.name.localeCompare(a.name) : 
-        a.name.localeCompare(b.name);
-    }
-    return 0;
-  });
+  // Pagination
+  const indexOfLastUser = currentPage * usersPerPage;
+  const indexOfFirstUser = indexOfLastUser - usersPerPage;
+  const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
+  const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'active': return 'bg-green-100 text-green-800';
-      case 'inactive': return 'bg-gray-100 text-gray-800';
-      case 'suspended': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
+  // Gestion de la sélection multiple
+  const handleSelectAll = (checked) => {
+    if (checked) {
+      setSelectedUsers(currentUsers.map(user => user.id));
+    } else {
+      setSelectedUsers([]);
     }
   };
 
-  const getRoleColor = (role) => {
-    switch (role) {
-      case 'admin': return 'bg-purple-100 text-purple-800';
-      case 'proprietaire': return 'bg-blue-100 text-blue-800';
-      case 'locataire': return 'bg-orange-100 text-orange-800';
-      default: return 'bg-gray-100 text-gray-800';
+  const handleSelectUser = (userId, checked) => {
+    if (checked) {
+      setSelectedUsers([...selectedUsers, userId]);
+    } else {
+      setSelectedUsers(selectedUsers.filter(id => id !== userId));
     }
+  };
+
+  // Actions sur les utilisateurs
+  const handleViewUser = (user) => {
+    setModalUser(user);
+    setShowModal(true);
+  };
+
+  const handleEditUser = (user) => {
+    setEditingUser({ ...user });
+    setShowEditModal(true);
+  };
+
+  const handleVerifyUser = (userId) => {
+    setUsers(users.map(user => 
+      user.id === userId 
+        ? { ...user, verified: true }
+        : user
+    ));
+  };
+
+  const handleActivateUser = (userId) => {
+    setUsers(users.map(user => 
+      user.id === userId 
+        ? { ...user, status: 'active' }
+        : user
+    ));
+  };
+
+  const handleSuspendUser = (userId) => {
+    setUsers(users.map(user => 
+      user.id === userId 
+        ? { ...user, status: 'suspended' }
+        : user
+    ));
+  };
+
+  const handleDeleteUser = (userId) => {
+    if (window.confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')) {
+      setUsers(users.filter(user => user.id !== userId));
+      setSelectedUsers(selectedUsers.filter(id => id !== userId));
+    }
+  };
+
+  const handleBulkAction = (action) => {
+    if (selectedUsers.length === 0) return;
+
+    switch (action) {
+      case 'verify':
+        setUsers(users.map(user => 
+          selectedUsers.includes(user.id) 
+            ? { ...user, verified: true }
+            : user
+        ));
+        break;
+      case 'activate':
+        setUsers(users.map(user => 
+          selectedUsers.includes(user.id) 
+            ? { ...user, status: 'active' }
+            : user
+        ));
+        break;
+      case 'suspend':
+        setUsers(users.map(user => 
+          selectedUsers.includes(user.id) 
+            ? { ...user, status: 'suspended' }
+            : user
+        ));
+        break;
+      case 'delete':
+        if (window.confirm(`Êtes-vous sûr de vouloir supprimer ${selectedUsers.length} utilisateur(s) ?`)) {
+          setUsers(users.filter(user => !selectedUsers.includes(user.id)));
+          setSelectedUsers([]);
+        }
+        break;
+      default:
+        break;
+    }
+  };
+
+  // Export CSV
+  const exportCSV = () => {
+    const headers = ['ID', 'Nom', 'Email', 'Rôle', 'Statut', 'Vérifié', 'Date création', 'Dernière connexion'];
+    const csvContent = [
+      headers.join(','),
+      ...filteredUsers.map(user => [
+        user.id,
+        `${user.firstName} ${user.lastName}`,
+        user.email,
+        user.role,
+        user.status,
+        user.verified ? 'Oui' : 'Non',
+        user.createdAt,
+        user.lastLogin
+      ].join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'utilisateurs_export.csv';
+    a.click();
+    window.URL.revokeObjectURL(url);
+  };
+
+  // Composant pour le rôle
+  const RoleBadge = ({ role }) => {
+    const roleConfig = {
+      client: { color: 'bg-blue-100 text-blue-800', icon: faUser, label: 'Client' },
+      owner: { color: 'bg-green-100 text-green-800', icon: faShip, label: 'Propriétaire' },
+      admin: { color: 'bg-purple-100 text-purple-800', icon: faUserCog, label: 'Administrateur' }
+    };
+
+    const config = roleConfig[role] || roleConfig.client;
+    return (
+      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${config.color}`}>
+        <FontAwesomeIcon icon={config.icon} className="w-3 h-3 mr-1" />
+        {config.label}
+      </span>
+    );
+  };
+
+  // Composant pour le statut
+  const StatusBadge = ({ status }) => {
+    const statusConfig = {
+      active: { color: 'bg-green-100 text-green-800', icon: faCheckCircle, label: 'Actif' },
+      pending: { color: 'bg-yellow-100 text-yellow-800', icon: faClock, label: 'En attente' },
+      suspended: { color: 'bg-red-100 text-red-800', icon: faBan, label: 'Suspendu' },
+      inactive: { color: 'bg-gray-100 text-gray-800', icon: faTimesCircle, label: 'Inactif' }
+    };
+
+    const config = statusConfig[status] || statusConfig.pending;
+    return (
+      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${config.color}`}>
+        <FontAwesomeIcon icon={config.icon} className="w-3 h-3 mr-1" />
+        {config.label}
+      </span>
+    );
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F5F1EB] flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[#AD7C59] mx-auto mb-4"></div>
-          <p className="text-gray-600">Chargement des utilisateurs...</p>
-        </div>
+      <div className="flex items-center justify-center h-64">
+        <FontAwesomeIcon icon={faSpinner} className="animate-spin text-4xl text-[#AD7C59]" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#F5F1EB] p-6">
-      <div className="max-w-7xl mx-auto">
-        {/* En-tête */}
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
-          <div className="flex items-center justify-between mb-4">
-            <h1 className="text-3xl font-bold text-[#AD7C59] flex items-center gap-3">
-              <FontAwesomeIcon icon={faUsers} className="text-[#AD7C59]" />
-              Gestion des Utilisateurs
-            </h1>
-            <div className="flex gap-3">
-              <button
-                onClick={() => exportUsersToCSV(users)}
-                className="flex items-center gap-2 px-4 py-2 bg-[#AD7C59] text-white rounded-lg hover:bg-[#8B5A3C] transition-colors"
-              >
-                <FontAwesomeIcon icon={faDownload} />
-                Exporter CSV
-              </button>
-            </div>
-          </div>
-          
-          {/* Statistiques */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-              <div className="flex items-center gap-3">
-                <FontAwesomeIcon icon={faUsers} className="text-2xl text-blue-600" />
-                <div>
-                  <p className="text-sm text-blue-600 font-medium">Total utilisateurs</p>
-                  <p className="text-2xl font-bold text-blue-800">{users.length}</p>
-                </div>
-              </div>
-            </div>
-            <div className="bg-green-50 p-4 rounded-lg border border-green-200">
-              <div className="flex items-center gap-3">
-                <FontAwesomeIcon icon={faCheckCircle} className="text-2xl text-green-600" />
-                <div>
-                  <p className="text-sm text-green-600 font-medium">Actifs</p>
-                  <p className="text-2xl font-bold text-green-800">{users.filter(u => u.status === 'active').length}</p>
-                </div>
-              </div>
-            </div>
-            <div className="bg-orange-50 p-4 rounded-lg border border-orange-200">
-              <div className="flex items-center gap-3">
-                <FontAwesomeIcon icon={faUser} className="text-2xl text-orange-600" />
-                <div>
-                  <p className="text-sm text-orange-600 font-medium">Locataires</p>
-                  <p className="text-2xl font-bold text-orange-800">{users.filter(u => u.role === 'locataire').length}</p>
-                </div>
-              </div>
-            </div>
-            <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
-              <div className="flex items-center gap-3">
-                <FontAwesomeIcon icon={faShieldAlt} className="text-2xl text-purple-600" />
-                <div>
-                  <p className="text-sm text-purple-600 font-medium">Propriétaires</p>
-                  <p className="text-2xl font-bold text-purple-800">{users.filter(u => u.role === 'proprietaire').length}</p>
-                </div>
-              </div>
-            </div>
-          </div>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Gestion des Utilisateurs</h1>
+          <p className="mt-1 text-sm text-gray-500">
+            Gérez tous les utilisateurs, validez les comptes et suivez l'activité
+          </p>
         </div>
+        <div className="mt-4 sm:mt-0 flex space-x-3">
+          <button
+            onClick={exportCSV}
+            className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#AD7C59]"
+          >
+            <FontAwesomeIcon icon={faDownload} className="w-4 h-4 mr-2" />
+            Exporter CSV
+          </button>
+          <button className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#AD7C59] hover:bg-[#9B6B47] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#AD7C59]">
+            <FontAwesomeIcon icon={faPlus} className="w-4 h-4 mr-2" />
+            Nouvel utilisateur
+          </button>
+        </div>
+      </div>
 
-        {/* Filtres et recherche */}
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
-          <div className="flex flex-col md:flex-row gap-4 mb-4">
-            <div className="flex-1">
-              <div className="relative">
-                <FontAwesomeIcon icon={faSearch} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Rechercher par nom ou email..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#AD7C59] focus:border-transparent"
-                />
-              </div>
-            </div>
-            <div className="flex gap-2">
-              <select
-                value={filterStatus}
-                onChange={(e) => setFilterStatus(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#AD7C59] focus:border-transparent"
-              >
-                <option value="all">Tous les statuts</option>
-                <option value="active">Actif</option>
-                <option value="inactive">Inactif</option>
-                <option value="suspended">Suspendu</option>
-              </select>
-              <select
-                value={filterRole}
-                onChange={(e) => setFilterRole(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#AD7C59] focus:border-transparent"
-              >
-                <option value="all">Tous les rôles</option>
-                <option value="admin">Admin</option>
-                <option value="proprietaire">Propriétaire</option>
-                <option value="locataire">Locataire</option>
-              </select>
-              <button
-                onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-                className="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                <FontAwesomeIcon icon={faFilter} />
-              </button>
-            </div>
+      {/* Filtres et recherche */}
+      <div className="bg-white p-4 rounded-lg shadow">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+          {/* Recherche */}
+          <div className="relative">
+            <FontAwesomeIcon icon={faSearch} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <input
+              type="text"
+              placeholder="Rechercher un utilisateur..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#AD7C59] focus:border-[#AD7C59]"
+            />
           </div>
 
-          {showAdvancedFilters && (
-            <div className="border-t pt-4">
-              <div className="flex gap-4">
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#AD7C59] focus:border-transparent"
-                >
-                  <option value="date">Trier par date</option>
-                  <option value="name">Trier par nom</option>
-                </select>
-                <button
-                  onClick={() => setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc')}
-                  className="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  <FontAwesomeIcon icon={faSort} />
-                  {sortOrder === 'desc' ? 'Décroissant' : 'Croissant'}
-                </button>
-              </div>
+          {/* Filtre par rôle */}
+          <select
+            value={filterRole}
+            onChange={(e) => setFilterRole(e.target.value)}
+            className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#AD7C59] focus:border-[#AD7C59]"
+          >
+            <option value="all">Tous les rôles</option>
+            <option value="client">Clients</option>
+            <option value="owner">Propriétaires</option>
+            <option value="admin">Administrateurs</option>
+          </select>
+
+          {/* Filtre par statut */}
+          <select
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+            className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#AD7C59] focus:border-[#AD7C59]"
+          >
+            <option value="all">Tous les statuts</option>
+            <option value="active">Actifs</option>
+            <option value="pending">En attente</option>
+            <option value="suspended">Suspendus</option>
+            <option value="inactive">Inactifs</option>
+          </select>
+
+          {/* Filtre par vérification */}
+          <select
+            value={filterVerified}
+            onChange={(e) => setFilterVerified(e.target.value)}
+            className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#AD7C59] focus:border-[#AD7C59]"
+          >
+            <option value="all">Tous</option>
+            <option value="true">Vérifiés</option>
+            <option value="false">Non vérifiés</option>
+          </select>
+
+          {/* Actions en lot */}
+          {selectedUsers.length > 0 && (
+            <div className="flex space-x-2">
+              <button
+                onClick={() => handleBulkAction('verify')}
+                className="px-3 py-2 text-sm text-green-600 hover:text-green-800"
+              >
+                Vérifier
+              </button>
+              <button
+                onClick={() => handleBulkAction('activate')}
+                className="px-3 py-2 text-sm text-blue-600 hover:text-blue-800"
+              >
+                Activer
+              </button>
+              <button
+                onClick={() => handleBulkAction('suspend')}
+                className="px-3 py-2 text-sm text-red-600 hover:text-red-800"
+              >
+                Suspendre
+              </button>
+              <button
+                onClick={() => handleBulkAction('delete')}
+                className="px-3 py-2 text-sm text-red-600 hover:text-red-800"
+              >
+                Supprimer
+              </button>
             </div>
           )}
         </div>
+      </div>
 
-        {/* Liste des utilisateurs */}
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+      {/* Statistiques */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="bg-white p-6 rounded-lg shadow">
+          <div className="flex items-center">
+            <div className="flex-shrink-0">
+              <FontAwesomeIcon icon={faUsers} className="w-8 h-8 text-[#AD7C59]" />
+            </div>
+            <div className="ml-5 w-0 flex-1">
+              <dl>
+                <dt className="text-sm font-medium text-gray-500 truncate">Total utilisateurs</dt>
+                <dd className="text-lg font-medium text-gray-900">{users.length}</dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white p-6 rounded-lg shadow">
+          <div className="flex items-center">
+            <div className="flex-shrink-0">
+              <FontAwesomeIcon icon={faUserCheck} className="w-8 h-8 text-green-500" />
+            </div>
+            <div className="ml-5 w-0 flex-1">
+              <dl>
+                <dt className="text-sm font-medium text-gray-500 truncate">Vérifiés</dt>
+                <dd className="text-lg font-medium text-gray-900">{users.filter(u => u.verified).length}</dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white p-6 rounded-lg shadow">
+          <div className="flex items-center">
+            <div className="flex-shrink-0">
+              <FontAwesomeIcon icon={faShip} className="w-8 h-8 text-blue-500" />
+            </div>
+            <div className="ml-5 w-0 flex-1">
+              <dl>
+                <dt className="text-sm font-medium text-gray-500 truncate">Propriétaires</dt>
+                <dd className="text-lg font-medium text-gray-900">{users.filter(u => u.role === 'owner').length}</dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white p-6 rounded-lg shadow">
+          <div className="flex items-center">
+            <div className="flex-shrink-0">
+              <FontAwesomeIcon icon={faUser} className="w-8 h-8 text-purple-500" />
+            </div>
+            <div className="ml-5 w-0 flex-1">
+              <dl>
+                <dt className="text-sm font-medium text-gray-500 truncate">Clients</dt>
+                <dd className="text-lg font-medium text-gray-900">{users.filter(u => u.role === 'client').length}</dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Table des utilisateurs */}
+      <div className="bg-white shadow rounded-lg">
+        <div className="px-4 py-5 sm:p-6">
           <div className="overflow-x-auto">
-            <table className="w-full">
+            <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Utilisateur</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rôle</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date d'inscription</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <input
+                      type="checkbox"
+                      checked={selectedUsers.length === currentUsers.length && currentUsers.length > 0}
+                      onChange={(e) => handleSelectAll(e.target.checked)}
+                      className="rounded border-gray-300 text-[#AD7C59] focus:ring-[#AD7C59]"
+                    />
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Utilisateur
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Contact
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Rôle & Statut
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Activité & Statistiques
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {sortedUsers.map((user) => (
+                {currentUsers.map((user) => (
                   <tr key={user.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
+                      <input
+                        type="checkbox"
+                        checked={selectedUsers.includes(user.id)}
+                        onChange={(e) => handleSelectUser(user.id, e.target.checked)}
+                        className="rounded border-gray-300 text-[#AD7C59] focus:ring-[#AD7C59]"
+                      />
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        <div className="flex-shrink-0 h-10 w-10">
-                          <div className="h-10 w-10 rounded-full bg-[#AD7C59] flex items-center justify-center text-white font-semibold">
-                            {user.name.charAt(0)}
-                          </div>
+                        <div className="flex-shrink-0 h-12 w-12">
+                          <img 
+                            className="h-12 w-12 rounded-full object-cover" 
+                            src={user.avatar} 
+                            alt={`${user.firstName} ${user.lastName}`}
+                            onError={(e) => {
+                              e.target.src = 'https://via.placeholder.com/48x48/AD7C59/FFFFFF?text=' + user.firstName.charAt(0);
+                            }}
+                          />
                         </div>
                         <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900">{user.name}</div>
+                          <div className="text-sm font-medium text-gray-900">
+                            {user.firstName} {user.lastName}
+                          </div>
                           <div className="text-sm text-gray-500">ID: {user.id}</div>
+                          <div className="text-xs text-gray-400">
+                            <FontAwesomeIcon icon={faCalendar} className="w-3 h-3 mr-1" />
+                            Inscrit le {new Date(user.createdAt).toLocaleDateString('fr-FR')}
+                          </div>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{user.email}</div>
-                      <div className="text-sm text-gray-500">{user.phone || 'N/A'}</div>
+                      <div className="space-y-2">
+                        <div>
+                          <div className="text-sm font-medium text-gray-900">
+                            <FontAwesomeIcon icon={faEnvelope} className="w-3 h-3 mr-1 text-blue-500" />
+                            {user.email}
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-sm font-medium text-gray-900">
+                            <FontAwesomeIcon icon={faPhone} className="w-3 h-3 mr-1 text-green-500" />
+                            {user.phone}
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-xs text-gray-500">
+                            <FontAwesomeIcon icon={faMapMarkerAlt} className="w-3 h-3 mr-1" />
+                            {user.address}
+                          </div>
+                        </div>
+                      </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getRoleColor(user.role)}`}>
-                        {user.role}
-                      </span>
+                      <div className="space-y-2">
+                        <RoleBadge role={user.role} />
+                        <StatusBadge status={user.status} />
+                        {user.verified ? (
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            <FontAwesomeIcon icon={faCheckCircle} className="w-3 h-3 mr-1" />
+                            Vérifié
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                            <FontAwesomeIcon icon={faExclamationTriangle} className="w-3 h-3 mr-1" />
+                            Non vérifié
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(user.status)}`}>
-                        {user.status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {new Date(user.createdAt).toLocaleDateString('fr-FR')}
+                      <div className="text-sm text-gray-900">
+                        <div className="flex items-center space-x-4 mb-1">
+                          <div>
+                            <FontAwesomeIcon icon={faShip} className="w-3 h-3 mr-1 text-blue-500" />
+                            {user.boats} bateau(x)
+                          </div>
+                          <div>
+                            <FontAwesomeIcon icon={faCalendar} className="w-3 h-3 mr-1 text-green-500" />
+                            {user.reservations} réservation(s)
+                          </div>
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          <FontAwesomeIcon icon={faClock} className="w-3 h-3 mr-1" />
+                          Dernière connexion: {new Date(user.lastLogin).toLocaleDateString('fr-FR')}
+                        </div>
+                        {user.role === 'client' && (
+                          <div className="text-xs text-gray-500">
+                            Total dépensé: {user.totalSpent} €
+                          </div>
+                        )}
+                        {user.role === 'owner' && (
+                          <div className="text-xs text-gray-500">
+                            Total gagné: {user.totalEarned} €
+                          </div>
+                        )}
+                      </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex gap-2">
+                      <div className="flex space-x-2">
                         <button
-                          onClick={() => setDetailUser(user)}
-                          className="text-[#AD7C59] hover:text-[#8B5A3C] transition-colors"
+                          onClick={() => handleViewUser(user)}
+                          className="text-[#AD7C59] hover:text-[#9B6B47]"
                           title="Voir les détails"
                         >
-                          <FontAwesomeIcon icon={faEye} />
+                          <FontAwesomeIcon icon={faEye} className="w-4 h-4" />
                         </button>
                         <button
-                          onClick={() => handleEdit(user)}
-                          className="text-blue-600 hover:text-blue-800 transition-colors"
+                          onClick={() => handleEditUser(user)}
+                          className="text-blue-600 hover:text-blue-800"
                           title="Modifier"
                         >
-                          <FontAwesomeIcon icon={faEdit} />
+                          <FontAwesomeIcon icon={faEdit} className="w-4 h-4" />
                         </button>
+                        {!user.verified && (
+                          <button
+                            onClick={() => handleVerifyUser(user.id)}
+                            className="text-green-600 hover:text-green-800"
+                            title="Vérifier"
+                          >
+                            <FontAwesomeIcon icon={faCheck} className="w-4 h-4" />
+                          </button>
+                        )}
+                        {user.status === 'pending' && (
+                          <button
+                            onClick={() => handleActivateUser(user.id)}
+                            className="text-green-600 hover:text-green-800"
+                            title="Activer"
+                          >
+                            <FontAwesomeIcon icon={faUserCheck} className="w-4 h-4" />
+                          </button>
+                        )}
+                        {user.status === 'active' && (
+                          <button
+                            onClick={() => handleSuspendUser(user.id)}
+                            className="text-orange-600 hover:text-orange-800"
+                            title="Suspendre"
+                          >
+                            <FontAwesomeIcon icon={faBan} className="w-4 h-4" />
+                          </button>
+                        )}
                         <button
-                          onClick={() => setResetPasswordModal(user.id)}
-                          className="text-orange-600 hover:text-orange-800 transition-colors"
-                          title="Réinitialiser le mot de passe"
-                        >
-                          <FontAwesomeIcon icon={faKey} />
-                        </button>
-                        <button
-                          onClick={() => setSuspendUserModal(user.id)}
-                          className="text-yellow-600 hover:text-yellow-800 transition-colors"
-                          title="Suspendre"
-                        >
-                          <FontAwesomeIcon icon={faPause} />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(user.id)}
-                          disabled={actionLoading[user.id]}
-                          className="text-red-600 hover:text-red-800 transition-colors disabled:opacity-50"
+                          onClick={() => handleDeleteUser(user.id)}
+                          className="text-red-600 hover:text-red-800"
                           title="Supprimer"
                         >
-                          {actionLoading[user.id] ? (
-                            <FontAwesomeIcon icon={faTimes} className="animate-spin" />
-                          ) : (
-                            <FontAwesomeIcon icon={faTrash} />
-                          )}
+                          <FontAwesomeIcon icon={faTrash} className="w-4 h-4" />
                         </button>
                       </div>
                     </td>
@@ -450,139 +672,310 @@ const UsersAdmin = () => {
         </div>
       </div>
 
-      {/* Modal d'édition */}
-      {editUser && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-6 w-full max-w-md mx-4">
-            <h3 className="text-lg font-semibold mb-4">Modifier l'utilisateur</h3>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Nom</label>
-                <input
-                  type="text"
-                  value={editForm.name}
-                  onChange={(e) => setEditForm({...editForm, name: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#AD7C59] focus:border-transparent"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                <input
-                  type="email"
-                  value={editForm.email}
-                  onChange={(e) => setEditForm({...editForm, email: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#AD7C59] focus:border-transparent"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Téléphone</label>
-                <input
-                  type="tel"
-                  value={editForm.phone}
-                  onChange={(e) => setEditForm({...editForm, phone: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#AD7C59] focus:border-transparent"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Rôle</label>
-                <select
-                  value={editForm.role}
-                  onChange={(e) => setEditForm({...editForm, role: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#AD7C59] focus:border-transparent"
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between">
+          <div className="text-sm text-gray-700">
+            Affichage de {indexOfFirstUser + 1} à {Math.min(indexOfLastUser, filteredUsers.length)} sur {filteredUsers.length} résultats
+          </div>
+          <div className="flex space-x-2">
+            <button
+              onClick={() => setCurrentPage(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Précédent
+            </button>
+            <span className="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md">
+              {currentPage} / {totalPages}
+            </span>
+            <button
+              onClick={() => setCurrentPage(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Suivant
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de détails utilisateur */}
+      {showModal && modalUser && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+          <div className="relative top-20 mx-auto p-5 border w-11/12 max-w-4xl shadow-lg rounded-md bg-white">
+            <div className="mt-3">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-medium text-gray-900">Détails de l'utilisateur {modalUser.firstName} {modalUser.lastName}</h3>
+                <button
+                  onClick={() => setShowModal(false)}
+                  className="text-gray-400 hover:text-gray-600"
                 >
-                  <option value="locataire">Locataire</option>
-                  <option value="proprietaire">Propriétaire</option>
-                  <option value="admin">Admin</option>
-                </select>
+                  <FontAwesomeIcon icon={faTimes} className="w-6 h-6" />
+                </button>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Statut</label>
-                <select
-                  value={editForm.status}
-                  onChange={(e) => setEditForm({...editForm, status: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#AD7C59] focus:border-transparent"
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <h4 className="font-semibold text-gray-900 mb-3">Informations personnelles</h4>
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Nom complet</label>
+                      <p className="text-sm text-gray-900">{modalUser.firstName} {modalUser.lastName}</p>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Email</label>
+                      <p className="text-sm text-gray-900">{modalUser.email}</p>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Téléphone</label>
+                      <p className="text-sm text-gray-900">{modalUser.phone}</p>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Adresse</label>
+                      <p className="text-sm text-gray-900">{modalUser.address}</p>
+                    </div>
+                  </div>
+                  
+                  <h4 className="font-semibold text-gray-900 mb-3 mt-6">Statut du compte</h4>
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Rôle</label>
+                      <RoleBadge role={modalUser.role} />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Statut</label>
+                      <StatusBadge status={modalUser.status} />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Vérifié</label>
+                      {modalUser.verified ? (
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                          <FontAwesomeIcon icon={faCheckCircle} className="w-3 h-3 mr-1" />
+                          Oui
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                          <FontAwesomeIcon icon={faExclamationTriangle} className="w-3 h-3 mr-1" />
+                          Non
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                
+                <div>
+                  <h4 className="font-semibold text-gray-900 mb-3">Activité et statistiques</h4>
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Date d'inscription</label>
+                      <p className="text-sm text-gray-900">{new Date(modalUser.createdAt).toLocaleDateString('fr-FR')}</p>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Dernière connexion</label>
+                      <p className="text-sm text-gray-900">{new Date(modalUser.lastLogin).toLocaleDateString('fr-FR')}</p>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Bateaux</label>
+                      <p className="text-sm text-gray-900">{modalUser.boats}</p>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">Réservations</label>
+                      <p className="text-sm text-gray-900">{modalUser.reservations}</p>
+                    </div>
+                    
+                    {modalUser.role === 'client' && (
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">Total dépensé</label>
+                        <p className="text-sm text-gray-900 font-semibold text-[#AD7C59]">{modalUser.totalSpent} €</p>
+                      </div>
+                    )}
+                    
+                    {modalUser.role === 'owner' && (
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">Total gagné</label>
+                        <p className="text-sm text-gray-900 font-semibold text-[#AD7C59]">{modalUser.totalEarned} €</p>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {modalUser.documents && modalUser.documents.length > 0 && (
+                    <div className="mt-6">
+                      <h4 className="font-semibold text-gray-900 mb-3">Documents</h4>
+                      <div className="space-y-2">
+                        {modalUser.documents.map((doc, index) => (
+                          <div key={index} className="flex items-center space-x-2 text-sm text-gray-600">
+                            <FontAwesomeIcon icon={faIdCard} className="w-4 h-4 text-blue-500" />
+                            <span>{doc}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+              
+              <div className="mt-6 flex justify-end space-x-3">
+                <button
+                  onClick={() => setShowModal(false)}
+                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#AD7C59]"
                 >
-                  <option value="active">Actif</option>
-                  <option value="inactive">Inactif</option>
-                  <option value="suspended">Suspendu</option>
-                </select>
+                  Fermer
+                </button>
+                <button
+                  onClick={() => {
+                    handleEditUser(modalUser);
+                    setShowModal(false);
+                  }}
+                  className="px-4 py-2 text-sm font-medium text-white bg-[#AD7C59] border border-transparent rounded-md hover:bg-[#9B6B47] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#AD7C59]"
+                >
+                  Modifier
+                </button>
               </div>
-            </div>
-            <div className="flex gap-3 mt-6">
-              <button
-                onClick={handleSaveEdit}
-                disabled={editLoading}
-                className="flex-1 bg-[#AD7C59] text-white py-2 px-4 rounded-lg hover:bg-[#8B5A3C] transition-colors disabled:opacity-50"
-              >
-                {editLoading ? 'Sauvegarde...' : 'Sauvegarder'}
-              </button>
-              <button
-                onClick={() => setEditUser(null)}
-                className="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-400 transition-colors"
-              >
-                Annuler
-              </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Modal de suspension */}
-      {suspendUserModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-6 w-full max-w-md mx-4">
-            <h3 className="text-lg font-semibold mb-4">Suspendre l'utilisateur</h3>
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Raison de la suspension</label>
-              <textarea
-                value={suspendReason}
-                onChange={(e) => setSuspendReason(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#AD7C59] focus:border-transparent"
-                rows="3"
-                placeholder="Entrez la raison de la suspension..."
-              />
-            </div>
-            <div className="flex gap-3">
-              <button
-                onClick={() => handleSuspend(suspendUserModal)}
-                disabled={!suspendReason.trim() || actionLoading[suspendUserModal]}
-                className="flex-1 bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50"
-              >
-                {actionLoading[suspendUserModal] ? 'Suspension...' : 'Suspendre'}
-              </button>
-              <button
-                onClick={() => setSuspendUserModal(null)}
-                className="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-400 transition-colors"
-              >
-                Annuler
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Modal de réinitialisation de mot de passe */}
-      {resetPasswordModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-6 w-full max-w-md mx-4">
-            <h3 className="text-lg font-semibold mb-4">Réinitialiser le mot de passe</h3>
-            <p className="text-gray-600 mb-4">
-              Un email de réinitialisation sera envoyé à l'utilisateur. Êtes-vous sûr de vouloir continuer ?
-            </p>
-            <div className="flex gap-3">
-              <button
-                onClick={() => handleResetPassword(resetPasswordModal)}
-                disabled={actionLoading[resetPasswordModal]}
-                className="flex-1 bg-[#AD7C59] text-white py-2 px-4 rounded-lg hover:bg-[#8B5A3C] transition-colors disabled:opacity-50"
-              >
-                {actionLoading[resetPasswordModal] ? 'Envoi...' : 'Confirmer'}
-              </button>
-              <button
-                onClick={() => setResetPasswordModal(null)}
-                className="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-400 transition-colors"
-              >
-                Annuler
-              </button>
+      {/* Modal d'édition d'utilisateur */}
+      {showEditModal && editingUser && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+          <div className="relative top-20 mx-auto p-5 border w-11/12 max-w-2xl shadow-lg rounded-md bg-white">
+            <div className="mt-3">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-medium text-gray-900">Modifier l'utilisateur {editingUser.firstName} {editingUser.lastName}</h3>
+                <button
+                  onClick={() => setShowEditModal(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <FontAwesomeIcon icon={faTimes} className="w-6 h-6" />
+                </button>
+              </div>
+              
+              <form className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Prénom</label>
+                    <input
+                      type="text"
+                      value={editingUser.firstName}
+                      onChange={(e) => setEditingUser({
+                        ...editingUser,
+                        firstName: e.target.value
+                      })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#AD7C59] focus:border-[#AD7C59]"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Nom</label>
+                    <input
+                      type="text"
+                      value={editingUser.lastName}
+                      onChange={(e) => setEditingUser({
+                        ...editingUser,
+                        lastName: e.target.value
+                      })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#AD7C59] focus:border-[#AD7C59]"
+                    />
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                  <input
+                    type="email"
+                    value={editingUser.email}
+                    onChange={(e) => setEditingUser({
+                      ...editingUser,
+                      email: e.target.value
+                    })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#AD7C59] focus:border-[#AD7C59]"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Téléphone</label>
+                  <input
+                    type="tel"
+                    value={editingUser.phone}
+                    onChange={(e) => setEditingUser({
+                      ...editingUser,
+                      phone: e.target.value
+                    })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#AD7C59] focus:border-[#AD7C59]"
+                  />
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Rôle</label>
+                    <select
+                      value={editingUser.role}
+                      onChange={(e) => setEditingUser({
+                        ...editingUser,
+                        role: e.target.value
+                      })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#AD7C59] focus:border-[#AD7C59]"
+                    >
+                      <option value="client">Client</option>
+                      <option value="owner">Propriétaire</option>
+                      <option value="admin">Administrateur</option>
+                    </select>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Statut</label>
+                    <select
+                      value={editingUser.status}
+                      onChange={(e) => setEditingUser({
+                        ...editingUser,
+                        status: e.target.value
+                      })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#AD7C59] focus:border-[#AD7C59]"
+                    >
+                      <option value="active">Actif</option>
+                      <option value="pending">En attente</option>
+                      <option value="suspended">Suspendu</option>
+                      <option value="inactive">Inactif</option>
+                    </select>
+                  </div>
+                </div>
+                
+                <div className="flex justify-end space-x-3 pt-4">
+                  <button
+                    type="button"
+                    onClick={() => setShowEditModal(false)}
+                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#AD7C59]"
+                  >
+                    Annuler
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      // Mettre à jour l'utilisateur
+                      setUsers(users.map(user => 
+                        user.id === editingUser.id 
+                          ? editingUser
+                          : user
+                      ));
+                      setShowEditModal(false);
+                      setEditingUser(null);
+                    }}
+                    className="px-4 py-2 text-sm font-medium text-white bg-[#AD7C59] border border-transparent rounded-md hover:bg-[#9B6B47] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#AD7C59]"
+                  >
+                    Sauvegarder
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         </div>
