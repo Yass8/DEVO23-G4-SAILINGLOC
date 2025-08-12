@@ -8,8 +8,11 @@ import Details from './Client/pages/Details.jsx';
 import Contact from './Client/pages/Contact.jsx';
 import Login from './Client/pages/Login.jsx';
 import Register from './Client/pages/Register.jsx';
+import ForgotPassword from './Client/pages/ForgotPassword.jsx';
 import Footer from './Client/components/Footer'; 
 import Page404 from './Client/pages/Page404.jsx';
+
+// Pages client
 import Customer from "./pages/client/Customer.jsx";
 import Dashboard from "./components/client/Dashboard.jsx";
 import Messages from "./components/client/Message.jsx";
@@ -24,26 +27,22 @@ import ReservationDetail from "./pages/client/locataire/ReservationDetails.jsx";
 import ReservationChat from "./pages/client/locataire/ReservationChat.jsx";
 import Profile from "./pages/common/Profil.jsx";
 import Documents from "./pages/common/Documents.jsx";
-import AdminLayout from "./pages/admin/AdminLayout.jsx";
-import UsersAdminPage from "./pages/admin/UsersAdminPage.jsx";
-import BoatsAdminPage from "./pages/admin/BoatsAdminPage.jsx";
-import ReservationsAdminPage from "./pages/admin/ReservationsAdminPage.jsx";
-import ContractsAdminPage from "./pages/admin/ContractsAdminPage.jsx";
-import PaymentsAdminPage from "./pages/admin/PaymentsAdminPage.jsx";
-import MessagesAdminPage from "./pages/admin/MessagesAdminPage.jsx";
-import ReviewsAdminPage from "./pages/admin/ReviewsAdminPage.jsx";
-import SettingsAdminPage from "./pages/admin/SettingsAdminPage.jsx";
+
+// Page admin
+import UsersAdmin from "./pages/admin/UsersAdmin.jsx";
 
 function AppContent() {
   const location = useLocation();
   const showFooter = !location.pathname.includes('/login') && 
                     !location.pathname.includes('/register') && 
+                    !location.pathname.includes('/forgot-password') &&
                     !location.pathname.includes('/my-space') &&
                     !location.pathname.includes('/admin');
 
   return (
     <>
       <Routes>
+        {/* Routes principales */}
         <Route path="/" element={<Navigate to="/home" replace />} />
         <Route path="/home" element={<Home />} />
         <Route path="/about" element={<About />} />
@@ -51,10 +50,11 @@ function AppContent() {
         <Route path="/boats" element={<Boats />} />
         <Route path="/details" element={<Details />} />
         <Route path="/contact" element={<Contact />} />
+        
+        {/* Routes d'authentification */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/404" element={<Page404 />} />
         
         {/* Routes pour l'espace client */}
         <Route path="/my-space" element={<Customer />}>
@@ -78,35 +78,11 @@ function AppContent() {
           <Route path="reservations/:id/chat" element={<ReservationChat />} />
         </Route>
 
-         {/* Routes pour l'espace admin */}
-         <Route path="/admin/sl/*" element={<AdminLayout />}>
-          <Route index element={<Navigate to="dashboard" replace />} />
-          
-          {/* Gestion des utilisateurs */}
-          <Route path="users" element={<UsersAdminPage />} />
-          
-          {/* Gestion des bateaux */}
-          <Route path="boats" element={<BoatsAdminPage />} />
-          
-          {/* Gestion des réservations */}
-          <Route path="reservations" element={<ReservationsAdminPage />} />
-          
-          {/* Gestion des contrats */}
-          <Route path="contracts" element={<ContractsAdminPage />} />
-          
-          {/* Gestion des paiements */}
-          <Route path="payments" element={<PaymentsAdminPage />} />
-          
-          {/* Gestion des messages */}
-          <Route path="messages" element={<MessagesAdminPage />} />
-          
-          {/* Gestion des avis */}
-          <Route path="reviews" element={<ReviewsAdminPage />} />
-          
-          {/* Configuration */}
-          <Route path="settings" element={<SettingsAdminPage />} />
-        </Route>
+        {/* Route admin - Gestion des utilisateurs */}
+        <Route path="/admin/sl/users" element={<UsersAdmin />} />
 
+        {/* Page 404 */}
+        <Route path="/404" element={<Page404 />} />
         <Route path="*" element={<Navigate to="/404" replace />} />
       </Routes>
       {showFooter && <Footer />}
