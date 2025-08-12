@@ -1,5 +1,4 @@
 import dotenv from 'dotenv';
-
 dotenv.config();
 
 export default {
@@ -8,6 +7,7 @@ export default {
     password: process.env.POSTGRES_PASSWORD,
     database: process.env.POSTGRES_DB,
     host: process.env.POSTGRES_HOST,
+    port: process.env.DB_PORT,
     dialect: 'postgres',
   },
   test: {
@@ -15,6 +15,7 @@ export default {
     password: process.env.POSTGRES_PASSWORD,
     database: process.env.POSTGRES_DB_TEST,
     host: process.env.POSTGRES_HOST,
+    port: process.env.DB_PORT,
     dialect: 'postgres',
   },
   production: {
@@ -22,6 +23,7 @@ export default {
     password: process.env.POSTGRES_PASSWORD,
     database: process.env.POSTGRES_DB_PROD,
     host: process.env.POSTGRES_HOST,
+    port: process.env.DB_PORT,
     dialect: 'postgres'
   }
 }

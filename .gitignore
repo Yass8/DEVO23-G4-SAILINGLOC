@@ -1,3 +1,4 @@
 back/.env
 back/node_modules/
+back/config/firebase-adminsdk.json
 front/node_modules/

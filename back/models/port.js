@@ -1,7 +1,5 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+import { Model } from "sequelize";
 export default (sequelize, DataTypes) => {
   class Port extends Model {
     static associate(models) {
@@ -39,9 +37,7 @@ export default (sequelize, DataTypes) => {
     sequelize,
     modelName: 'Port',
     tableName: 'Ports',
-    timestamps: true,
-    createdAt: 'created_at',
-    updatedAt: 'updated_at'
+    timestamps: true
   });
   return Port;
 };

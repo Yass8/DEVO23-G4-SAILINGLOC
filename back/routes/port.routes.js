@@ -6,13 +6,13 @@ import {
   validateUpdatePort
 } from "../validators/port.validator.js";
 import { validate } from "../middlewares/validate.js";
-
+import { isAuthenticated, authorizeUser } from "../middlewares/auth/authorize.js";
 const router = express.Router();
 
 router.get("/", portController.index);
-router.post("/new", validateCreatePort, validate, portController.create);
+router.post("/new", isAuthenticated, authorizeUser(['admin']), validateCreatePort, validate, portController.create);
 router.get("/:id/show", validatePortId, validate, portController.show);
-router.put("/:id/edit", validatePortId, validateUpdatePort, validate, portController.update);
-router.delete("/:id/delete", validatePortId, validate, portController.remove);
+router.put("/:id/edit", isAuthenticated, authorizeUser(['admin']), validatePortId, validateUpdatePort, validate, portController.update);
+router.delete("/:id/delete", isAuthenticated, authorizeUser(['admin']), validatePortId, validate, portController.remove);
 
 export default router;

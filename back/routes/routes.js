@@ -13,13 +13,14 @@ import paymentRoutes from './payment.routes.js';
 import contractRoutes from './contract.routes.js';
 import reviewRoutes from './review.routes.js';
 import messageRoutes from './message.routes.js';
-
-
+import authRoutes from './auth.routes.js';
+import contactRoutes from './contact.routes.js';
+import { isAuthenticated } from '../middlewares/auth/authorize.js';
 const router = express.Router();
 
 
-router.use('/users', userRoutes);
-router.use('/users-documents', userDocumentRoutes);
+router.use('/users', isAuthenticated, userRoutes);
+router.use('/users-documents', isAuthenticated, userDocumentRoutes);
 router.use('/ports', portRoutes);
 router.use('/boat-types', boatTypeRoutes);
 router.use('/boats', boatRoutes);
@@ -27,11 +28,16 @@ router.use('/boat-photos', boatPhotoRoutes);
 router.use('/boat-equipments', boatEquipmentRoutes);
 router.use('/availabilities', availabilityRoutes);
 router.use('/reservations', reservationRoutes);
-router.use('/payments', paymentRoutes);
-router.use('/contracts', contractRoutes);
+router.use('/payments', isAuthenticated, paymentRoutes);
+router.use('/contracts', isAuthenticated, contractRoutes);
 router.use('/reviews', reviewRoutes);
-router.use('/messages', messageRoutes);
+router.use('/messages', isAuthenticated, messageRoutes);
+router.use('/auth', authRoutes);
+router.use('/contact', contactRoutes);
 
+router.get('/', (req, res) => {
+  res.status(200).json({ message: 'Welcome to the SailingLoc API' });
+});
 
 
 export default router;

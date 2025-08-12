@@ -1,0 +1,67 @@
+import nodemailer from 'nodemailer';
+import dotenv from 'dotenv';
+import { confirmationEmailHtml, resetPasswordEmailHtml } from './templatesMailers.js';
+
+dotenv.config();
+const { MAILER_HOST, MAILER_PORT, MAILER_USER, MAILER_PASS, URL } = process.env;
+
+
+const sendEmail = async (to, subject, html) => {
+  const transporter = nodemailer.createTransport({
+    host: MAILER_HOST,
+    port: MAILER_PORT,
+    secure: false,
+    auth: {
+      user: MAILER_USER,
+      pass: MAILER_PASS
+    }
+  });
+
+  const mailOptions = {
+    from: `"SailingLoc" <${MAILER_USER}>`,
+    to,
+    subject,
+    html
+  };
+
+  await transporter.sendMail(mailOptions);
+}
+
+export const sendConfirmationEmail = async (username, email, token) => {
+    sendEmail({
+        to: email,
+        subject: "Confirmation de votre compte SailingLoc",
+        html: confirmationEmailHtml(username, `${URL}/auth/confirmation/${token}`)
+    });
+}
+
+export const sendResetPasswordEmail = async (username, email, token) => {
+    sendEmail({
+        to: email,
+        subject: "Réinitialisation de votre mot de passe SailingLoc",
+        html: resetPasswordEmailHtml(username, `${URL}/auth/reset-password/${token}`)
+    });
+}
+
+
+export const sendContactEmail = async (name, email, message, subject) => {
+    const transporter = nodemailer.createTransport({
+        host: MAILER_HOST,
+        port: MAILER_PORT,
+        secure: false,
+        auth: {
+            user: MAILER_USER,
+            pass: MAILER_PASS
+        }
+    });
+
+    const mailOptions = {
+        from: `"${name}" <${email}>`,
+        to: MAILER_USER,
+        replyTo: email,
+        subject: subject || "Nouveau message de contact",
+        text: message
+    };
+
+    await transporter.sendMail(mailOptions);
+}

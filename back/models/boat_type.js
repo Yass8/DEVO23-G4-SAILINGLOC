@@ -1,20 +1,18 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+import { Model } from "sequelize";
 export default (sequelize, DataTypes) => {
-  class Boat_type extends Model {
+  class BoatType extends Model {
     static associate(models) {
 
-      // OneToMany : Boat_type -> Boats
-      Boat_type.hasMany(models.Boat, {
+      // OneToMany : BoatType -> Boats
+      BoatType.hasMany(models.Boat, {
         foreignKey: 'type_id',
         onDelete: 'SET NULL',
         onUpdate: 'CASCADE'
       });
     }
   }
-  Boat_type.init({
+  BoatType.init({
     name: {
       type: DataTypes.STRING,
       allowNull: false
@@ -25,11 +23,9 @@ export default (sequelize, DataTypes) => {
     }
   }, {
     sequelize,
-    modelName: 'Boat_type',
+    modelName: 'BoatType',
     tableName: 'Boat_types',
-    timestamps: true,
-    createdAt: 'created_at',
-    updatedAt: 'updated_at'
+    timestamps: true
   });
-  return Boat_type;
+  return BoatType;
 };

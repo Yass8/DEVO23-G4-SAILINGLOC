@@ -6,14 +6,14 @@ import {
   validateUpdateBoat
 } from "../validators/boat.validator.js";
 import { validate } from "../middlewares/validate.js";
-
+import { isAuthenticated, authorizeUser } from "../middlewares/auth/authorize.js";
 const router = express.Router();
 
 router.get("/", boatController.index);
 router.post("/new", validateCreateBoat, validate, boatController.create);
 router.get("/:id/show", validateBoatId, validate, boatController.show);
-router.put("/:id/edit", validateBoatId, validateUpdateBoat, validate, boatController.update);
-router.delete("/:id/delete", validateBoatId, validate, boatController.remove);
+router.put("/:id/edit", isAuthenticated, authorizeUser(['owner','admin']), validateBoatId, validateUpdateBoat, validate, boatController.update);
+router.delete("/:id/delete", isAuthenticated, authorizeUser(['owner','admin']), validateBoatId, validate, boatController.remove);
 
 router.get("/:id/photos", validateBoatId, validate, boatController.getBoatPhotos);
 router.get("/:id/equipments", validateBoatId, validate, boatController.getBoatEquipments);
