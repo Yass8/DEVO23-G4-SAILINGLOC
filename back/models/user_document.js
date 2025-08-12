@@ -36,9 +36,7 @@ export default (sequelize, DataTypes) => {
     sequelize,
     modelName: 'User_document',
     tableName: 'User_documents',
-    timestamps: true,
-    createdAt: 'created_at',
-    updatedAt: 'updated_at'
+    timestamps: true
   });
   return User_document;
 };

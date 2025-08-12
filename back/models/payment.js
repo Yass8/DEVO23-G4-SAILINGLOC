@@ -48,9 +48,7 @@ export default (sequelize, DataTypes) => {
     sequelize,
     modelName: 'Payment',
     tableName: 'Payments',
-    timestamps: true,
-    createdAt: 'created_at',
-    updatedAt: 'updated_at'
+    timestamps: true
   });
 
   return Payment;

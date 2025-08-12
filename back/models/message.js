@@ -55,9 +55,7 @@ export default (sequelize, DataTypes) => {
     sequelize,
     modelName: 'Message',
     tableName: 'Messages',
-    timestamps: true,
-    createdAt: 'created_at',
-    updatedAt: 'updated_at'
+    timestamps: true
   });
 
   return Message;
