@@ -8,15 +8,16 @@ export const validateBoatId = [
     param('boat_id').isInt().withMessage('L\'ID du bateau doit être un entier.')
 ];
 
-export const validateCreateBoatPhoto = [
-  body('boat_id').isInt().withMessage('L\'ID du bateau doit être un entier'),
-  body('photo_url').isURL().withMessage('L\'URL de la photo doit être valide'),
-  body('is_main').optional().isBoolean()
-    .withMessage('Le champ is_main doit être un booléen')
+export const validateCreateBoatPhotos = [
+  body('boat_id')
+    .isInt({ gt: 0 }).withMessage('L’ID du bateau doit être un entier positif'),
+  body('mainIndex')
+    .isInt({ min: 0 }).withMessage('mainIndex doit être un entier ≥ 0'),
 ];
 
-export const validateUpdateBoatPhoto = [
-  body('photo_url').optional().isURL().withMessage('L\'URL de la photo doit être valide'),
-  body('is_main').optional().isBoolean()
-    .withMessage('Le champ is_main doit être un booléen')
+export const validateUpdateBoatPhotos = [
+  body('boat_id')
+    .isInt({ gt: 0 }).withMessage('L’ID du bateau doit être un entier positif'),
+  body('mainIndex')
+    .isInt({ min: 0 }).withMessage('mainIndex doit être un entier ≥ 0'),
 ];

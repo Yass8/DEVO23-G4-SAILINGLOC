@@ -11,7 +11,17 @@ const index = async (req, res) => {
 
 const create = async (req, res) => {
   try {
-    const result = await boatPhotoService.createBoatPhoto(req.body, req.files);
+    const { boat_id, mainIndex } = req.body;
+
+    const files = Array.isArray(req.files?.photos)
+      ? req.files.photos
+      : [req.files.photos];
+
+    const result = await boatPhotoService.createBoatPhotos(
+      Number(boat_id),
+      files,
+      Number(mainIndex)
+    );
     res.status(201).json(result);
   } catch (error) {
     res.status(500).json({ error: error.message });

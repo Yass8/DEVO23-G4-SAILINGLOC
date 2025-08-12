@@ -2,28 +2,54 @@ import db from "../models/index.js";
 const { BoatPhoto, Boat } = db;
 import uploadFile from "../utils/uploadFile.js";
 
+
 const getAllBoatPhotos = async () => {
     return await BoatPhoto.findAll({
         include: Boat
     });
 };
 
-const createBoatPhoto = async (data, files) => {
-    if (files && files.photo_url) {
-        const file = files.photo_url;
+const createBoatPhotos = async (boatId, files, mainIndex = 0) => {
+  
+  if (!files?.length) throw new Error('Aucune photo fournie');
+
+  if (mainIndex < 0 || mainIndex >= files.length) {
+    throw new Error(
+      `mainIndex (${mainIndex}) invalide : doit être entre 0 et ${files.length - 1}`
+    );
+  }
+
+  const t = await db.sequelize.transaction();
+
+  try {
+    const photos = await Promise.all(
+      files.map(async (file, idx) => {
         const filePath = await uploadFile.saveFile(
-            'boat',
-            file.data,
-            file.name,
-            `boats/${data.boat_id}/photos`,
-            ['.jpg', '.jpeg', '.png', '.gif'],
-            2
+          'boat',
+          file.data,
+          file.name,
+          `boats/${boatId}/photos`,
+          ['.jpg', '.jpeg', '.png', '.gif'],
+          2
         );
 
-        data.photo_url = filePath;
-    }
+        return BoatPhoto.create(
+          {
+            boat_id: boatId,
+            photo_url: filePath,
+            is_main: idx === mainIndex,
+          },
+          { transaction: t }
+        );
+      })
+    );
 
-    return await BoatPhoto.create(data);
+    await t.commit();
+    return photos;
+  } catch (err) {
+    await t.rollback();
+    throw err;
+  }
 };
 
 
@@ -54,7 +80,7 @@ const getBoatPhotos = async (boatId) => {
 
 export default {
     getAllBoatPhotos,
-    createBoatPhoto,
+    createBoatPhotos,
     getBoatPhotoById,
     updateBoatPhoto,
     deleteBoatPhoto,
