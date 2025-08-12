@@ -5,7 +5,7 @@ export const validateBoatPhotoId = [
 ];
 
 export const validateBoatId = [
-    param('boat_id').isInt().withMessage('L\'ID du bateau doit être un entier.')
+  param('boat_id').isInt().withMessage('L\'ID du bateau doit être un entier.')
 ];
 
 export const validateCreateBoatPhotos = [

@@ -9,9 +9,9 @@ class UploadFile {
     return `${prefix}-${ramdomPart}-${timestamp}`;
   }
 
-  async saveFile(prefix = '',fileBuffer, originalName, destination, extensions = [], maxMo = 4) {
+  async saveFile(prefix = '', fileBuffer, originalName, destination, extensions = [], maxMo = 4) {
     const ext = path.extname(originalName).toLowerCase();
-    
+
     if (extensions.length && !extensions.includes(ext)) {
       throw new Error(`Extension non autorisée. Autorisées : ${extensions.join(', ')}`);
     }

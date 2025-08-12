@@ -28,40 +28,40 @@ const sendEmail = async (to, subject, html) => {
 }
 
 export const sendConfirmationEmail = async (username, email, token) => {
-    sendEmail({
-        to: email,
-        subject: "Confirmation de votre compte SailingLoc",
-        html: confirmationEmailHtml(username, `${URL}/auth/confirmation/${token}`)
-    });
+  sendEmail({
+    to: email,
+    subject: "Confirmation de votre compte SailingLoc",
+    html: confirmationEmailHtml(username, `${URL}/auth/confirmation/${token}`)
+  });
 }
 
 export const sendResetPasswordEmail = async (username, email, token) => {
-    sendEmail({
-        to: email,
-        subject: "Réinitialisation de votre mot de passe SailingLoc",
-        html: resetPasswordEmailHtml(username, `${URL}/auth/reset-password/${token}`)
-    });
+  sendEmail({
+    to: email,
+    subject: "Réinitialisation de votre mot de passe SailingLoc",
+    html: resetPasswordEmailHtml(username, `${URL}/auth/reset-password/${token}`)
+  });
 }
 
 
 export const sendContactEmail = async (name, email, message, subject) => {
-    const transporter = nodemailer.createTransport({
-        host: MAILER_HOST,
-        port: MAILER_PORT,
-        secure: false,
-        auth: {
-            user: MAILER_USER,
-            pass: MAILER_PASS
-        }
-    });
+  const transporter = nodemailer.createTransport({
+    host: MAILER_HOST,
+    port: MAILER_PORT,
+    secure: false,
+    auth: {
+      user: MAILER_USER,
+      pass: MAILER_PASS
+    }
+  });
 
-    const mailOptions = {
-        from: `"${name}" <${email}>`,
-        to: MAILER_USER,
-        replyTo: email,
-        subject: subject || "Nouveau message de contact",
-        text: message
-    };
+  const mailOptions = {
+    from: `"${name}" <${email}>`,
+    to: MAILER_USER,
+    replyTo: email,
+    subject: subject || "Nouveau message de contact",
+    text: message
+  };
 
-    await transporter.sendMail(mailOptions);
+  await transporter.sendMail(mailOptions);
 }

@@ -1,6 +1,6 @@
 import { sendContactEmail } from "../utils/mailer.js";
 
-const sendContact = async (data)=> {
+const sendContact = async (data) => {
   const { name, email, message, subject } = data;
   try {
     await sendContactEmail(name, email, message, subject);
