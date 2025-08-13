@@ -11,7 +11,7 @@ const Register = () => {
     phone: "",
     password: "",
     confirm_password: "",
-    user_type: "client",
+    user_type: "locataire",
     accept_terms: false,
   });
   const [showPassword, setShowPassword] = useState(false);
@@ -82,29 +82,29 @@ const Register = () => {
   };
 
   return (
-    <main className="min-h-screen bg-[#F5F1EB] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <section className="max-w-md w-full space-y-8">
+    <div className="min-h-screen bg-[#F5F1EB] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8">
         {/* Logo et titre */}
-        <header className="text-center">
+        <div className="text-center">
           <img 
             src={logo} 
             alt="SailingLoc" 
             className="mx-auto h-16 mb-6"
           />
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          <h2 className="text-3xl font-bold text-gray-900 mb-2">
             Créer un compte
-          </h1>
+          </h2>
           <p className="text-gray-600">
             Rejoignez la communauté SailingLoc
           </p>
-        </header>
+        </div>
 
         {/* Message d'erreur */}
         {error && (
-          <article className="bg-red-50 border border-red-200 rounded-lg p-4" role="alert" aria-live="polite">
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
             <div className="flex">
               <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                <svg className="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                 </svg>
               </div>
@@ -114,42 +114,40 @@ const Register = () => {
                 </p>
               </div>
             </div>
-          </article>
+          </div>
         )}
 
         {/* Formulaire */}
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit} noValidate>
-          <fieldset className="space-y-4">
-            <legend className="sr-only">Type d'utilisateur</legend>
-            
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          <div className="space-y-4">
             {/* Type d'utilisateur */}
             <div>
-              <p className="block text-sm font-medium text-gray-700 mb-2" id="user-type-label">
+              <p className="block text-sm font-medium text-gray-700 mb-2">
                 Je suis un...
               </p>
-              <div className="flex space-x-4" role="radiogroup" aria-labelledby="user-type-label">
+              <div className="flex space-x-4">
                 <label className="flex items-center">
-                                  <input
-                  type="radio"
-                  name="user_type"
-                  value="client"
-                  checked={formData.user_type === "client"}
-                  onChange={handleChange}
-                  disabled={isLoading}
-                  className="h-4 w-4 text-[#AD7C59] focus:ring-[#AD7C59] border-gray-300 disabled:opacity-50"
-                />
-                <span className="ml-2 text-sm text-gray-700">Client</span>
-              </label>
-              <label className="flex items-center">
-                <input
-                  type="radio"
-                  name="user_type"
-                  value="owner"
-                  checked={formData.user_type === "owner"}
-                  onChange={handleChange}
-                  disabled={isLoading}
-                  className="h-4 w-4 text-[#AD7C59] focus:ring-[#AD7C59] border-gray-300 disabled:opacity-50"
-                />
+                  <input
+                    type="radio"
+                    name="user_type"
+                    value="locataire"
+                    checked={formData.user_type === "locataire"}
+                    onChange={handleChange}
+                    disabled={isLoading}
+                    className="h-4 w-4 text-[#AD7C59] focus:ring-[#AD7C59] border-gray-300 disabled:opacity-50"
+                  />
+                  <span className="ml-2 text-sm text-gray-700">Locataire</span>
+                </label>
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    name="user_type"
+                    value="proprietaire"
+                    checked={formData.user_type === "proprietaire"}
+                    onChange={handleChange}
+                    disabled={isLoading}
+                    className="h-4 w-4 text-[#AD7C59] focus:ring-[#AD7C59] border-gray-300 disabled:opacity-50"
+                  />
                   <span className="ml-2 text-sm text-gray-700">Propriétaire</span>
                 </label>
               </div>
@@ -159,7 +157,7 @@ const Register = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-2">
-                  Prénom <span className="text-red-500" aria-label="requis">*</span>
+                  Prénom
                 </label>
                 <input
                   id="firstName"
@@ -175,7 +173,7 @@ const Register = () => {
               </div>
               <div>
                 <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-2">
-                  Nom <span className="text-red-500" aria-label="requis">*</span>
+                  Nom
                 </label>
                 <input
                   id="lastName"
@@ -194,7 +192,7 @@ const Register = () => {
             {/* Email */}
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                Adresse email <span className="text-red-500" aria-label="requis">*</span>
+                Adresse email
               </label>
               <input
                 id="email"
@@ -230,7 +228,7 @@ const Register = () => {
             {/* Mot de passe */}
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                Mot de passe <span className="text-red-500" aria-label="requis">*</span>
+                Mot de passe
               </label>
               <div className="relative">
                 <input
@@ -250,14 +248,13 @@ const Register = () => {
                   onClick={() => setShowPassword(!showPassword)}
                   disabled={isLoading}
                   className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-[#AD7C59] transition-colors disabled:opacity-50"
-                  aria-label={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
                 >
                   {showPassword ? (
-                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
                     </svg>
                   ) : (
-                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                     </svg>
@@ -269,7 +266,7 @@ const Register = () => {
             {/* Confirmation mot de passe */}
             <div>
               <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
-                Confirmer le mot de passe <span className="text-red-500" aria-label="requis">*</span>
+                Confirmer le mot de passe
               </label>
               <div className="relative">
                 <input
@@ -293,14 +290,13 @@ const Register = () => {
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   disabled={isLoading}
                   className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-[#AD7C59] transition-colors disabled:opacity-50"
-                  aria-label={showConfirmPassword ? "Masquer la confirmation du mot de passe" : "Afficher la confirmation du mot de passe"}
                 >
                   {showConfirmPassword ? (
-                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
                     </svg>
                   ) : (
-                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                     </svg>
@@ -308,7 +304,7 @@ const Register = () => {
                 </button>
               </div>
               {formData.confirm_password && formData.password !== formData.confirm_password && (
-                <p className="text-red-500 text-sm mt-1" role="alert" aria-live="polite">Les mots de passe ne correspondent pas</p>
+                <p className="text-red-500 text-sm mt-1">Les mots de passe ne correspondent pas</p>
               )}
             </div>
 
@@ -332,11 +328,10 @@ const Register = () => {
                 et la{" "}
                 <Link to="/privacy" className="text-[#AD7C59] hover:text-[#8B5A3C] transition-colors">
                   politique de confidentialité
-                </Link>{" "}
-                <span className="text-red-500" aria-label="requis">*</span>
+                </Link>
               </label>
             </div>
-          </fieldset>
+          </div>
 
           {/* Bouton d'inscription */}
           <div>
@@ -351,7 +346,7 @@ const Register = () => {
             >
               {isLoading ? (
                 <div className="flex items-center">
-                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
@@ -361,11 +356,10 @@ const Register = () => {
                 "Créer mon compte"
               )}
             </button>
-
           </div>
 
           {/* Séparateur */}
-          <div className="relative" role="separator" aria-label="Séparateur">
+          <div className="relative">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-gray-300" />
             </div>
@@ -381,7 +375,7 @@ const Register = () => {
               disabled={isLoading}
               className="w-full flex justify-center items-center py-3 px-4 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#AD7C59] transition-colors disabled:opacity-50"
             >
-              <svg className="h-5 w-5 mr-2" viewBox="0 0 24 24" aria-hidden="true">
+              <svg className="h-5 w-5 mr-2" viewBox="0 0 24 24">
                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                 <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
                 <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
@@ -395,7 +389,7 @@ const Register = () => {
               disabled={isLoading}
               className="w-full flex justify-center items-center py-3 px-4 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#AD7C59] transition-colors disabled:opacity-50"
             >
-              <svg className="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <svg className="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/>
               </svg>
               Continuer avec Twitter
@@ -403,7 +397,7 @@ const Register = () => {
           </div>
 
           {/* Lien de connexion */}
-          <footer className="text-center">
+          <div className="text-center">
             <p className="text-sm text-gray-600">
               Déjà un compte ?{" "}
               <Link
@@ -413,10 +407,10 @@ const Register = () => {
                 Se connecter
               </Link>
             </p>
-          </footer>
+          </div>
         </form>
-      </section>
-    </main>
+      </div>
+    </div>
   );
 };
 

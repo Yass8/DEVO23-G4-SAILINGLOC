@@ -30,14 +30,12 @@ function AppContent() {
   const location = useLocation();
   const showFooter = !location.pathname.includes('/login') && 
                     !location.pathname.includes('/register') && 
-                    !location.pathname.includes('/forgot-password') &&
                     !location.pathname.includes('/my-space') &&
                     !location.pathname.includes('/admin');
 
   return (
     <>
       <Routes>
-        {/* Routes principales */}
         <Route path="/" element={<Navigate to="/home" replace />} />
         <Route path="/home" element={<Home />} />
         <Route path="/about" element={<About />} />
@@ -74,8 +72,6 @@ function AppContent() {
 
         {/* Routes pour l'administration */}
         <Route path="/admin/sl/*" element={<AdminLayout />} />
-        
-
         
         <Route path="*" element={<Navigate to="/404" replace />} />
       </Routes>
