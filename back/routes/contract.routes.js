@@ -12,9 +12,9 @@ const router = express.Router();
 
 router.get("/", isAuthenticated, authorizeUser(['admin']), contractController.index);
 router.post("/new", isAuthenticated, validateCreateContract, validate, contractController.create);
-router.get("/:id/show", isAuthenticated,  validateContractId, validate, contractController.show);
-router.put("/:id/edit",isAuthenticated,  validateContractId, validateUpdateContract, validate, contractController.update);
-router.delete("/:id/delete",isAuthenticated,  validateContractId, validate, contractController.remove);
-router.get("/reservation/:reservationId",isAuthenticated,  validateReservationId, validate, contractController.getReservationContract);
+router.get("/:id/show", isAuthenticated, validateContractId, validate, contractController.show);
+router.put("/:id/edit", isAuthenticated, validateContractId, validateUpdateContract, validate, contractController.update);
+router.delete("/:id/delete", isAuthenticated, validateContractId, validate, contractController.remove);
+router.get("/reservation/:reservationId", isAuthenticated, validateReservationId, validate, contractController.getReservationContract);
 
 export default router;

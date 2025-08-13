@@ -1,7 +1,7 @@
 version: "3.8"
 
 services:
-  postgres: 
+  postgres:
     image: postgres:latest
     container_name: postgres_container
     environment:
@@ -14,7 +14,18 @@ services:
       - pg_data:/var/lib/postgresql/data
     networks:
       - sailingLocNet
-    
+
+  locust:
+    image: locustio/locust
+    container_name: locust_container
+    ports:
+      - "8089:8089"
+    networks:
+      - sailingLocNet
+    command: -f /locustfile.py --host=http://server:3000
+    volumes:
+      - ./tests/locustfile.py:/locustfile.py
+
   server:
     build: ./back
     container_name: server_container
@@ -29,7 +40,7 @@ services:
     volumes:
       - ./back:/app
       - /app/node_modules
-    
+
   client:
     build: ./front
     container_name: client_container
@@ -42,12 +53,11 @@ services:
     volumes:
       - ./front:/app
       - /app/node_modules
-    
 
 volumes:
   pg_data:
 
+
 networks:
   sailingLocNet:
     driver: bridge
-  

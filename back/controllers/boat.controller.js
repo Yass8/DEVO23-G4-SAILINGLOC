@@ -92,6 +92,6 @@ const getBoatReservations = async (req, res) => {
 
 export default {
   index, create, show, update, remove,
-  getBoatPhotos, getBoatEquipments, getBoatAvailabilities, 
+  getBoatPhotos, getBoatEquipments, getBoatAvailabilities,
   getBoatReviews, getBoatReservations
 };

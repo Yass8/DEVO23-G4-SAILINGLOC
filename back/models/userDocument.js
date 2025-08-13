@@ -1,17 +1,17 @@
 'use strict';
 import { Model } from "sequelize";
 export default (sequelize, DataTypes) => {
-  class User_document extends Model {
+  class UserDocument extends Model {
     static associate(models) {
 
-      User_document.belongsTo(models.User, {
+      UserDocument.belongsTo(models.User, {
         foreignKey: 'user_id',
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE'
       });
     }
   }
-  User_document.init({
+  UserDocument.init({
     type: {
       type: DataTypes.ENUM('licence', 'insurance', 'id_card'),
       allowNull: false
@@ -20,7 +20,7 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false
     },
-    is_verified: {
+    is_approved: {
       type: DataTypes.BOOLEAN,
       defaultValue: false
     },
@@ -34,11 +34,9 @@ export default (sequelize, DataTypes) => {
     }
   }, {
     sequelize,
-    modelName: 'User_document',
-    tableName: 'User_documents',
-    timestamps: true,
-    createdAt: 'created_at',
-    updatedAt: 'updated_at'
+    modelName: 'UserDocument',
+    tableName: 'UserDocuments',
+    timestamps: true
   });
-  return User_document;
+  return UserDocument;
 };

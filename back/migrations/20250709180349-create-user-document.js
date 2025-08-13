@@ -2,7 +2,7 @@
 /** @type {import('sequelize-cli').Migration} */
 export default {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('User_documents', {
+    await queryInterface.createTable('UserDocuments', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -17,7 +17,7 @@ export default {
         type: Sequelize.STRING,
         allowNull: false
       },
-      is_verified: {
+      is_approved: {
         type: Sequelize.BOOLEAN,
         defaultValue: false
       },
@@ -35,12 +35,12 @@ export default {
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE'
       },
-      createdAt: {
+      created_at: {
         allowNull: false,
         type: Sequelize.DATE,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
       },
-      updatedAt: {
+      updated_at: {
         allowNull: false,
         type: Sequelize.DATE,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
@@ -48,6 +48,6 @@ export default {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('User_documents');
+    await queryInterface.dropTable('UserDocuments');
   }
 };

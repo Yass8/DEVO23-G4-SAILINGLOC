@@ -1,5 +1,8 @@
 import db from "../models/index.js";
 const { User, Boat, Reservation, Message, Review, UserDocument } = db;
+import uploadFile from "../utils/uploadFile.js";
+import fs from "fs";
+import path from "path";
 
 const getAllUsers = async () => {
     return await User.findAll();
@@ -61,6 +64,32 @@ const getUserDocuments = async (userId) => {
     return user ? user.UserDocuments : null;
 };
 
+const uploadUserPhoto = async (userId, file) => {
+
+    const user = await User.findByPk(userId);
+    if (!user) throw new Error("Utilisateur non trouvé");
+
+    if(user.photo && !user.photo.startsWith("avatar")) {
+        const oldFilePath = path.join(process.cwd(), user.photo);
+       
+        if (fs.existsSync(oldFilePath)) fs.unlinkSync(oldFilePath);
+    }
+
+    const filePath = await uploadFile.saveFile(
+        'user',
+        file.data,
+        file.name,
+        `users/${userId}/profile`,
+        ['.jpg', '.jpeg', '.png',],
+        2
+    );
+
+    await user.update({ photo: filePath });
+
+    return user;
+
+}
+
 export default {
     getAllUsers,
     createUser,
@@ -71,5 +100,6 @@ export default {
     getUserReservations,
     getUserMessages,
     getUserReviews,
-    getUserDocuments
+    getUserDocuments,
+    uploadUserPhoto
 };

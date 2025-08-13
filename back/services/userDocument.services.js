@@ -1,5 +1,5 @@
 import db from "../models/index.js";
-const { User_document: UserDocument, User } = db;
+const { UserDocument, User } = db;
 
 const getAllUserDocuments = async () => {
     return await UserDocument.findAll({
