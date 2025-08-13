@@ -73,7 +73,12 @@ export default (sequelize, DataTypes) => {
     phone: DataTypes.STRING,
     payment_method: DataTypes.STRING,
     photo: DataTypes.STRING,
-    address: DataTypes.STRING
+    address: DataTypes.STRING,
+    is_active: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
+      allowNull: false
+    }
   }, {
     sequelize,
     modelName: 'User',

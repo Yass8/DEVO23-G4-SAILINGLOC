@@ -13,6 +13,7 @@ router.post("/new", validateCreateUser, validate, userController.create);
 router.get("/:id/show", validateUserId, validate, userController.show);
 router.put("/:id/edit", validateUserId, validateUpdateUser, validate, userController.update);
 router.delete("/:id/delete", validateUserId, validate, userController.remove);
+router.put("/:id/photo", validateUserId, validate, userController.uploadPhoto);
 
 router.get("/:id/boats", validateUserId, validate, userController.getUserBoats);
 router.get("/:id/reservations", validateUserId, validate, userController.getUserReservations);

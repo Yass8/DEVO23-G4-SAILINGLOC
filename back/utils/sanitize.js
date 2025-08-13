@@ -4,6 +4,6 @@
  */
 export const sanitizeUser = (user) => {
   if (!user) return null;
-  const { password, createdAt, updatedAt, ...rest } = user.toJSON();
+  const { password, created_at, updated_at, ...rest } = user.toJSON();
   return rest;
 };
