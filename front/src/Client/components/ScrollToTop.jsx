@@ -41,7 +41,7 @@ export default function ScrollToTop() {
             stroke="currentColor"
             strokeWidth="4"
             strokeDasharray="307"
-            strokeDashoffset={307 - (307 * scroll) / 100}
+            strokeDashoffset={Math.max(0, 307 - (307 * (scroll || 0)) / 100)}
           />
         </svg>
         <div className="absolute inset-0 flex items-center justify-center">
