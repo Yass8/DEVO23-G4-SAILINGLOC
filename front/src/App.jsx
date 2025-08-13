@@ -8,6 +8,7 @@ import Details from './Client/pages/Details.jsx';
 import Contact from './Client/pages/Contact.jsx';
 import Login from './Client/pages/Login.jsx';
 import Register from './Client/pages/Register.jsx';
+import ForgotPassword from './Client/pages/ForgotPassword.jsx';
 import Footer from './Client/components/Footer'; 
 import Page404 from './Client/pages/Page404.jsx';
 import Customer from "./pages/client/Customer.jsx";
