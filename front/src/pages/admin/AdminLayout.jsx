@@ -32,7 +32,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import Preloader from "../../Client/components/Preloader";
 import ScrollToTop from "../../Client/components/ScrollToTop";
-import SettingsAdmin from "./SettingsAdmin";
+import PaymentsAdmin from "./PaymentsAdmin";
+
 
 // Composant Card réutilisable
 function Card({ icon, value, label, color = "text-slate-blue", loading = false }) {
@@ -55,6 +56,18 @@ function Card({ icon, value, label, color = "text-slate-blue", loading = false }
     </div>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 // Dashboard Admin Component
 const AdminDashboard = () => {
@@ -140,7 +153,7 @@ const AdminDashboard = () => {
               <div>
                 <p className="font-semibold">Bateaux</p>
                 <p className="text-sm text-gray-600">Gérer les bateaux</p>
-                <p className="text-xs text-[#AD7C59] mt-1">🔄 En développement</p>
+                <p className="text-xs text-green-600 mt-1">✅ Disponible</p>
               </div>
             </div>
           </Link>
@@ -151,7 +164,7 @@ const AdminDashboard = () => {
               <div>
                 <p className="font-semibold">Réservations</p>
                 <p className="text-sm text-gray-600">Gérer les réservations</p>
-                <p className="text-xs text-[#AD7C59] mt-1">🔄 En développement</p>
+                <p className="text-xs text-green-600 mt-1">✅ Disponible</p>
               </div>
             </div>
           </Link>
@@ -357,12 +370,7 @@ export default function AdminLayout() {
           </div>
         </div>;
       case '/admin/sl/payments':
-        return <div className="min-h-screen bg-[#F5F1EB] flex items-center justify-center">
-          <div className="text-center">
-            <h1 className="text-4xl font-bold text-[#AD7C59] mb-4">Gestion des Paiements</h1>
-            <p className="text-gray-600 mb-6">Cette page est en cours de développement</p>
-          </div>
-        </div>;
+        return <PaymentsAdmin />;
       case '/admin/sl/ports':
         return <div className="min-h-screen bg-[#F5F1EB] flex items-center justify-center">
           <div className="text-center">
@@ -385,7 +393,12 @@ export default function AdminLayout() {
           </div>
         </div>;
       case '/admin/sl/settings':
-        return <SettingsAdmin />;
+        return <div className="min-h-screen bg-[#F5F1EB] flex items-center justify-center">
+          <div className="text-center">
+            <h1 className="text-4xl font-bold text-[#AD7C59] mb-4">Configuration</h1>
+            <p className="text-gray-600 mb-6">Cette page est en cours de développement</p>
+          </div>
+        </div>;
       default:
         return <AdminDashboard />;
     }
@@ -408,4 +421,4 @@ export default function AdminLayout() {
       </main>
     </div>
   );
-} 
+}
