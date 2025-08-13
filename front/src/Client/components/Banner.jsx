@@ -1,17 +1,45 @@
 import banner from "/images/hero.jpeg";
+
 function Banner() {
   return (
-    <div className="relative w-full h-[180px] sm:h-[220px] md:h-[260px] lg:h-[300px]">
-      <img src={banner} alt="Bannière" className="w-full h-full object-cover" />
-      <div className="absolute top-1/2 left-4 sm:left-10 -translate-y-1/2 text-black space-y-2">
-        <h2 className="text-lg sm:text-xl md:text-2xl font-bold leading-snug">
-          Trouvez le bateau parfait
-          <br />
-          pour votre prochaine
-          <br />
-          aventure
-        </h2>
-        <button className="mt-1 bg-[#c58e6a] text-white px-3 sm:px-5 py-1.5 sm:py-2 rounded-md text-sm sm:text-base font-medium">
+    <div className="relative w-full h-[180px] sm:h-[220px] md:h-[300px] lg:h-[350px]">
+      <img
+        src={banner}
+        alt="Bannière"
+        className="w-full h-full object-cover"
+      />
+      <div
+        className="
+          absolute
+          top-1/2
+          left-4 sm:left-8 md:left-12 lg:left-20
+          -translate-y-1/2
+          w-[90%] sm:w-[70%] md:w-[50%] lg:w-[35%]
+          text-black
+          space-y-3
+          "
+      >
+        <h1
+          className="
+            text-base sm:text-lg md:text-2xl lg:text-4xl
+            font-bold
+            leading-snug
+          "
+        >
+          Trouvez le bateau<br /> parfait pour votre <br /> prochaine <br/> aventure
+        </h1>
+        <button
+          className="
+            bg-[#c58e6a]
+            hover:bg-[#b37954]
+            transition-colors
+            text-white
+            px-4 py-2
+            rounded-md
+            text-sm sm:text-base
+            font-medium
+          "
+        >
           Commencez votre aventure
         </button>
       </div>

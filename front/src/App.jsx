@@ -1,20 +1,38 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import Header from "./Client/components/Header";  // adapte le chemin si besoin
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import './App.css'
 import Home from './Client/pages/Home.jsx';
 import About from './Client/pages/About.jsx';
 import Category from './Client/pages/Category.jsx';
 import Boats from './Client/pages/Boats.jsx';
 import Details from './Client/pages/Details.jsx';
 import Contact from './Client/pages/Contact.jsx';
+import Login from './Client/pages/Login.jsx';
+import Register from './Client/pages/Register.jsx';
+import Footer from './Client/components/Footer'; 
 import Page404 from './Client/pages/Page404.jsx';
-// import Footer from './Client/components/Footer'; 
-import './App.css';
+import Customer from "./pages/client/Customer.jsx";
+import Dashboard from "./components/client/Dashboard.jsx";
+import Messages from "./components/client/Message.jsx";
+import MesBateaux from "./components/client/proprietaire/MesBateaux.jsx";
+import VoirBateau from "./components/client/proprietaire/ViewBoat.jsx";
+import CreateBoat from "./components/client/proprietaire/CreatBoat.jsx";
+import EditBoat from "./pages/client/proprietaire/EditBoat.jsx";
+import AvailabilitiesManagement from "./pages/client/proprietaire/AvailabilitiesManagement.jsx";
+import RevenusStats from "./pages/client/proprietaire/RevenusStats.jsx";
+import MyReservations from "./pages/client/locataire/MyReservations.jsx";
+import ReservationDetail from "./pages/client/locataire/ReservationDetails.jsx";
+import ReservationChat from "./pages/client/locataire/ReservationChat.jsx";
+import Profile from "./pages/common/Profil.jsx";
+import Documents from "./pages/common/Documents.jsx";
 
-function App() {
+function AppContent() {
+  const location = useLocation();
+  const showFooter = !location.pathname.includes('/login') && 
+                    !location.pathname.includes('/register') && 
+                    !location.pathname.includes('/my-space');
+
   return (
-    <Router>
-      {/* <Header /> Ton header sera visible partout */}
-
+    <>
       <Routes>
         <Route path="/" element={<Navigate to="/home" replace />} />
         <Route path="/home" element={<Home />} />
@@ -23,11 +41,43 @@ function App() {
         <Route path="/boats" element={<Boats />} />
         <Route path="/details" element={<Details />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
         <Route path="/404" element={<Page404 />} />
+        
+        {/* Routes pour l'espace client */}
+        <Route path="/my-space" element={<Customer />}>
+          <Route index element={<Navigate to="dashboard" replace />} />
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="messages" element={<Messages />} />
+          <Route path="profil" element={<Profile />} />
+          <Route path="documents" element={<Documents />} />
 
-        <Route path="*" element={<Navigate to="/" replace />} />
+          {/* Propriétaire routes */}
+          <Route path="boats" element={<MesBateaux />} />
+          <Route path="boats/new" element={<CreateBoat />} />
+          <Route path="boats/:id" element={<VoirBateau />} />
+          <Route path="boats/:id/edit" element={<EditBoat />} />
+          <Route path="boats/:id/availabilities" element={<AvailabilitiesManagement />} />
+          <Route path="revenus" element={<RevenusStats />} />
+          
+          {/* Locataire routes */}
+          <Route path="reservations" element={<MyReservations />} />
+          <Route path="reservations/:id" element={<ReservationDetail />} />
+          <Route path="reservations/:id/chat" element={<ReservationChat />} />
+        </Route>
+
+        <Route path="*" element={<Navigate to="/404" replace />} />
       </Routes>
-      {/* <Footer /> */}
+      {showFooter && <Footer />}
+    </>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <AppContent />
     </Router>
   );
 }
