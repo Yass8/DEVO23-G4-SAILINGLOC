@@ -25,13 +25,15 @@ import ReservationDetail from "./pages/client/locataire/ReservationDetails.jsx";
 import ReservationChat from "./pages/client/locataire/ReservationChat.jsx";
 import Profile from "./pages/common/Profil.jsx";
 import Documents from "./pages/common/Documents.jsx";
-// import AdminLayout from './pages/admin/AdminLayout.jsx';
+import AdminLayout from "./pages/admin/AdminLayout.jsx";
 
 function AppContent() {
   const location = useLocation();
   const showFooter = !location.pathname.includes('/login') && 
                     !location.pathname.includes('/register') && 
                     !location.pathname.includes('/forgot-password') &&
+                    !location.pathname.includes('/my-space') &&
+                    !location.pathname.includes('/admin');
                     !location.pathname.includes('/my-space') &&
                     !location.pathname.includes('/admin');
 
@@ -74,9 +76,8 @@ function AppContent() {
         </Route>
 
         {/* Routes pour l'administration */}
-        {/* <Route path="/admin/sl/*" element={<AdminLayout />} /> */}
-        
-
+        <Route path="/admin" element={<Navigate to="/admin/sl" replace />} />
+        <Route path="/admin/sl/*" element={<AdminLayout />} />
         
         <Route path="*" element={<Navigate to="/404" replace />} />
       </Routes>
