@@ -3,7 +3,7 @@ const { Review, User, Boat, Reservation } = db;
 
 const getAllReviews = async () => {
     return await Review.findAll({
-        attributes:["id", "reservation_id", "rating", "comment", "response", "createdAt", "updatedAt"]
+        attributes:["id", "reservation_id", "rating", "comment", "response", "created_at", "updated_at"]
     });
 };
 
