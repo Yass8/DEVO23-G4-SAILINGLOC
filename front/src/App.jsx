@@ -54,8 +54,8 @@ function AppContent() {
           <Route path="messages" element={<Messages />} />
           <Route path="profil" element={<Profile />} />
           <Route path="documents" element={<Documents />} />
-          <Route path="parametres" element={<Parameters />} />
-          <Route path="reservations/:id/review" element={<ReservationReview />} />
+          {/* <Route path="parametres" element={<Param />} /> */}
+          {/* <Route path="reservations/:id/review" element={<ReservationReview />} /> */}
           {/* Propriétaire routes */}
           <Route path="boats" element={<MesBateaux />} />
           <Route path="boats/new" element={<CreateBoat />} />
