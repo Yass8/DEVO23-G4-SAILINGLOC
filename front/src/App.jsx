@@ -24,7 +24,7 @@ import ReservationDetail from "./pages/client/locataire/ReservationDetails.jsx";
 import ReservationChat from "./pages/client/locataire/ReservationChat.jsx";
 import Profile from "./pages/common/Profil.jsx";
 import Documents from "./pages/common/Documents.jsx";
-import AdminLayout from './pages/admin/AdminLayout.jsx';
+// import AdminLayout from './pages/admin/AdminLayout.jsx';
 
 function AppContent() {
   const location = useLocation();
@@ -72,7 +72,7 @@ function AppContent() {
         </Route>
 
         {/* Routes pour l'administration */}
-        <Route path="/admin/sl/*" element={<AdminLayout />} />
+        {/* <Route path="/admin/sl/*" element={<AdminLayout />} /> */}
         
 
         
