@@ -40,7 +40,6 @@ const Footer = () => {
         <div>
           <h2 className="text-base font-bold mb-1">Ne manquez rien</h2>
           <p className="text-xs">Recevez nos meilleures offres par email.</p>
-          <p className='text-xs'>Inscrivez-vous à notre newsletter et recevez en avant-première les meilleures offres de location, conseils de navigation et actualités exclusives.</p>
           <form className="mt-2 flex flex-col sm:flex-row gap-1">
             <div className="relative flex items-center">
               <div className="relative w-full max-w-xs">

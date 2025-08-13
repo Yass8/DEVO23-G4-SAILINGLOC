@@ -7,7 +7,7 @@ import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
 import Preloader from "../components/Preloader";
 import ScrollToTop from "../components/ScrollToTop";
 import Banner from "../components/Banner";
-import Footer from "../components/Footer";
+
 import Header from "../components/Header";
 
 function Home() {
@@ -116,7 +116,7 @@ function Home() {
         </div>
       </section>
 
-      <Footer/>
+
     </>
   );
 }

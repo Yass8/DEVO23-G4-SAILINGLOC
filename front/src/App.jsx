@@ -8,6 +8,7 @@ import Details from './Client/pages/Details.jsx';
 import Contact from './Client/pages/Contact.jsx';
 import Login from './Client/pages/Login.jsx';
 import Register from './Client/pages/Register.jsx';
+import ForgotPassword from './Client/pages/ForgotPassword.jsx';
 import Footer from './Client/components/Footer'; 
 import Page404 from './Client/pages/Page404.jsx';
 import Customer from "./pages/client/Customer.jsx";
@@ -30,6 +31,7 @@ function AppContent() {
   const location = useLocation();
   const showFooter = !location.pathname.includes('/login') && 
                     !location.pathname.includes('/register') && 
+                    !location.pathname.includes('/forgot-password') &&
                     !location.pathname.includes('/my-space') &&
                     !location.pathname.includes('/admin');
 
@@ -45,6 +47,7 @@ function AppContent() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/404" element={<Page404 />} />
         
         {/* Routes pour l'espace client */}

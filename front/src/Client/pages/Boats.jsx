@@ -45,6 +45,7 @@ function Boats() {
 
   return (
     <>
+      <Header />
       <Banner />
       <Preloader />
       <ScrollToTop />
