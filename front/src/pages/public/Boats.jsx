@@ -6,15 +6,15 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ReactPaginate from "react-paginate";
 
-import Filter from "../components/Filter";
-import Breadcrumb from "../components/Breadcrumb";
+import Filter from "../../components/common/Filter";
+import Breadcrumb from "../../components/common/Breadcrumb";
 import { getBoats } from "../../services/boatServices";
-import CardProduct from "../components/cards/CardProduct";
-import Header from "../components/Header";
+import CardProduct from "../../components/common/cards/CardProduct";
+import Header from "../../components/common/Header";
 import { useEffect, useState } from "react";
-import Banner from "../components/Banner";
-import Preloader from "../components/Preloader";
-import ScrollToTop from "../components/ScrollToTop";
+import Banner from "../../components/common/Banner";
+import Preloader from "../../components/common/Preloader";
+import ScrollToTop from "../../components/common/ScrollToTop";
 function Boats() {
   const [boats, setBoats] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);

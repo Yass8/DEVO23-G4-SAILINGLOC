@@ -1,8 +1,8 @@
 // pages/client/Customer.jsx
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
-import Preloader from "../../Client/components/Preloader";
-import ScrollToTop from "../../Client/components/ScrollToTop";
+import Preloader from "../../components/common/Preloader";
+import ScrollToTop from "../../components/common/ScrollToTop";
 import Navbar from "../../components/client/Navbar";
 import Sidebar from "../../components/client/Sidebar";
 

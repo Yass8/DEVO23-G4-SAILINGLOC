@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-import Preloader from '../components/Preloader';
-import ScrollToTop from '../components/ScrollToTop';
+import Preloader from '../../components/common/Preloader';
+import ScrollToTop from '../../components/common/ScrollToTop';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
-import CarouselTestimonial from '../components/CarouselTestimonial';
+import CarouselTestimonial from '../../components/common/CarouselTestimonial';
 import { getTeams } from '../../services/teamServices';
 
 export default function About() {

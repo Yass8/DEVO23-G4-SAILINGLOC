@@ -1,5 +1,5 @@
-import Header from "../components/Header";
-import Banner from "../components/Banner";
+import Header from "../../components/common/Header";
+import Banner from "../../components/common/Banner";
 import { Link } from "react-router-dom";
 
 const categories = [

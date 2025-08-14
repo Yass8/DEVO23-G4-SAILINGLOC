@@ -1,14 +1,14 @@
-import FormSearch from "../components/FormSearch";
-import CarouselCategories from "../components/CarouselCategories";
-import CarouselProducts from "../components/CarouselProducts";
-import CarouselTestimonial from "../components/CarouselTestimonial";
+import FormSearch from "../../components/common/FormSearch";
+import CarouselCategories from "../../components/common/CarouselCategories";
+import CarouselProducts from "../../components/common/CarouselProducts";
+import CarouselTestimonial from "../../components/common/CarouselTestimonial";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
-import Preloader from "../components/Preloader";
-import ScrollToTop from "../components/ScrollToTop";
-import Banner from "../components/Banner";
-import Footer from "../components/Footer";
-import Header from "../components/Header";
+import Preloader from "../../components/common/Preloader";
+import ScrollToTop from "../../components/common/ScrollToTop";
+import Banner from "../../components/common/Banner";
+import Footer from "../../components/common/Footer";
+import Header from "../../components/common/Header";
 
 function Home() {
   return (

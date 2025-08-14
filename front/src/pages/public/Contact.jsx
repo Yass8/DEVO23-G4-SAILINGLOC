@@ -1,5 +1,5 @@
-import Preloader from '../components/Preloader';
-import ScrollToTop from '../components/ScrollToTop.jsx';
+import Preloader from '../../components/common/Preloader.jsx';
+import ScrollToTop from '../../components/common/ScrollToTop.jsx';
 import { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope, faMapMarkerAlt, faClock, faPhone } from '@fortawesome/free-solid-svg-icons';

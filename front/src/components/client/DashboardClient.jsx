@@ -42,7 +42,7 @@ const demandes = [
         
 ];
 
-export default function Dashboard() {
+export default function DashboardClient() {
   const [demandesState, setDemandesState] = useState(demandes);
 
   

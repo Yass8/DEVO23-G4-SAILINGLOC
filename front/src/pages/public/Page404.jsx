@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import Preloader from '../components/Preloader';
-import ScrollToTop from '../components/ScrollToTop';
+import Preloader from '../../components/common/Preloader';
+import ScrollToTop from '../../components/common/ScrollToTop';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPhone, faEnvelope, faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
 

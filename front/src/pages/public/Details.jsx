@@ -1,6 +1,6 @@
-import Banner from "../components/Banner";
-import Preloader from "../components/Preloader";
-import ScrollToTop from "../components/ScrollToTop";
+import Banner from "../../components/common/Banner";
+import Preloader from "../../components/common/Preloader";
+import ScrollToTop from "../../components/common/ScrollToTop";
 function Details() {
   return (
     <>
