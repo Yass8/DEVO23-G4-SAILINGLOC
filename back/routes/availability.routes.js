@@ -15,7 +15,7 @@ router.get("/", availabilityController.index);
 router.post("/new", validateCreateAvailability, validate, availabilityController.create);
 router.get("/:id/show", validateAvailabilityId, validate, validateAvailabilityId, validate, availabilityController.show);
 router.put("/:id/edit", isAuthenticated, validateUpdateAvailability, validate, availabilityController.update);
-router.delete("/:id/delete", isAuthenticated, authorizeUser(['admin','owner']), validateAvailabilityId, validate, availabilityController.remove);
+router.delete("/:id/delete", isAuthenticated, authorizeUser(['admin', 'owner']), validateAvailabilityId, validate, availabilityController.remove);
 
 router.get("/boat/:boatId", validateBoatId, validate, availabilityController.getBoatAvailabilities);
 

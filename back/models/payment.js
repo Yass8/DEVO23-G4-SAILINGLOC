@@ -4,7 +4,7 @@ export default (sequelize, DataTypes) => {
   class Payment extends Model {
     static associate(models) {
 
-       // ManyToOne: Payment -> Reservation
+      // ManyToOne: Payment -> Reservation
       Payment.belongsTo(models.Reservation, {
         foreignKey: 'reservation_id',
         onDelete: 'CASCADE',
@@ -48,9 +48,7 @@ export default (sequelize, DataTypes) => {
     sequelize,
     modelName: 'Payment',
     tableName: 'Payments',
-    timestamps: true,
-    createdAt: 'created_at',
-    updatedAt: 'updated_at'
+    timestamps: true
   });
 
   return Payment;

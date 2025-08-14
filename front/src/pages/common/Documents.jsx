@@ -11,7 +11,7 @@ import {
   faShieldAlt
 } from '@fortawesome/free-solid-svg-icons';
 
-// Mock data basé sur le modèle User_document
+// Mock data basé sur le modèle UserDocument
 const mockDocuments = [
   {
     id: 1,

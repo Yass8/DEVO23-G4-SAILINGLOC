@@ -2,8 +2,8 @@
 /* * @file sanitize.js
  * @description Utility functions to sanitize user data.
  */
-export const sanitizeUser= (user) => {
+export const sanitizeUser = (user) => {
   if (!user) return null;
-  const { password, createdAt, updatedAt, ...rest } = user.toJSON();
+  const { password, created_at, updated_at, ...rest } = user.toJSON();
   return rest;
 };

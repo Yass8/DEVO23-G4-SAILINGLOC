@@ -3,7 +3,11 @@ const { Message, User, Reservation } = db;
 
 const getAllMessages = async () => {
     return await Message.findAll({
-        include: [User, Reservation]
+        include: [
+            { model: User, as: 'Sender' },
+            { model: User, as: 'Receiver' },
+            { model: Reservation }
+        ]
     });
 };
 

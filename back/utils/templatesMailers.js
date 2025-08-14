@@ -1,6 +1,6 @@
 
 
-export const confirmationEmailHtml = (username, URL,token) => `
+export const confirmationEmailHtml = (username, URL, token) => `
   <!DOCTYPE html>
   <html lang="fr">
     <body style="background-color: #F5F1EB; font-family: 'Open Sans', sans-serif; color: #4B6A88; margin: 20px 0px; padding: 0;">
@@ -51,4 +51,3 @@ export const resetPasswordEmailHtml = (username, URL, token) => `
         </body>
       </html>
     `;
-    

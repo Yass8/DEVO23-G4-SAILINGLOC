@@ -1,11 +1,11 @@
 import { body, param } from 'express-validator';
 
 export const validateAvailabilityId = [
-    param('id').isInt().withMessage('L\'ID doit être un entier')
+  param('id').isInt().withMessage('L\'ID doit être un entier')
 ];
 
 export const validateBoatId = [
-    param('boatId').isInt().withMessage('L\'ID du bateau doit être un entier')
+  param('boatId').isInt().withMessage('L\'ID du bateau doit être un entier')
 ];
 
 export const validateCreateAvailability = [

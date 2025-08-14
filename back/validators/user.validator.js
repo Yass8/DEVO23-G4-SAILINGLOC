@@ -9,7 +9,7 @@ export const validateCreateUser = [
   body('firstname')
     .isString().withMessage('Le prénom doit être une chaîne de caractères.')
     .isLength({ min: 2, max: 50 }).withMessage('Le prénom doit contenir entre 2 et 50 caractères.'),
-  
+
   body('lastname')
     .isString().withMessage('Le nom doit être une chaîne de caractères.')
     .isLength({ min: 2, max: 50 }).withMessage('Le nom doit contenir entre 2 et 50 caractères.'),
@@ -45,7 +45,7 @@ export const validateUpdateUser = [
     .optional()
     .isString().withMessage('Le prénom doit être une chaîne de caractères.')
     .isLength({ min: 2, max: 50 }).withMessage('Le prénom doit contenir entre 2 et 50 caractères.'),
-  
+
   body('lastname')
     .optional()
     .isString().withMessage('Le nom doit être une chaîne de caractères.')
