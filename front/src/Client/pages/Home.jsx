@@ -7,6 +7,7 @@ import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
 import Preloader from "../components/Preloader";
 import ScrollToTop from "../components/ScrollToTop";
 import Banner from "../components/Banner";
+import footer from "../components/footer";
 
 import Header from "../components/Header";
 

@@ -9,7 +9,7 @@ import Contact from './Client/pages/Contact.jsx';
 import Login from './Client/pages/Login.jsx';
 import Register from './Client/pages/Register.jsx';
 import ForgotPassword from './Client/pages/ForgotPassword.jsx';
-import Footer from './Client/components/Footer'; 
+import Footer from './Client/components/footer'; 
 import Page404 from './Client/pages/Page404.jsx';
 import Customer from "./pages/client/Customer.jsx";
 import Dashboard from "./components/client/Dashboard.jsx";
