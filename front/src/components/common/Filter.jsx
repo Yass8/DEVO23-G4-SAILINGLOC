@@ -4,8 +4,8 @@ import Select from "react-select";
 import { useEffect, useState } from "react";
 import { customSelectStyles, customSelectTheme } from "../../utils/selectTheme";
 import { getPorts } from "../../services/portServices";
-import { getTypes } from "../../services/typeSevices";
-import { getEquipments } from "../../services/equipmentServices";
+import { getTypes } from "../../services/boatTypeSevices";
+import { getEquipments } from "../../services/boatEquipmentServices";
 
 function Filter(){
 

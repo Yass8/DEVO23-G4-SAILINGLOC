@@ -25,7 +25,9 @@ export default (sequelize, DataTypes) => {
     sequelize,
     modelName: 'BoatType',
     tableName: 'BoatTypes',
-    timestamps: true
+    timestamps: true,
+    createdAt: 'created_at',
+    updatedAt: 'updated_at'
   });
   return BoatType;
 };
