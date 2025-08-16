@@ -1,13 +1,10 @@
 import { request } from "./http.js";
 
-export const login = (data) =>
-  request("/auth/login", { method: "POST", body: JSON.stringify(data) });
-export const register = (data) =>
-  request("/auth/register", { method: "POST", body: JSON.stringify(data) });
+export const login = (data) => request("/auth/login", { method: "POST", body: JSON.stringify(data) });
+export const register = (data) => request("/auth/register", { method: "POST", body: JSON.stringify(data) });
 // export const getCurrentUser = () => request('/auth/me');
 export const confirmEmail = (token) => request(`/auth/confirmation/${token}`);
-export const changePassword = (data) =>
-  request("/auth/change-password", {
+export const changePassword = (data) => request("/auth/change-password", {
     method: "POST",
     body: JSON.stringify(data),
 });
@@ -23,6 +20,7 @@ export const resetPassword = (token, password) =>
     method: "POST",
     body: JSON.stringify({ token, password }),
   });
+  
 
 export const getCurrentUser = () => {
   const user = localStorage.getItem("user");

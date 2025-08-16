@@ -10,6 +10,8 @@ import Details from '../pages/public/Details.jsx';
 import Contact from '../pages/public/Contact.jsx';
 import Login from '../pages/public/Login.jsx';
 import Register from '../pages/public/Register.jsx';
+import ForgotPasswordEmail from "../pages/public/ForgotPassword.jsx";
+import ResetPassword from "../pages/public/ResetPassword.jsx";
 import Page404 from '../pages/public/Page404.jsx';
 
 // Espace client
@@ -60,6 +62,8 @@ export default function AppRoutes() {
             <Route path="/contact" element={<Contact />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/forgot-password-email" element={<ForgotPasswordEmail />} />
+            <Route path="/reset-password/:token" element={<ResetPassword />} />
             <Route path="/404" element={<Page404 />} />
 
             {/* Espace client */}
