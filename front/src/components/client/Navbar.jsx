@@ -2,12 +2,12 @@
 import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faEnvelope,
   faBars,
   faTimes
 } from "@fortawesome/free-solid-svg-icons";
 import { getInitials } from "../../utils/initials";
 import { getCurrentUser, isTokenValid } from "../../services/authService";
+import { logout } from "../../utils/auth";
 
 export default function Navbar({ sidebarOpen, setSidebarOpen }) {
   const [profileOpen, setProfileOpen] = useState(false);
@@ -33,9 +33,6 @@ export default function Navbar({ sidebarOpen, setSidebarOpen }) {
 
         {/* Droite */}
         <div className="flex items-center space-x-4">
-          <button className="p-2 text-gray-500 rounded-lg hover:bg-gray-100">
-            <FontAwesomeIcon icon={faEnvelope} className="w-5 h-5" />
-          </button>
 
           {/* Profil */}
           {(user && isTokenValid()) ? (
@@ -58,7 +55,7 @@ export default function Navbar({ sidebarOpen, setSidebarOpen }) {
                     <li><a href="/my-space/profil" className="block px-4 py-2 hover:bg-gray-100">Mon Profil</a></li>
                     <li><a href="/my-space/documents" className="block px-4 py-2 hover:bg-gray-100">Mes Documents</a></li>
                     <li><a href="/my-space/parametres" className="block px-4 py-2 hover:bg-gray-100">Paramètres</a></li>
-                    <li><a href="/logout" className="block px-4 py-2 text-red-600 hover:bg-gray-100">Déconnexion</a></li>
+                    <li><a onClick={logout} className="block px-4 py-2 text-red-600 hover:bg-gray-100 cursor-pointer">Déconnexion</a></li>
                   </ul>
                 </div>
               )}

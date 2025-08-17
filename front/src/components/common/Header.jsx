@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import logo from "/images/logo.png";
 import { getInitials } from "../../utils/initials";
 import { getCurrentUser, isTokenValid } from "../../services/authService";
+import { logout } from "../../utils/auth";
 
 const Header = () => {
   const location = useLocation();
@@ -10,7 +11,7 @@ const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [user, setUser] = useState(getCurrentUser());
-  const navigate = useNavigate();
+  
 
   const tokenValid = isTokenValid();
 
@@ -25,10 +26,7 @@ const Header = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    setUser(null);
-    navigate("/home");
+    logout();
   };
 
   const navLinks = [

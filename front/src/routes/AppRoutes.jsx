@@ -48,6 +48,7 @@ import BoatsAdmin from "../pages/admin/BoatsAdmin.jsx";
 import ReservationsAdmin from "../pages/admin/Reservations.jsx";
 import ContractsAdmin from "../pages/admin/Contracts.jsx";
 import AdminLayout from "../pages/admin/AdminLayout.jsx";
+import LoginAdmin from "../pages/admin/LoginAdmin.jsx";
 
 export default function AppRoutes() {
     return (
@@ -88,10 +89,11 @@ export default function AppRoutes() {
                 <Route path="reservations/:id/details" element={<ReservationDetails />} />
                 <Route path="reservations/:id/chat" element={<ReservationChat />} />
             </Route>
+            <Route path="/admin/sl/login" element={<LoginAdmin/>} />
 
             {/* Routes administrateur */}
             <Route path="/admin/sl" element={<AdminLayout />}>
-                <Route index element={<Navigate to="dashboard" replace />} />
+                <Route index element={<Navigate to="/admin/sl/login" replace />} />
                 <Route path="dashboard" element={<AdminDashboard />} />
                 <Route path="users" element={<UsersAdmin />} />
                 <Route path="ports" element={<PortsAdmin />} />

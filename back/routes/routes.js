@@ -15,10 +15,11 @@ import reviewRoutes from './review.routes.js';
 import messageRoutes from './message.routes.js';
 import authRoutes from './auth.routes.js';
 import contactRoutes from './contact.routes.js';
+import userRoutes from './user.routes.js';
 import { isAuthenticated } from '../middlewares/auth/authorize.js';
 const router = express.Router();
 
-// router.use('/users', isAuthenticated, userRoutes); // Route commentée car fichier manquant
+router.use('/users', isAuthenticated, userRoutes); // Route commentée car fichier manquant
 router.use('/users-documents', isAuthenticated, userDocumentRoutes);
 router.use('/ports', portRoutes);
 // router.use('/boat-types', boatTypeRoutes); // Route commentée car fichier manquant
