@@ -21,7 +21,7 @@ app.use("/uploads", express.static("uploads"));
 
 app.use('/api/v1', routes);
 
-app.use('api/v1/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use('/api/v1/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 const PORT = process.env.PORT || 3000;
 
