@@ -49,6 +49,7 @@ import ReservationsAdmin from "../pages/admin/Reservations.jsx";
 import ContractsAdmin from "../pages/admin/Contracts.jsx";
 import AdminLayout from "../pages/admin/AdminLayout.jsx";
 import LoginAdmin from "../pages/admin/LoginAdmin.jsx";
+import Booking from "../pages/public/Booking.jsx";
 
 export default function AppRoutes() {
     return (
@@ -60,6 +61,7 @@ export default function AppRoutes() {
             <Route path="/category" element={<Category />} />
             <Route path="/boats" element={<Boats />} />
             <Route path="/details" element={<Details />} />
+            <Route path="/booking" element={<Booking />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
