@@ -60,8 +60,8 @@ export default function AppRoutes() {
             <Route path="/about" element={<About />} />
             <Route path="/category" element={<Category />} />
             <Route path="/boats" element={<Boats />} />
-            <Route path="/boat/:slug" element={<Details />} />
-            <Route path="/booking/:slug" element={<Booking />} />
+            <Route path="/details" element={<Details />} />
+            <Route path="/booking" element={<Booking />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />

@@ -2,7 +2,6 @@ import express from "express";
 import boatController from "../controllers/boat.controller.js";
 import {
   validateBoatId,
-  validateBoatSlug,
   validateCreateBoat,
   validateUpdateBoat
 } from "../validators/boat.validator.js";
@@ -13,7 +12,6 @@ const router = express.Router();
 router.get("/", boatController.index);
 router.post("/new", validateCreateBoat, validate, boatController.create);
 router.get("/:id/show", validateBoatId, validate, boatController.show);
-router.get("/:slug/details", validateBoatSlug, validate, boatController.showBySlug);
 router.put("/:id/edit", isAuthenticated, authorizeUser(['owner', 'admin']), validateBoatId, validateUpdateBoat, validate, boatController.update);
 router.delete("/:id/delete", isAuthenticated, authorizeUser(['owner', 'admin']), validateBoatId, validate, boatController.remove);
 
@@ -22,6 +20,5 @@ router.get("/:id/equipments", validateBoatId, validate, boatController.getBoatEq
 router.get("/:id/availabilities", validateBoatId, validate, boatController.getBoatAvailabilities);
 router.get("/:id/reviews", validateBoatId, validate, boatController.getBoatReviews);
 router.get("/:id/reservations", validateBoatId, validate, boatController.getBoatReservations);
-router.get("/filters", boatController.getFilteredBoats);
 
 export default router;
