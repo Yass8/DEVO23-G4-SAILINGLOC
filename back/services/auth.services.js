@@ -31,7 +31,7 @@ const loginUser = async ({ email, password }) => {
 const registerUser = async (data) => {
   const userData = {
     ...data,
-    roles: data.isOwner ? ["owner"] : data.roles
+    roles: data.isOwner ? ["tenant", "owner"] : data.roles
   };
 
   const user = await User.create(userData);

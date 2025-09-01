@@ -1,8 +1,7 @@
 import { request } from "./http.js"
 
-export const fetchBoats = (query = '') => request(`/boats/filters${query}`);
+export const fetchBoats = () => request('/boats');
 export const fetchBoatById = (id) => request(`/boats/${id}/show`);
-export const fetchBoatBySlug = (slug) => request(`/boats${slug}/details`);
 export const createBoat = (data) => request('/boats/new', { method: 'POST', body: JSON.stringify(data) });
 export const updateBoat = (id, data) => request(`/boats/${id}/edit`, { method: 'PUT', body: JSON.stringify(data) });
 export const deleteBoat = (id) => request(`/boats/${id}/delete`, { method: 'DELETE' });
