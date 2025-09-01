@@ -27,6 +27,16 @@ const show = async (req, res) => {
   }
 };
 
+const showBySlug = async (req, res) => {
+  try {
+    const boat = await boatService.getBoatBySlug(req.params.slug);
+    if (!boat) return res.status(404).json({ error: "Bateau introuvable" });
+    res.json(boat);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 const update = async (req, res) => {
   try {
     const result = await boatService.updateBoat(req.params.id, req.body);
@@ -90,8 +100,20 @@ const getBoatReservations = async (req, res) => {
   }
 };
 
+const getFilteredBoats = async (req, res) => {
+  try {
+    const filters = req.query;
+    console.log(filters);
+    
+    const result = await boatService.getFilteredBoats(filters);
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
 export default {
-  index, create, show, update, remove,
+  index, create, show, showBySlug, update, remove,
   getBoatPhotos, getBoatEquipments, getBoatAvailabilities,
-  getBoatReviews, getBoatReservations
+  getBoatReviews, getBoatReservations, getFilteredBoats 
 };

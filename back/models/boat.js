@@ -56,13 +56,23 @@ export default (sequelize, DataTypes) => {
   }
 
   Boat.init({
-    reference: {
+    registration_number: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
+      unique: {
+        args: true,
+        msg: 'Ce numéro d\'immatriculation est déjà utilisé.'
+      },
+      validate: {
+        notEmpty: { msg: 'Le numéro d\'immatriculation est obligatoire.' }
+      }
     },
     name: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
+      validate: {
+        notEmpty: { msg: 'Le nom du bateau est obligatoire.' }
+      }
     },
     brand: {
       type: DataTypes.STRING,
@@ -94,6 +104,31 @@ export default (sequelize, DataTypes) => {
     },
     daily_price: {
       type: DataTypes.DECIMAL(10, 2),
+      allowNull: false
+    },
+    water_draft: {
+      type: DataTypes.FLOAT,
+      allowNull: true
+    },
+    insurance_url:{
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    registration_url:{
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    message: {
+      allowNull: true,
+      type: DataTypes.TEXT
+    },
+    accepted: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+    slug: {
+      type: DataTypes.STRING,
+      unique: true,
       allowNull: false
     },
     user_id: {
