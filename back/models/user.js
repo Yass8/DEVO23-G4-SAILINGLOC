@@ -67,13 +67,41 @@ export default (sequelize, DataTypes) => {
     },
     roles: {
       type: DataTypes.ARRAY(DataTypes.STRING),
-      allowNull: false,
-      defaultValue: ['locataire']
+      allowNull: false
     },
-    phone: DataTypes.STRING,
+    phone: {
+      type: DataTypes.STRING,
+      validate: {
+        is: {
+          args: /^(\+\d{1,4}[-.\s]?)?\(?\d{1,4}\)?[-.\s]?\d{1,4}[-.\s]?\d{1,9}$/,
+          msg: 'Veuillez entrer un numéro de téléphone valide.'
+        }
+      }
+    },
     payment_method: DataTypes.STRING,
     photo: DataTypes.STRING,
     address: DataTypes.STRING,
+    birth_date: {
+      type: DataTypes.DATE,
+      validate: {
+        isDate: { msg: 'Veuillez entrer une date valide.' },
+        isBefore: { args: new Date().toISOString().split('T')[0], msg: 'La date de naissance doit être dans le passé.' },
+        isAdult(value) {
+          if (value) {
+            const birthDate = new Date(value);
+            const today = new Date();
+            const age = today.getFullYear() - birthDate.getFullYear();
+            const m = today.getMonth() - birthDate.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+              age--;
+            }
+            if (age < 18) {
+              throw new Error('Vous devez avoir au moins 18 ans.');
+            }
+          }
+        }
+      }
+    },
     is_active: {
       type: DataTypes.BOOLEAN,
       defaultValue: true,

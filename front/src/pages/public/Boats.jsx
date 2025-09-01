@@ -8,23 +8,67 @@ import ReactPaginate from "react-paginate";
 
 import Filter from "../../components/common/Filter";
 import Breadcrumb from "../../components/common/Breadcrumb";
-import { getBoats } from "../../services/boatServices";
+import { fetchBoats } from "../../services/boatServices";
 import CardProduct from "../../components/common/cards/CardProduct";
 import Header from "../../components/common/Header";
 import { useEffect, useState } from "react";
 import Banner from "../../components/common/Banner";
 import Preloader from "../../components/common/Preloader";
 import ScrollToTop from "../../components/common/ScrollToTop";
+import { useNavigate } from "react-router-dom";
+
 function Boats() {
   const [boats, setBoats] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalBoats, setTotalBoats] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
   const boatsPerPage = 9;
+  const navigate = useNavigate();
+
+  // lire les paramètres de l'url
+  const buildQuery = (page = 0) =>{
+    const params = new URLSearchParams(window.location.search);
+    params.set("page", page);
+    params.set("limit", boatsPerPage);
+    return params.toString();
+  }
+
+  const loadBoats = async (page = 0) => {
+    setLoading(true);
+    try {
+      const query = buildQuery(page);
+      const data = await fetchBoats(`?${query}`);
+
+      setBoats(data.boats);
+      setTotalPages(data.pages);
+      setTotalBoats(data.total);
+      setCurrentPage(page);
+      
+    } catch (error) {
+      console.error("Erreur lors du chargement des bateaux :", error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const handleSerchSubmit = (e) => {
+    e.preventDefault();
+    
+    const params = new URLSearchParams(window.location.search);
+    if (searchTerm.trim()) {
+      params.set("search", searchTerm.trim());
+    } else {
+      params.delete("search");
+    }
+    window.history.replaceState(null, "", `?${params.toString()}`);
+    loadBoats(0);
+  }
 
   useEffect(() => {
-    getBoats().then((data) => {
-      setBoats(data);
-    });
-  }, []);
+    loadBoats();
+  }, [window.location.search]);
 
   // Pagination logic
   const pageCount = Math.ceil(boats.length / boatsPerPage);
@@ -40,11 +84,14 @@ function Boats() {
   }
 
   const handlePageClick = (event) => {
-    setCurrentPage(event.selected); // Met à jour la page courante
+    const page = event.selected; // Met à jour la page courante
+    loadBoats(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
     <>
+      <Header />
       <Banner />
       <Preloader />
       <ScrollToTop />
@@ -60,10 +107,14 @@ function Boats() {
                       type="text"
                       placeholder="Rechercher un bateau..."
                       className="w-full rounded placeholder:text-black placeholder:opacity-50 p-2 focus:outline-none text-black"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+
                     />
                     <button
                       type="submit"
                       className="bg-slate-blue text-center text-sand p-2 rounded hover:bg-[#8B5A3E]"
+                      onClick={handleSerchSubmit}
                     >
                       <FontAwesomeIcon
                         icon={faMagnifyingGlass}
@@ -74,7 +125,7 @@ function Boats() {
                 </form>
               </div>
               <div className="filter border-t border-[#F5F1EB] mt-4 p-4">
-                <Filter />
+                <Filter onFilterChange={(page = 0) => loadBoats(page)} />
               </div>
             </div>
           </div>
@@ -90,25 +141,33 @@ function Boats() {
               {/* Nombre de bateaux trouver dans un span ex. 1245 bateaux */}
               <div className="mt-4">
                 <span className="text-sm font-bold mt-20">
-                  {boats.length} bateaux trouvés
+                  {totalBoats} bateaux trouvés
                 </span>
               </div>
+              
+              { loading ? (
+                <p>Chargement...</p>
+              ) : (
+
+              <>
+
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 mt-4">
-                {currentBoats.map((boat, index) => (
+                {boats.map((boat, index) => (
                   <CardProduct
                     key={index}
                     name={boat.name}
                     image={boat.image}
                     length={boat.length}
-                    capacity={boat.capacity}
-                    price={boat.price}
-                    onClick={() => console.log(`Voir le bateau: ${boat.name}`)}
+                    capacity={boat.max_passengers}
+                    price={boat.daily_price}
+                    onClick={() => navigate(`/boat/${boat.slug}`)}
                   />
                 ))}
               </div>
+                
               {/* Pagination design */}
               <div className="flex justify-center mt-6">
-                {boats.length > boatsPerPage && (
+                {!loading && totalPages > 1 && (
                   <ReactPaginate
                     previousLabel={<FontAwesomeIcon icon={faChevronLeft} />}
                     nextLabel={<FontAwesomeIcon icon={faChevronRight} />}
@@ -133,6 +192,8 @@ function Boats() {
                   />
                 )}
               </div>
+              </>
+              )}
             </div>
           </div>
         </div>
