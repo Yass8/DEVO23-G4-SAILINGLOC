@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Header from "../../components/common/Header";
@@ -12,20 +13,12 @@ import {
   faArrowLeft,
   faInfoCircle,
   faLock,
-  faExclamationTriangle,
-  faFileUpload,
-  faFilePdf,
+  faExclamationTriangle
 } from "@fortawesome/free-solid-svg-icons";
-import { faCcVisa, faCcMastercard, faCcAmex } from '@fortawesome/free-brands-svg-icons';
-
 
 // Import des composants Stripe
 import { Elements, CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
-
-// Import du DatePicker
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
 
 // Initialisation de Stripe avec la clé publique depuis les variables d'environnement
 const stripePromise = loadStripe(import.meta.env.VITE_PUBLIC_STRIPE_TEST_DEV || "pk_test_51MockKey1234567890abcdefghijklmnopqrstuvwxyz012345");
@@ -44,7 +37,7 @@ const Booking = () => {
     model: "Sun Odyssey 449",
     length: 13.5,
     engine_type: "Diesel",
-    skipper_required: false,
+    skipper_required: true,
     description: "Magnifique voilier idéal pour une croisière en Méditerranée. Parfait pour 10 personnes avec tout le confort nécessaire à bord.",
     max_passengers: 10,
     daily_price: 450,
@@ -56,25 +49,20 @@ const Booking = () => {
   };
 
   // États pour le formulaire de réservation
-  const [startDate, setStartDate] = useState(null);
-  const [endDate, setEndDate] = useState(null);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   const [passengers, setPassengers] = useState(2);
+  const [skipper, setSkipper] = useState(false);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-  const [step, setStep] = useState(1); // 1: Dates, 2: Détails, 3: Documents, 4: Récapitulatif, 5: Paiement, 6: Confirmation
+  const [step, setStep] = useState(1); // 1: Dates, 2: Détails, 3: Paiement, 4: Confirmation
   const [paymentError, setPaymentError] = useState(null);
   const [processing, setProcessing] = useState(false);
   const [cardComplete, setCardComplete] = useState(false);
   const [formErrors, setFormErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
-
-  // États pour les documents
-  const [identityFile, setIdentityFile] = useState(null);
-  const [licenseFile, setLicenseFile] = useState(null);
-  const [addressFile, setAddressFile] = useState(null);
-  const [uploadProgress, setUploadProgress] = useState({});
 
   // Validation du formulaire
   const validateStep = (step) => {
@@ -83,7 +71,7 @@ const Booking = () => {
     if (step === 1) {
       if (!startDate) errors.startDate = "La date de début est requise";
       if (!endDate) errors.endDate = "La date de fin est requise";
-      if (startDate && endDate && startDate >= endDate) {
+      if (startDate && endDate && new Date(startDate) >= new Date(endDate)) {
         errors.dateRange = "La date de fin doit être postérieure à la date de début";
       }
     }
@@ -98,12 +86,6 @@ const Booking = () => {
       }
       if (!phone) errors.phone = "Le téléphone est requis";
     }
-
-    if (step === 3) {
-      if (!identityFile) errors.identityFile = "La pièce d'identité est requise";
-      if (!licenseFile) errors.licenseFile = "Le permis nautique est requis";
-      if (!addressFile) errors.addressFile = "Le justificatif de domicile est requis";
-    }
     
     return errors;
   };
@@ -111,7 +93,9 @@ const Booking = () => {
   // Calcul du nombre de jours et du prix total
   const calculateDays = () => {
     if (startDate && endDate) {
-      const diffTime = Math.abs(endDate - startDate);
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+      const diffTime = Math.abs(end - start);
       return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     }
     return 0;
@@ -119,7 +103,8 @@ const Booking = () => {
 
   const days = calculateDays();
   const basePrice = days * boat.daily_price;
-  const totalPrice = basePrice;
+  const skipperPrice = skipper ? 150 * days : 0;
+  const totalPrice = basePrice + skipperPrice;
 
   // Fonctions de navigation entre les étapes
   const nextStep = () => {
@@ -136,26 +121,6 @@ const Booking = () => {
     setStep(step - 1);
     setFormErrors({});
     setPaymentError(null);
-  };
-
-  // Gestion du téléchargement des fichiers
-  const handleFileUpload = (file, setFile, fileType) => {
-    if (file) {
-      // Simuler la progression du téléchargement
-      setUploadProgress(prev => ({ ...prev, [fileType]: 0 }));
-      
-      const interval = setInterval(() => {
-        setUploadProgress(prev => {
-          const newProgress = prev[fileType] + 10;
-          if (newProgress >= 100) {
-            clearInterval(interval);
-            setFile(file);
-            return { ...prev, [fileType]: 100 };
-          }
-          return { ...prev, [fileType]: newProgress };
-        });
-      }, 200);
-    }
   };
 
   // Style personnalisé pour l'élément de carte Stripe
@@ -210,16 +175,12 @@ const Booking = () => {
       // Envoyer les données de réservation à l'API
       setIsLoading(true);
       
-      // Formater les dates pour l'envoi à l'API
-      const formatDate = (date) => {
-        return date ? date.toISOString().split('T')[0] : '';
-      };
-      
       const bookingData = {
         boat_id: boat.id,
-        start_date: formatDate(startDate),
-        end_date: formatDate(endDate),
+        start_date: startDate,
+        end_date: endDate,
         passengers,
+        skipper_required: skipper,
         total_price: totalPrice,
         payment_method_id: paymentMethod.id,
         customer: {
@@ -227,11 +188,6 @@ const Booking = () => {
           last_name: lastName,
           email,
           phone
-        },
-        documents: {
-          identity: identityFile?.name,
-          license: licenseFile?.name,
-          address_proof: addressFile?.name
         }
       };
 
@@ -317,29 +273,9 @@ const Booking = () => {
                     <div className="absolute top-5 left-0 w-full h-0.5 bg-mocha -z-10"></div>
                   )}
                 </div>
-
-                <div className="flex-1 flex flex-col items-center relative">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center mb-2 ${step >= 3 ? 'bg-slate-blue text-white' : 'bg-gray-200 text-gray-500'} transition-colors`}>
-                    <FontAwesomeIcon icon={faFileUpload} />
-                  </div>
-                  <span className="text-sm font-medium">Documents</span>
-                  {step > 3 && (
-                    <div className="absolute top-5 left-0 w-full h-0.5 bg-mocha -z-10"></div>
-                  )}
-                </div>
-
-                <div className="flex-1 flex flex-col items-center relative">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center mb-2 ${step >= 4 ? 'bg-slate-blue text-white' : 'bg-gray-200 text-gray-500'} transition-colors`}>
-                    <FontAwesomeIcon icon={faInfoCircle} />
-                  </div>
-                  <span className="text-sm font-medium">Récapitulatif</span>
-                  {step > 4 && (
-                    <div className="absolute top-5 left-0 w-full h-0.5 bg-mocha -z-10"></div>
-                  )}
-                </div>
                 
                 <div className="flex-1 flex flex-col items-center relative">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center mb-2 ${step >= 5 ? 'bg-slate-blue text-white' : 'bg-gray-200 text-gray-500'} transition-colors`}>
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center mb-2 ${step >= 3 ? 'bg-slate-blue text-white' : 'bg-gray-200 text-gray-500'} transition-colors`}>
                     <FontAwesomeIcon icon={faCreditCard} />
                   </div>
                   <span className="text-sm font-medium">Paiement</span>
@@ -347,7 +283,7 @@ const Booking = () => {
               </div>
 
               {/* Avertissement si Stripe n'est pas configuré */}
-              {!import.meta.env.VITE_PUBLIC_STRIPE_TEST_DEV && step >= 5 && (
+              {!import.meta.env.VITE_PUBLIC_STRIPE_TEST_DEV && step >= 3 && (
                 <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6 flex items-start">
                   <FontAwesomeIcon icon={faExclamationTriangle} className="text-yellow-600 mr-2 mt-0.5" />
                   <div>
@@ -364,33 +300,25 @@ const Booking = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Date de début</label>
-                      <DatePicker
-                        selected={startDate}
-                        onChange={(date) => setStartDate(date)}
-                        selectsStart
-                        startDate={startDate}
-                        endDate={endDate}
-                        minDate={new Date()}
+                      <input
+                        type="date"
+                        value={startDate}
+                        onChange={(e) => setStartDate(e.target.value)}
                         className="w-full p-3 border border-gray-300 rounded-md focus:ring-mocha focus:border-mocha transition-colors"
-                        placeholderText="Sélectionnez une date"
-                        dateFormat="dd/MM/yyyy"
-                        isClearable
+                        min={new Date().toISOString().split('T')[0]}
+                        required
                       />
                       {formErrors.startDate && <p className="text-red-500 text-xs mt-1">{formErrors.startDate}</p>}
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Date de fin</label>
-                      <DatePicker
-                        selected={endDate}
-                        onChange={(date) => setEndDate(date)}
-                        selectsEnd
-                        startDate={startDate}
-                        endDate={endDate}
-                        minDate={startDate || new Date()}
+                      <input
+                        type="date"
+                        value={endDate}
+                        onChange={(e) => setEndDate(e.target.value)}
                         className="w-full p-3 border border-gray-300 rounded-md focus:ring-mocha focus:border-mocha transition-colors"
-                        placeholderText="Sélectionnez une date"
-                        dateFormat="dd/MM/yyyy"
-                        isClearable
+                        min={startDate || new Date().toISOString().split('T')[0]}
+                        required
                       />
                       {formErrors.endDate && <p className="text-red-500 text-xs mt-1">{formErrors.endDate}</p>}
                     </div>
@@ -410,6 +338,7 @@ const Booking = () => {
                       ))}
                     </select>
                   </div>
+            
                   
                   <div className="flex justify-end">
                     <button
@@ -495,228 +424,14 @@ const Booking = () => {
                 </div>
               )}
 
-              {/* Formulaire d'étape 3: Documents */}
+              {/* Formulaire d'étape 3: Paiement avec Stripe */}
               {step === 3 && (
-                <div>
-                  <h2 className="text-2xl font-bold mb-6">Vos documents</h2>
-                  <p className="text-gray-600 mb-6">Pour finaliser votre réservation, veuillez provide les documents suivants :</p>
-                  
-                  <div className="space-y-6">
-                    {/* Pièce d'identité */}
-                    <div className="form-group">
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Pièce d'identité (Carte d'identité ou Passeport)
-                      </label>
-                      <div className="flex items-center justify-center w-full">
-                        <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer border-gray-300 hover:border-mocha">
-                          <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                            <FontAwesomeIcon icon={faFileUpload} className="w-8 h-8 mb-3 text-gray-400" />
-                            <p className="mb-2 text-sm text-gray-500">
-                              {identityFile ? identityFile.name : "Cliquez pour télécharger"}
-                            </p>
-                            <p className="text-xs text-gray-500">PDF, JPG ou PNG (MAX. 5MB)</p>
-                          </div>
-                          <input 
-                            type="file" 
-                            className="hidden" 
-                            accept=".pdf,.jpg,.jpeg,.png"
-                            onChange={(e) => handleFileUpload(e.target.files[0], setIdentityFile, 'identity')}
-                          />
-                        </label>
-                      </div>
-                      {uploadProgress.identity > 0 && uploadProgress.identity < 100 && (
-                        <div className="w-full bg-gray-200 rounded-full h-2.5 mt-2">
-                          <div 
-                            className="bg-mocha h-2.5 rounded-full" 
-                            style={{ width: `${uploadProgress.identity}%` }}
-                          ></div>
-                        </div>
-                      )}
-                      {formErrors.identityFile && <p className="text-red-500 text-xs mt-1">{formErrors.identityFile}</p>}
-                    </div>
-
-                    {/* Permis nautique */}
-                    <div className="form-group">
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Permis nautique ou CV (Carte de Vocation)
-                      </label>
-                      <div className="flex items-center justify-center w-full">
-                        <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer border-gray-300 hover:border-mocha">
-                          <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                            <FontAwesomeIcon icon={faFileUpload} className="w-8 h-8 mb-3 text-gray-400" />
-                            <p className="mb-2 text-sm text-gray-500">
-                              {licenseFile ? licenseFile.name : "Cliquez pour télécharger"}
-                            </p>
-                            <p className="text-xs text-gray-500">PDF, JPG ou PNG (MAX. 5MB)</p>
-                          </div>
-                          <input 
-                            type="file" 
-                            className="hidden" 
-                            accept=".pdf,.jpg,.jpeg,.png"
-                            onChange={(e) => handleFileUpload(e.target.files[0], setLicenseFile, 'license')}
-                          />
-                        </label>
-                      </div>
-                      {uploadProgress.license > 0 && uploadProgress.license < 100 && (
-                        <div className="w-full bg-gray-200 rounded-full h-2.5 mt-2">
-                          <div 
-                            className="bg-mocha h-2.5 rounded-full" 
-                            style={{ width: `${uploadProgress.license}%` }}
-                          ></div>
-                        </div>
-                      )}
-                      {formErrors.licenseFile && <p className="text-red-500 text-xs mt-1">{formErrors.licenseFile}</p>}
-                    </div>
-
-                    {/* Justificatif de domicile */}
-                    <div className="form-group">
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Justificatif de domicile (de moins de 3 mois)
-                      </label>
-                      <div className="flex items-center justify-center w-full">
-                        <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer border-gray-300 hover:border-mocha">
-                          <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                            <FontAwesomeIcon icon={faFileUpload} className="w-8 h-8 mb-3 text-gray-400" />
-                            <p className="mb-2 text-sm text-gray-500">
-                              {addressFile ? addressFile.name : "Cliquez pour télécharger"}
-                            </p>
-                            <p className="text-xs text-gray-500">PDF, JPG ou PNG (MAX. 5MB)</p>
-                          </div>
-                          <input 
-                            type="file" 
-                            className="hidden" 
-                            accept=".pdf,.jpg,.jpeg,.png"
-                            onChange={(e) => handleFileUpload(e.target.files[0], setAddressFile, 'address')}
-                          />
-                        </label>
-                      </div>
-                      {uploadProgress.address > 0 && uploadProgress.address < 100 && (
-                        <div className="w-full bg-gray-200 rounded-full h-2.5 mt-2">
-                          <div 
-                            className="bg-mocha h-2.5 rounded-full" 
-                            style={{ width: `${uploadProgress.address}%` }}
-                          ></div>
-                        </div>
-                      )}
-                      {formErrors.addressFile && <p className="text-red-500 text-xs mt-1">{formErrors.addressFile}</p>}
-                    </div>
-                  </div>
-                  
-                  <div className="flex justify-between mt-8">
-                    <button
-                      onClick={prevStep}
-                      className="px-6 py-3 rounded-md bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium transition-colors"
-                    >
-                      Retour
-                    </button>
-                    <button
-                      onClick={nextStep}
-                      disabled={!identityFile || !licenseFile || !addressFile}
-                      className={`px-6 py-3 rounded-md transition-colors ${!identityFile || !licenseFile || !addressFile ? 'bg-gray-400 cursor-not-allowed' : 'bg-mocha hover:bg-mocha/90'} text-white font-medium`}
-                    >
-                      Continuer
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {/* Étape 4: Récapitulatif */}
-              {step === 4 && (
-                <div>
-                  <h2 className="text-2xl font-bold mb-6">Récapitulatif de votre réservation</h2>
-                  
-                  <div className="bg-gray-50 p-6 rounded-lg mb-6">
-                    <h3 className="font-medium text-lg mb-4">Informations personnelles</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                      <div>
-                        <p className="text-sm text-gray-600">Prénom</p>
-                        <p className="font-medium">{firstName}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-600">Nom</p>
-                        <p className="font-medium">{lastName}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-600">Email</p>
-                        <p className="font-medium">{email}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-600">Téléphone</p>
-                        <p className="font-medium">{phone}</p>
-                      </div>
-                    </div>
-                    
-                    <h3 className="font-medium text-lg mb-4 mt-6">Détails de la location</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <p className="text-sm text-gray-600">Bateau</p>
-                        <p className="font-medium">{boat.name}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-600">Dates</p>
-                        <p className="font-medium">
-                          {startDate?.toLocaleDateString()} au {endDate?.toLocaleDateString()} ({days} jours)
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-600">Passagers</p>
-                        <p className="font-medium">{passengers} {passengers === 1 ? 'personne' : 'personnes'}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-600">Port</p>
-                        <p className="font-medium">{boat.port?.name}</p>
-                      </div>
-                    </div>
-                    
-                    <h3 className="font-medium text-lg mb-4 mt-6">Documents fournis</h3>
-                    <div className="space-y-2">
-                      <div className="flex items-center">
-                        <FontAwesomeIcon icon={faFilePdf} className="text-red-500 mr-2" />
-                        <span className="text-sm">{identityFile?.name}</span>
-                      </div>
-                      <div className="flex items-center">
-                        <FontAwesomeIcon icon={faFilePdf} className="text-red-500 mr-2" />
-                        <span className="text-sm">{licenseFile?.name}</span>
-                      </div>
-                      <div className="flex items-center">
-                        <FontAwesomeIcon icon={faFilePdf} className="text-red-500 mr-2" />
-                        <span className="text-sm">{addressFile?.name}</span>
-                      </div>
-                    </div>
-                    
-                    <div className="border-t border-gray-200 pt-4 mt-6">
-                      <div className="flex justify-between items-center">
-                        <span className="text-lg font-semibold">Total</span>
-                        <span className="text-xl font-bold">{totalPrice}€</span>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="flex justify-between">
-                    <button
-                      onClick={prevStep}
-                      className="px-6 py-3 rounded-md bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium transition-colors"
-                    >
-                      Retour
-                    </button>
-                    <button
-                      onClick={nextStep}
-                      className="px-6 py-3 rounded-md bg-mocha hover:bg-mocha/90 text-white font-medium transition-colors"
-                    >
-                      Procéder au paiement
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {/* Formulaire d'étape 5: Paiement avec Stripe */}
-              {step === 5 && (
                 <div>
                   <h2 className="text-2xl font-bold mb-6">Paiement sécurisé</h2>
                   
                   <div className="bg-blue-50 p-4 rounded-lg mb-6 flex items-start">
-                    <FontAwesomeIcon icon={faLock} className="text-mocha mr-2 mt-1" />
-                    <p className="text-sm text-slate-blue">
+                    <FontAwesomeIcon icon={faLock} className="text-blue-500 mr-2 mt-1" />
+                    <p className="text-sm text-blue-700">
                       <span className="font-semibold">Paiement sécurisé</span> - Toutes vos informations sont cryptées et sécurisées.
                     </p>
                   </div>
@@ -730,11 +445,9 @@ const Booking = () => {
                       />
                     </div>
                     <div className="flex mt-2">
-                      <FontAwesomeIcon icon={faCcVisa} size="1x" className="text-slate-blue" />
-                      <FontAwesomeIcon icon={faCcMastercard} size="1x" className="mx-2 text-slate-blue" />
-                      <FontAwesomeIcon icon={faCcAmex} size="1x" className="text-slate-blue" />
-
-
+                      <img src="https://logos-world.net/wp-content/uploads/2020/09/Visa-Logo.png" alt="Visa" className="h-8 mr-2" />
+                      <img src="https://logos-world.net/wp-content/uploads/2020/04/Mastercard-Logo.png" alt="Mastercard" className="h-8 mr-2" />
+                      <img src="https://logos-world.net/wp-content/uploads/2020/09/American-Express-Logo.png" alt="American Express" className="h-8" />
                     </div>
                   </div>
                   
@@ -746,7 +459,7 @@ const Booking = () => {
                   
                   <div className="flex items-start mb-6">
                     <FontAwesomeIcon icon={faInfoCircle} className="text-mocha mr-2 mt-1" />
-                    <p className="text-sm text-slate-blue font-bold">
+                    <p className="text-sm text-gray-600">
                       Votre carte ne sera débitée qu'après confirmation de la réservation par le propriétaire.
                     </p>
                   </div>
@@ -779,8 +492,8 @@ const Booking = () => {
                 </div>
               )}
 
-              {/* Étape 6: Confirmation */}
-              {step === 6 && (
+              {/* Étape 4: Confirmation */}
+              {step === 4 && (
                 <div className="text-center py-8">
                   <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                     <FontAwesomeIcon icon={faCheckCircle} className="text-green-600 text-3xl" />
@@ -793,8 +506,9 @@ const Booking = () => {
                   <div className="bg-gray-50 p-4 rounded-lg mb-6">
                     <h3 className="font-medium mb-2">Récapitulatif de votre réservation</h3>
                     <p className="text-sm"><span className="font-medium">Bateau:</span> {boat.name}</p>
-                    <p className="text-sm"><span className="font-medium">Dates:</span> {startDate?.toLocaleDateString()} au {endDate?.toLocaleDateString()} ({days} jours)</p>
+                    <p className="text-sm"><span className="font-medium">Dates:</span> {new Date(startDate).toLocaleDateString()} au {new Date(endDate).toLocaleDateString()} ({days} jours)</p>
                     <p className="text-sm"><span className="font-medium">Passagers:</span> {passengers}</p>
+                    {skipper && <p className="text-sm"><span className="font-medium">Skipper:</span> Inclus</p>}
                     <p className="text-sm mt-2"><span className="font-medium">Total:</span> {totalPrice}€</p>
                   </div>
                   <button
@@ -809,7 +523,7 @@ const Booking = () => {
           </div>
 
           {/* Récapitulatif de la réservation */}
-          {step < 6 && (
+          {step < 4 && (
             <div className="lg:w-1/3">
               <div className="bg-white rounded-lg shadow-md p-6 sticky top-6">
                 <h3 className="text-xl font-bold mb-4">Votre réservation</h3>
@@ -832,6 +546,13 @@ const Booking = () => {
                     <span>{boat.daily_price}€ x {days} {days === 1 ? 'jour' : 'jours'}</span>
                     <span>{basePrice}€</span>
                   </div>
+                  
+                  {skipper && (
+                    <div className="flex justify-between mb-2">
+                      <span>Skipper (150€ x {days} jours)</span>
+                      <span>{skipperPrice}€</span>
+                    </div>
+                  )}
                   
                   <div className="flex justify-between font-bold text-lg mt-4 pt-4 border-t border-gray-200">
                     <span>Total</span>

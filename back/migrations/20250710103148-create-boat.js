@@ -9,7 +9,7 @@ export default {
         primaryKey: true,
         type: Sequelize.BIGINT
       },
-      registration_number: {
+      reference: {
         type: Sequelize.STRING,
         unique: true,
         allowNull: false
@@ -49,31 +49,6 @@ export default {
       daily_price: {
         type: Sequelize.DECIMAL(10, 2),
         allowNull: false
-      },
-      water_draft: {
-        type: Sequelize.FLOAT,
-        allowNull: true
-      },
-      insurance_url:{
-        type: Sequelize.STRING,
-        allowNull: true
-      },
-      registration_url:{
-        type: Sequelize.STRING,
-        allowNull: true
-      },
-      message: {
-        allowNull: true,
-        type: Sequelize.TEXT
-      },
-      accepted: {
-        type: Sequelize.BOOLEAN,
-        defaultValue: false,
-      },
-      slug: {
-        type: Sequelize.STRING,
-        allowNull: false,
-        unique: true
       },
       user_id: {
         type: Sequelize.BIGINT,

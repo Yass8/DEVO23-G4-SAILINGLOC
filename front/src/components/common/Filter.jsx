@@ -3,39 +3,35 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Select from "react-select";
 import { useEffect, useState } from "react";
 import { customSelectStyles, customSelectTheme } from "../../utils/selectTheme";
-import { fetchPorts } from "../../services/portServices";
-import { fetchBoatTypes } from "../../services/boatTypeSevices";
+import { getPorts } from "../../services/portServices";
+import { getTypes } from "../../services/boatTypeSevices";
+import { getEquipments } from "../../services/boatEquipmentServices";
 
-function Filter(props){
+function Filter(){
 
   const [selectedPort, setSelectedPort] = useState(null);
   const [ports, setPorts] = useState([]);
   const [types, setTypes] = useState([]);
+  const [equipments, setEquipments] = useState([]);
 
   // Ajout des états pour les filtres range
-  const [length, setLength] = useState(100);
-  const [capacity, setCapacity] = useState(50);
-  const [price, setPrice] = useState(10000);
+  const [length, setLength] = useState(20);
+  const [capacity, setCapacity] = useState(20);
+  const [price, setPrice] = useState(2000);
 
   const [showOtherFilters, setShowOtherFilters] = useState(false);
   const [btnShowOtherFilters, setBtnShowOtherFilters] = useState("Plus de filtres");
 
   useEffect(() => {
-    fetchPorts().then((data) => {
-    const formattedPorts = data.map(port => ({
-      value: port.id,
-      label: port.name
-    }));
-    setPorts(formattedPorts);
-  });
-    fetchBoatTypes().then((data) => {
-      const formattedTypes = data.map(type => ({
-        value : type.id,
-        label: type.name
-      }));
-      setTypes(formattedTypes);
+    getPorts().then((data) => {
+      setPorts(data);
     });
-    
+    getTypes().then((data) => {
+      setTypes(data);
+    });
+    getEquipments().then((data) => {
+      setEquipments(data);
+    });
   }, []);
 
   const openOtherFilter = () => {
@@ -46,9 +42,9 @@ function Filter(props){
 const handleResetFormFilter = (e) => {
   e.preventDefault();
   setSelectedPort(null);
-  setLength(100);
-  setCapacity(50);
-  setPrice(10000);
+  setLength(20);
+  setCapacity(20);
+  setPrice(2000);
 
   const radios = document.getElementsByName("boatType");
   radios.forEach(radio => {
@@ -60,40 +56,6 @@ const handleResetFormFilter = (e) => {
   checkboxes.forEach(checkbox => {
     checkbox.checked = false;
   });
-  console.log(ports);
-  
-};
-
-const handleSubmit = (e) => {
-  e.preventDefault();
-
-  const params = new URLSearchParams(window.location.search);
-
-  // Port
-  if (selectedPort?.value) params.set("port", selectedPort.value);
-
-  // Type
-  const selectedType = document.querySelector('input[name="boatType"]:checked')?.value;
-  if (selectedType && selectedType !== "all") params.set("type", selectedType);
-
-  // Équipements
-  const selectedEquipments = Array.from(document.querySelectorAll('input[name="equipment"]:checked'))
-    .map(cb => cb.value);
-  params.delete("equipment");
-  selectedEquipments.forEach(eq => params.append("equipment", eq));
-
-  // Range filters
-  params.set("length", length);
-  params.set("capacity", capacity);
-  params.set("price", price);
-
-  // Recherche textuelle
-  const searchInput = document.querySelector("input[placeholder='Rechercher un bateau...']");
-  if (searchInput?.value.trim()) params.set("search", searchInput.value.trim());
-
-  // Appliquer et recharger
-  window.history.replaceState(null, "", `?${params.toString()}`);
-  props.onFilterChange(0);
 };
 
 
@@ -101,7 +63,7 @@ const handleSubmit = (e) => {
   return (
     <>
       <h4 className="font-bold">Filtrez les résultats <FontAwesomeIcon icon={faFilter}/></h4>
-      <form className="relative z-0 w-full my-3" onSubmit={handleSubmit}>
+      <form className="relative z-0 w-full my-3">
         <label htmlFor="port" className="sr-only">Entrez le port ou la ville de départ</label>
         <Select
           inputId="port"
@@ -142,13 +104,28 @@ const handleSubmit = (e) => {
         </div>
         {/* Les filtres à cacher au début */}
         <div className={`mt-4 other-filters ${showOtherFilters ? "" : "hidden"}`}>
+          {/* Équipements */}
+          <h5 className="">Équipements</h5>
+          <div className="flex flex-col text-sm mb-2">
+            {equipments.map((equipment) => (
+              <label className="flex items-center my-1" key={equipment.value}>
+                <input
+                  type="checkbox"
+                  name="equipment"
+                  value={equipment.value}
+                  className="mr-2 accent-[#AD7C59]"
+                />
+                {equipment.label}
+              </label>
+            ))}
+          </div>
           <h5 className="">Longueur du bateau</h5>
           <div className="flex items-center gap-2">
             <input
               type="range"
               min="0"
-              max="100"
-              step="1"
+              max="20"
+              step="0.1"
               className="w-full accent-[#AD7C59]"
               value={length}
               onChange={e => setLength(Number(e.target.value))}
@@ -156,15 +133,15 @@ const handleSubmit = (e) => {
           </div>
           <div className="flex justify-between">
             <span className="text-sm">0 m - <b>{length}</b> m</span>
-            <span className="text-sm font-bold">100 m</span>
+            <span className="text-sm font-bold">20 m</span>
           </div>
           <h5 className="mt-4">Capacité</h5>
           <div className="">
             <input
               type="range"
               min="0"
-              max="50"
-              step="5"
+              max="20"
+              step="1"
               className="w-full accent-[#AD7C59]"
               value={capacity}
               onChange={e => setCapacity(Number(e.target.value))}
@@ -172,14 +149,14 @@ const handleSubmit = (e) => {
           </div>
           <div className="flex justify-between">
             <span className="text-sm">0 - <b>{capacity} passagers</b></span>
-            <span className="text-sm font-bold">50 passagers</span>
+            <span className="text-sm font-bold">20 passagers</span>
           </div>
           <h5 className="mt-4">Prix par jour</h5>
           <div className="">
             <input
               type="range"
               min="0"
-              max="10000"
+              max="2000"
               step="10"
               className="w-full accent-[#AD7C59]"
               value={price}
@@ -188,7 +165,7 @@ const handleSubmit = (e) => {
           </div>
           <div className="flex justify-between">
             <span className="text-sm">0 € - <b>{price} €</b></span>
-            <span className="text-sm font-bold">10 000 €</span>
+            <span className="text-sm font-bold">2000 €</span>
           </div>
         </div>
         {/* Boutons plus de filtres et Réinitialisez */}

@@ -74,7 +74,7 @@ const Register = () => {
     password: formData.password,
     phone: formData.phone || undefined,
     isOwner: formData.user_type === 'proprietaire',
-    roles: formData.user_type === 'proprietaire' ? ['owner'] : ['tenant']
+    roles: formData.user_type === 'proprietaire' ? ['owner'] : ['renter']
   };
 
   try {
