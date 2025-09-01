@@ -3,3 +3,6 @@ back/node_modules/
 back/config/firebase-adminsdk.json
 front/node_modules/
 front/.env
+config/dsp-dev-o24a-g4.fr_private_key.key
+config/dsp-dev-o24a-g4.fr_ssl_certificate.cer
+config/dsp-dev-o24a-g4.fr_ssl_certificate.pem
