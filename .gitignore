@@ -3,5 +3,4 @@ back/node_modules/
 front/node_modules/
 front/.env
 back/config/dsp-dev-o24a-g4.fr_private_key.key
-back/config/dsp-dev-o24a-g4.fr_ssl_certificate.cer
 back/config/dsp-dev-o24a-g4.fr_ssl_certificate.pem

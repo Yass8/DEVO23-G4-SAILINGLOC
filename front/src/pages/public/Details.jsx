@@ -7,6 +7,7 @@ import ScrollToTop from "../../components/common/ScrollToTop";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheckCircle } from "@fortawesome/free-solid-svg-icons";
 import { fetchBoatBySlug, fetchBoatPhotos } from "../../services/boatServices";
+import { useNavigate } from "react-router-dom";
 
 function Details() {
   const { slug } = useParams();
@@ -14,6 +15,7 @@ function Details() {
   const [photos, setPhotos] = useState([]);
   const [mainImage, setMainImage] = useState(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   const api_base_url = import.meta.env.VITE_API_BASE_URL
   
@@ -77,15 +79,15 @@ function Details() {
             </p>
 
             <div className="text-sm text-gray-700 space-y-1">
-              <p><strong>Port :</strong> {boat.port.name}</p>
-              <p><strong>Type :</strong> {boat.boat_type.name}</p>
+              <p><strong>Port :</strong> {boat.Port?.name}</p>
+              <p><strong>Type :</strong> {boat.BoatType?.name}</p>
               <p><strong>Capacité :</strong> {boat.max_passengers} personnes</p>
               <p><strong>Moteur :</strong> {boat.engine_type}</p>
               <p><strong>Skipper requis :</strong> {boat.skipper_required ? "Oui" : "Non"}</p>
             </div>
 
-            <button className="w-full bg-mocha text-sand py-3 rounded-lg font-semibold hover:bg-mocha/80 hover:text-white transition">
-              <a href="{`/booking/${boat.slug}`}">Louer maintenant</a>
+            <button onClick={() => navigate(`/booking/${boat.slug}`)}  className="w-full bg-mocha text-sand py-3 rounded-lg font-semibold hover:bg-mocha/80 hover:text-white transition">
+              <a href={`/booking/${boat.slug}`}>Louer maintenant</a>
             </button>
           </div>
         </div>

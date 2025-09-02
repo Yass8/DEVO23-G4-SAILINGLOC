@@ -13,12 +13,12 @@ const CardProduct = ({
   buttonLabel = "Voir ce bateau"
 }) => (
   <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
-    <a href="#">
+    <a href="#" onClick={onClick}>
       <img src={image} alt={name} className="rounded-t-lg w-full h-48 object-cover" />
     </a>
     <div className="p-5">
       <div className="flex justify-between items-center">
-        <a href="#"><h4 className="font-bold">{name}</h4></a>
+        <a href="#" onClick={onClick}><h4 className="font-bold">{name}</h4></a>
         <p className="font-bold">
           <span className="text-mocha text-2xl font-bold">{price}</span> /jour
         </p>

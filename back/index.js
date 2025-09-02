@@ -4,10 +4,6 @@ import fileUpload from 'express-fileupload';
 import cors from 'cors';
 dotenv.config();
 
-import express from "express";
-import dotenv from "dotenv";
-import fileUpload from "express-fileupload";
-import cors from "cors";
 import helmet from "helmet";
 import cookieParser from "cookie-parser";
 import https from "https";

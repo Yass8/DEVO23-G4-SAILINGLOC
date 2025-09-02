@@ -1,6 +1,5 @@
 import express from "express"
 
-import userRoutes from './user.routes.js';
 import userDocumentRoutes from './userDocument.routes.js';
 import portRoutes from './port.routes.js';
 import boatTypeRoutes from './boatType.routes.js';
