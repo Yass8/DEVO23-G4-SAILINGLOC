@@ -8,7 +8,7 @@ const getAllBoatEquipments = async () => {
 };
 
 const createBoatEquipment = async (data) => {
-  return await BoatEquipment.create(data);
+  return await BoatEquipment.bulkCreate(data);
 };
 
 const getBoatEquipmentById = async (id) => {

@@ -1,9 +1,9 @@
 import express from "express"
 
-// import userRoutes from './user.routes.js'; // Fichier manquant
+import userRoutes from './user.routes.js';
 import userDocumentRoutes from './userDocument.routes.js';
 import portRoutes from './port.routes.js';
-// import boatTypeRoutes from './boatType.routes.js'; // Fichier manquant
+import boatTypeRoutes from './boatType.routes.js';
 import boatRoutes from './boat.routes.js';
 import boatPhotoRoutes from './boatPhoto.routes.js';
 import boatEquipmentRoutes from './boatEquipment.routes.js';
@@ -19,10 +19,10 @@ import userRoutes from './user.routes.js';
 import { isAuthenticated } from '../middlewares/auth/authorize.js';
 const router = express.Router();
 
-router.use('/users', isAuthenticated, userRoutes); // Route commentée car fichier manquant
+router.use('/users', isAuthenticated, userRoutes);
 router.use('/users-documents', isAuthenticated, userDocumentRoutes);
 router.use('/ports', portRoutes);
-// router.use('/boat-types', boatTypeRoutes); // Route commentée car fichier manquant
+router.use('/boat-types', boatTypeRoutes); 
 router.use('/boats', boatRoutes);
 router.use('/boat-photos', boatPhotoRoutes);
 router.use('/boat-equipments', boatEquipmentRoutes);

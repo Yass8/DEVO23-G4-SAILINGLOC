@@ -9,9 +9,9 @@ export const validateBoatId = [
 ];
 
 export const validateCreateBoatEquipment = [
-  body('boat_id').isInt().withMessage('L\'ID du bateau doit être un entier'),
-  body('equipment_name').isString().isLength({ max: 255 })
-    .withMessage('Le nom de l\'équipement ne doit pas dépasser 255 caractères')
+  body().isArray().withMessage('Le body doit être un tableau'),
+  body('*.boat_id').isInt().withMessage('L\'ID du bateau doit être un entier'),
+  body('*.equipment_name').isString().isLength({ max: 255 })
 ];
 
 export const validateUpdateBoatEquipment = [
