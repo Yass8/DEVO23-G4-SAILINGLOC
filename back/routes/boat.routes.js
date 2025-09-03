@@ -3,7 +3,8 @@ import boatController from "../controllers/boat.controller.js";
 import {
   validateBoatId,
   validateCreateBoat,
-  validateUpdateBoat
+  validateUpdateBoat,
+  validateBoatSlug
 } from "../validators/boat.validator.js";
 import { validate } from "../middlewares/validate.js";
 import { isAuthenticated, authorizeUser } from "../middlewares/auth/authorize.js";
@@ -223,6 +224,37 @@ router.get("/:id/show", validateBoatId, validate, boatController.show);
 
 /**
  * @swagger
+ * /boats/{slug}/details:
+ *   get:
+ *     summary: Récupérer un bateau par son slug
+ *     tags: [Boats]
+ *     parameters:
+ *       - in: path
+ *         name: slug
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Slug du bateau
+ *     responses:
+ *       200:
+ *         description: Détails du bateau
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Boat'
+ *       400:
+ *         description: Erreur de validation (slug invalide)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ValidationError'
+ *       404:
+ *         description: Bateau non trouvé
+ */
+router.get("/:slug/details", validateBoatSlug, validate, boatController.showBySlug);
+
+/**
+ * @swagger
  * /boats/{id}/edit:
  *   put:
  *     summary: Mettre à jour un bateau
@@ -389,5 +421,6 @@ router.get("/:id/reviews", validateBoatId, validate, boatController.getBoatRevie
  *         description: Bateau non trouvé
  */
 router.get("/:id/reservations", validateBoatId, validate, boatController.getBoatReservations);
+router.get("/filters", boatController.getFilteredBoats);
 
 export default router;
