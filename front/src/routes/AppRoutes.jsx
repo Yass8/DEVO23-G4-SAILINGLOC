@@ -39,10 +39,14 @@ import ReservationChat from "../pages/client/locataire/ReservationChat.jsx";
 import AdminDashboard from "../pages/admin/Dashboard.jsx";
 import UsersAdmin from "../pages/admin/UsersAdmin.jsx";
 import PortsAdmin from "../pages/admin/Ports.jsx";
-import ReviewsAdmin from "../pages/admin/Review.jsx";
+import ReviewsAdmin from "../pages/admin/ReviewsAdmin.jsx";
 import PaymentsAdmin from "../pages/admin/PaymentsAdmin.jsx";
+import MessagesAdmin from "../pages/admin/MessagesAdmin.jsx";
 import DetailsUsers from "../pages/admin/DetailsUsers.jsx";
 import BoatsAdmin from "../pages/admin/BoatsAdmin.jsx";
+import AddBoatAdmin from "../pages/admin/AddBoatAdmin.jsx";
+import EditBoatAdmin from "../pages/admin/EditBoatAdmin.jsx";
+import BoatTypesAdmin from "../pages/admin/BoatTypesAdmin.jsx";
 import ReservationsAdmin from "../pages/admin/Reservations.jsx";
 import ContractsAdmin from "../pages/admin/Contracts.jsx";
 import AdminLayout from "../pages/admin/AdminLayout.jsx";
@@ -93,8 +97,12 @@ export default function AppRoutes() {
                 <Route path="ports" element={<PortsAdmin />} />
                 <Route path="reviews" element={<ReviewsAdmin />} />
                 <Route path="payments" element={<PaymentsAdmin />} />
+                <Route path="messages" element={<MessagesAdmin />} />
                 <Route path="users/:id" element={<DetailsUsers />} />
                 <Route path="boats" element={<BoatsAdmin />} />
+                <Route path="boats/add" element={<AddBoatAdmin />} />
+                <Route path="boats/:id/edit" element={<EditBoatAdmin />} />
+                <Route path="boats/types" element={<BoatTypesAdmin />} />
                 <Route path="reservations" element={<ReservationsAdmin />} />
                 <Route path="contracts" element={<ContractsAdmin />} />
             </Route>

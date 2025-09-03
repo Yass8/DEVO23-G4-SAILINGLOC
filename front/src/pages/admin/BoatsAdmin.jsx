@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 import {
   faShip,
   faSearch,
@@ -10,7 +12,6 @@ import {
   faCheckCircle,
   faTimesCircle,
   faExclamationTriangle,
-  faSpinner,
   faDownload,
   faPlus,
   faImage,
@@ -24,8 +25,10 @@ import {
   faBan,
   faCheck,
   faClock,
-  faTimes
+  faTimes,
+  faArrowLeft
 } from '@fortawesome/free-solid-svg-icons';
+import Preloader from '../../components/common/Preloader';
 
 const BoatsAdmin = () => {
   const [boats, setBoats] = useState([]);
@@ -39,6 +42,8 @@ const BoatsAdmin = () => {
   const [modalBoat, setModalBoat] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [boatsPerPage] = useState(10);
+
+  const navigate = useNavigate();
 
   // Données simulées pour le développement
   useEffect(() => {
@@ -62,8 +67,7 @@ const BoatsAdmin = () => {
         lastReservation: '2024-01-20',
         totalReservations: 15,
         totalRevenue: 2250,
-        verified: true,
-        featured: true
+        verified: true
       },
       {
         id: 2,
@@ -84,8 +88,7 @@ const BoatsAdmin = () => {
         lastReservation: '2024-01-18',
         totalReservations: 12,
         totalRevenue: 2400,
-        verified: false,
-        featured: false
+        verified: false
       },
       {
         id: 3,
@@ -106,8 +109,7 @@ const BoatsAdmin = () => {
         lastReservation: '2024-01-15',
         totalReservations: 28,
         totalRevenue: 5040,
-        verified: true,
-        featured: false
+        verified: true
       },
       {
         id: 4,
@@ -128,8 +130,7 @@ const BoatsAdmin = () => {
         lastReservation: '2024-01-22',
         totalReservations: 35,
         totalRevenue: 4200,
-        verified: true,
-        featured: true
+        verified: true
       },
       {
         id: 5,
@@ -150,8 +151,7 @@ const BoatsAdmin = () => {
         lastReservation: '2024-01-21',
         totalReservations: 8,
         totalRevenue: 4000,
-        verified: true,
-        featured: true
+        verified: true
       }
     ];
 
@@ -203,68 +203,168 @@ const BoatsAdmin = () => {
   };
 
   const handleEditBoat = (boatId) => {
-    console.log('Éditer bateau:', boatId);
-    // TODO: Implémenter l'édition
+    Swal.fire({
+      title: 'Modifier le bateau ?',
+      text: "Vous allez être redirigé vers le formulaire d'édition",
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#AD7C59',
+      cancelButtonColor: '#6B7280',
+      confirmButtonText: 'Oui, modifier',
+      cancelButtonText: 'Annuler'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        navigate(`/admin/sl/boats/${boatId}/edit`);
+      }
+    });
   };
 
   const handleDeleteBoat = (boatId) => {
-    if (window.confirm('Êtes-vous sûr de vouloir supprimer ce bateau ?')) {
-      setBoats(boats.filter(boat => boat.id !== boatId));
-      setSelectedBoats(selectedBoats.filter(id => id !== boatId));
-    }
+    Swal.fire({
+      title: 'Êtes-vous sûr ?',
+      text: "Cette action est irréversible !",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#AD7C59',
+      cancelButtonColor: '#6B7280',
+      confirmButtonText: 'Oui, supprimer',
+      cancelButtonText: 'Annuler'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setBoats(boats.filter(boat => boat.id !== boatId));
+        setSelectedBoats(selectedBoats.filter(id => id !== boatId));
+        
+        Swal.fire(
+          'Supprimé !',
+          'Le bateau a été supprimé avec succès.',
+          'success'
+        );
+      }
+    });
   };
 
   const handleApproveBoat = (boatId) => {
-    setBoats(boats.map(boat => 
-      boat.id === boatId 
-        ? { ...boat, status: 'active' }
-        : boat
-    ));
+    Swal.fire({
+      title: 'Approuver le bateau ?',
+      text: "Le bateau sera visible pour les utilisateurs",
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#10B981',
+      cancelButtonColor: '#6B7280',
+      confirmButtonText: 'Oui, approuver',
+      cancelButtonText: 'Annuler'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setBoats(boats.map(boat => 
+          boat.id === boatId 
+            ? { ...boat, status: 'active' }
+            : boat
+        ));
+        
+        Swal.fire(
+          'Approuvé !',
+          'Le bateau a été approuvé avec succès.',
+          'success'
+        );
+      }
+    });
   };
 
   const handleSuspendBoat = (boatId) => {
-    setBoats(boats.map(boat => 
-      boat.id === boatId 
-        ? { ...boat, status: 'suspended' }
-        : boat
-    ));
-  };
-
-  const handleToggleFeatured = (boatId) => {
-    setBoats(boats.map(boat => 
-      boat.id === boatId 
-        ? { ...boat, featured: !boat.featured }
-        : boat
-    ));
+    Swal.fire({
+      title: 'Suspendre le bateau ?',
+      text: "Le bateau ne sera plus visible pour les utilisateurs",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#F59E0B',
+      cancelButtonColor: '#6B7280',
+      confirmButtonText: 'Oui, suspendre',
+      cancelButtonText: 'Annuler'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        setBoats(boats.map(boat => 
+          boat.id === boatId 
+            ? { ...boat, status: 'suspended' }
+            : boat
+        ));
+        
+        Swal.fire(
+          'Suspendu !',
+          'Le bateau a été suspendu avec succès.',
+          'success'
+        );
+      }
+    });
   };
 
   const handleBulkAction = (action) => {
     if (selectedBoats.length === 0) return;
 
+    let actionText = '';
+    let actionIcon = '';
+    let confirmColor = '';
+
     switch (action) {
       case 'approve':
-        setBoats(boats.map(boat => 
-          selectedBoats.includes(boat.id) 
-            ? { ...boat, status: 'active' }
-            : boat
-        ));
+        actionText = 'approuver';
+        actionIcon = 'question';
+        confirmColor = '#10B981';
         break;
       case 'suspend':
-        setBoats(boats.map(boat => 
-          selectedBoats.includes(boat.id) 
-            ? { ...boat, status: 'suspended' }
-            : boat
-        ));
+        actionText = 'suspendre';
+        actionIcon = 'warning';
+        confirmColor = '#F59E0B';
         break;
       case 'delete':
-        if (window.confirm(`Êtes-vous sûr de vouloir supprimer ${selectedBoats.length} bateau(x) ?`)) {
-          setBoats(boats.filter(boat => !selectedBoats.includes(boat.id)));
-          setSelectedBoats([]);
-        }
+        actionText = 'supprimer';
+        actionIcon = 'warning';
+        confirmColor = '#EF4444';
         break;
       default:
-        break;
+        return;
     }
+
+    Swal.fire({
+      title: `Êtes-vous sûr ?`,
+      text: `Vous allez ${actionText} ${selectedBoats.length} bateau(x)`,
+      icon: actionIcon,
+      showCancelButton: true,
+      confirmButtonColor: confirmColor,
+      cancelButtonColor: '#6B7280',
+      confirmButtonText: `Oui, ${actionText}`,
+      cancelButtonText: 'Annuler'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        switch (action) {
+          case 'approve':
+            setBoats(boats.map(boat => 
+              selectedBoats.includes(boat.id) 
+                ? { ...boat, status: 'active' }
+                : boat
+            ));
+            break;
+          case 'suspend':
+            setBoats(boats.map(boat => 
+              selectedBoats.includes(boat.id) 
+                ? { ...boat, status: 'suspended' }
+                : boat
+            ));
+            break;
+          case 'delete':
+            setBoats(boats.filter(boat => !selectedBoats.includes(boat.id)));
+            setSelectedBoats([]);
+            break;
+          default:
+            break;
+        }
+        
+        Swal.fire(
+          'Action effectuée !',
+          `${selectedBoats.length} bateau(x) ${actionText}(s) avec succès.`,
+          'success'
+        );
+      }
+    });
   };
 
   // Export CSV
@@ -299,12 +399,12 @@ const BoatsAdmin = () => {
   // Composant pour le statut
   const StatusBadge = ({ status }) => {
     const statusConfig = {
-      active: { color: 'bg-green-100 text-green-800', icon: faCheckCircle, label: 'Actif' },
-      pending: { color: 'bg-yellow-100 text-yellow-800', icon: faClock, label: 'En attente' },
-      suspended: { color: 'bg-red-100 text-red-800', icon: faBan, label: 'Suspendu' }
+      active: { color: 'bg-[var(--color-sage-green)] text-[var(--color-slate-blue)]', icon: faCheckCircle, label: 'Actif' },
+      pending: { color: 'bg-[var(--color-pale-blue)] text-[var(--color-slate-blue)]', icon: faClock, label: 'En attente' },
+      suspended: { color: 'bg-[var(--color-mocha)] text-white', icon: faBan, label: 'Suspendu' }
     };
-
-    const config = statusConfig[status] || statusConfig.pending;
+    
+    const config = statusConfig[status] || statusConfig.active;
 
     return (
       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${config.color}`}>
@@ -315,47 +415,52 @@ const BoatsAdmin = () => {
   };
 
   // Composant pour la vérification
-  const VerificationBadge = ({ verified }) => {
-    return verified ? (
-      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-        <FontAwesomeIcon icon={faCheckCircle} className="w-3 h-3 mr-1" />
-        Vérifié
-      </span>
-    ) : (
-      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-        <FontAwesomeIcon icon={faExclamationTriangle} className="w-3 h-3 mr-1" />
-        Non vérifié
-      </span>
-    );
-  };
+  // Supprimé - plus de statuts secondaires
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <FontAwesomeIcon icon={faSpinner} className="animate-spin text-4xl text-[#AD7C59]" />
-      </div>
-    );
+    return <Preloader />;
   }
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Gestion des Bateaux</h1>
-          <p className="mt-1 text-sm text-gray-500">
-            Gérez le catalogue des bateaux, validez les annonces et modérez le contenu
-          </p>
+        <div className="flex items-center space-x-3">
+          <button
+            onClick={() => navigate('/admin/sl')}
+            className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+            title="Retour au dashboard"
+          >
+            <FontAwesomeIcon icon={faArrowLeft} className="w-5 h-5" />
+          </button>
+          <div>
+            <h1 className="text-2xl font-bold text-[var(--color-slate-blue)]">Gestion des Bateaux</h1>
+            <p className="mt-1 text-sm text-gray-500">
+              Gérez le catalogue des bateaux, validez les annonces et modérez le contenu
+            </p>
+          </div>
         </div>
         <div className="mt-4 sm:mt-0 flex space-x-3">
           <button
-            onClick={exportCSV}
-            className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#AD7C59]"
+            onClick={() => {
+              console.log('Bouton Nouveau bateau cliqué');
+              Swal.fire({
+                title: 'Créer un nouveau bateau ?',
+                text: "Vous allez être redirigé vers le formulaire de création",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#AD7C59',
+                cancelButtonColor: '#6B7280',
+                confirmButtonText: 'Oui, continuer',
+                cancelButtonText: 'Annuler'
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  navigate('/admin/sl/boats/add');
+                }
+              });
+            }}
+            className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#AD7C59] hover:bg-[#9B6B47] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#AD7C59]"
           >
-            <FontAwesomeIcon icon={faDownload} className="w-4 h-4 mr-2" />
-            Exporter CSV
-          </button>
-          <button className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#AD7C59] hover:bg-[#9B6B47] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#AD7C59]">
             <FontAwesomeIcon icon={faPlus} className="w-4 h-4 mr-2" />
             Nouveau bateau
           </button>
@@ -421,19 +526,19 @@ const BoatsAdmin = () => {
             <div className="flex space-x-2">
               <button
                 onClick={() => handleBulkAction('approve')}
-                className="px-3 py-2 text-sm text-green-600 hover:text-green-800"
+                className="px-3 py-2 text-sm text-[var(--color-sage-green)] hover:text-[var(--color-slate-blue)]"
               >
                 Approuver
               </button>
               <button
                 onClick={() => handleBulkAction('suspend')}
-                className="px-3 py-2 text-sm text-red-600 hover:text-red-800"
+                className="px-3 py-2 text-sm text-[var(--color-mocha)] hover:text-[var(--color-slate-blue)]"
               >
                 Suspendre
               </button>
               <button
                 onClick={() => handleBulkAction('delete')}
-                className="px-3 py-2 text-sm text-red-600 hover:text-red-800"
+                className="px-3 py-2 text-sm text-[var(--color-mocha)] hover:text-[var(--color-slate-blue)]"
               >
                 Supprimer
               </button>
@@ -461,12 +566,12 @@ const BoatsAdmin = () => {
         <div className="bg-white p-6 rounded-lg shadow">
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <FontAwesomeIcon icon={faCheckCircle} className="w-8 h-8 text-green-500" />
+              <FontAwesomeIcon icon={faCheckCircle} className="w-8 h-8 text-[var(--color-sage-green)]" />
             </div>
             <div className="ml-5 w-0 flex-1">
               <dl>
-                <dt className="text-sm font-medium text-gray-500 truncate">Bateaux actifs</dt>
-                <dd className="text-lg font-medium text-gray-900">{boats.filter(b => b.status === 'active').length}</dd>
+                <dt className="text-sm font-medium text-[var(--color-slate-blue)] truncate">Bateaux actifs</dt>
+                <dd className="text-lg font-medium text-[var(--color-slate-blue)]">{boats.filter(b => b.status === 'active').length}</dd>
               </dl>
             </div>
           </div>
@@ -475,12 +580,12 @@ const BoatsAdmin = () => {
         <div className="bg-white p-6 rounded-lg shadow">
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <FontAwesomeIcon icon={faClock} className="w-8 h-8 text-yellow-500" />
+              <FontAwesomeIcon icon={faClock} className="w-8 h-8 text-[var(--color-pale-blue)]" />
             </div>
             <div className="ml-5 w-0 flex-1">
               <dl>
-                <dt className="text-sm font-medium text-gray-500 truncate">En attente</dt>
-                <dd className="text-lg font-medium text-gray-900">{boats.filter(b => b.status === 'pending').length}</dd>
+                <dt className="text-sm font-medium text-[var(--color-slate-blue)] truncate">En attente</dt>
+                <dd className="text-lg font-medium text-[var(--color-slate-blue)]">{boats.filter(b => b.status === 'pending').length}</dd>
               </dl>
             </div>
           </div>
@@ -489,7 +594,7 @@ const BoatsAdmin = () => {
         <div className="bg-white p-6 rounded-lg shadow">
           <div className="flex items-center">
             <div className="flex-shrink-0">
-              <FontAwesomeIcon icon={faStar} className="w-8 h-8 text-yellow-500" />
+                                  <FontAwesomeIcon icon={faStar} className="w-8 h-8 text-[#AD7C59]" />
             </div>
             <div className="ml-5 w-0 flex-1">
               <dl>
@@ -559,11 +664,6 @@ const BoatsAdmin = () => {
                         <div className="ml-4">
                           <div className="text-sm font-medium text-gray-900">
                             {boat.name}
-                            {boat.featured && (
-                              <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                                ⭐ Vedette
-                              </span>
-                            )}
                           </div>
                           <div className="text-sm text-gray-500">{boat.type} • {boat.port}</div>
                           <div className="text-xs text-gray-400">
@@ -581,27 +681,15 @@ const BoatsAdmin = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="space-y-2">
-                        <StatusBadge status={boat.status} />
-                        <VerificationBadge verified={boat.verified} />
-                      </div>
+                      <StatusBadge status={boat.status} />
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {boat.price} €
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div className="flex items-center space-x-1 mr-2">
-                          {[...Array(5)].map((_, i) => (
-                            <FontAwesomeIcon 
-                              key={i} 
-                              icon={faStar} 
-                              className={`w-3 h-3 ${i < Math.floor(boat.rating) ? 'text-yellow-400' : 'text-gray-300'}`} 
-                            />
-                          ))}
-                        </div>
-                        <span className="text-sm text-gray-900">{boat.rating}</span>
-                        <span className="text-xs text-gray-500 ml-1">({boat.reviews})</span>
+                      <div className="flex items-center space-x-2">
+                        <FontAwesomeIcon icon={faStar} className="w-8 h-8 text-[#AD7C59]" />
+                        <span className="text-lg font-semibold text-gray-900">{boat.rating}</span>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -615,7 +703,7 @@ const BoatsAdmin = () => {
                         </button>
                         <button
                           onClick={() => handleEditBoat(boat.id)}
-                          className="text-blue-600 hover:text-blue-800"
+                          className="text-[var(--color-slate-blue)] hover:text-[var(--color-mocha)]"
                           title="Modifier"
                         >
                           <FontAwesomeIcon icon={faEdit} className="w-4 h-4" />
@@ -623,7 +711,7 @@ const BoatsAdmin = () => {
                         {boat.status === 'pending' && (
                           <button
                             onClick={() => handleApproveBoat(boat.id)}
-                            className="text-green-600 hover:text-green-800"
+                            className="text-[var(--color-sage-green)] hover:text-[var(--color-slate-blue)]"
                             title="Approuver"
                           >
                             <FontAwesomeIcon icon={faCheck} className="w-4 h-4" />
@@ -632,22 +720,15 @@ const BoatsAdmin = () => {
                         {boat.status === 'active' && (
                           <button
                             onClick={() => handleSuspendBoat(boat.id)}
-                            className="text-yellow-600 hover:text-yellow-800"
+                            className="text-[var(--color-pale-blue)] hover:text-[var(--color-slate-blue)]"
                             title="Suspendre"
                           >
                             <FontAwesomeIcon icon={faBan} className="w-4 h-4" />
                           </button>
                         )}
                         <button
-                          onClick={() => handleToggleFeatured(boat.id)}
-                          className={`${boat.featured ? 'text-yellow-600 hover:text-yellow-800' : 'text-gray-600 hover:text-gray-800'}`}
-                          title={boat.featured ? 'Retirer des vedettes' : 'Mettre en vedette'}
-                        >
-                          <FontAwesomeIcon icon={faStar} className="w-4 h-4" />
-                        </button>
-                        <button
                           onClick={() => handleDeleteBoat(boat.id)}
-                          className="text-red-600 hover:text-red-800"
+                          className="text-[var(--color-mocha)] hover:text-[var(--color-slate-blue)]"
                           title="Supprimer"
                         >
                           <FontAwesomeIcon icon={faTrash} className="w-4 h-4" />
@@ -672,17 +753,17 @@ const BoatsAdmin = () => {
             <button
               onClick={() => setCurrentPage(currentPage - 1)}
               disabled={currentPage === 1}
-              className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-3 py-2 text-sm font-medium text-[var(--color-slate-blue)] bg-white border border-[var(--color-slate-blue)] rounded-md hover:bg-[var(--color-slate-blue)] hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Précédent
             </button>
-            <span className="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md">
+            <span className="px-3 py-2 text-sm font-medium text-[var(--color-slate-blue)] bg-white border border-[var(--color-slate-blue)] rounded-md">
               {currentPage} / {totalPages}
             </span>
             <button
               onClick={() => setCurrentPage(currentPage + 1)}
               disabled={currentPage === totalPages}
-              className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-3 py-2 text-sm font-medium text-[var(--color-slate-blue)] bg-white border border-[var(--color-slate-blue)] rounded-md hover:bg-[var(--color-slate-blue)] hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Suivant
             </button>
@@ -737,7 +818,7 @@ const BoatsAdmin = () => {
                             <FontAwesomeIcon 
                               key={i} 
                               icon={faStar} 
-                              className={`w-3 h-3 ${i < Math.floor(modalBoat.rating) ? 'text-yellow-400' : 'text-gray-300'}`} 
+                              className={`w-3 h-3 ${i < Math.floor(modalBoat.rating) ? 'text-[#AD7C59]' : 'text-gray-300'}`} 
                             />
                           ))}
                         </div>
@@ -786,19 +867,16 @@ const BoatsAdmin = () => {
                 </div>
               </div>
               
-              <div className="mt-6 flex justify-end space-x-3">
+              <div className="flex justify-end space-x-3">
                 <button
                   onClick={() => setShowModal(false)}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#AD7C59]"
+                  className="px-4 py-2 text-sm font-medium text-[var(--color-slate-blue)] bg-[var(--color-pale-blue)] border border-[var(--color-slate-blue)] rounded-md hover:bg-[var(--color-slate-blue)] hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--color-mocha)]"
                 >
                   Fermer
                 </button>
                 <button
-                  onClick={() => {
-                    handleEditBoat(modalBoat.id);
-                    setShowModal(false);
-                  }}
-                  className="px-4 py-2 text-sm font-medium text-white bg-[#AD7C59] border border-transparent rounded-md hover:bg-[#9B6B47] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#AD7C59]"
+                  onClick={() => handleEditBoat(modalBoat.id)}
+                  className="px-4 py-2 text-sm font-medium text-white bg-[var(--color-mocha)] border border-transparent rounded-md hover:bg-[var(--color-slate-blue)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[var(--color-mocha)]"
                 >
                   Modifier
                 </button>

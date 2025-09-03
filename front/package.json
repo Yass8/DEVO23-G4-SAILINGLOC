@@ -19,6 +19,8 @@
     "axios": "^1.11.0",
     "date-fns": "^4.1.0",
     "esbuild": "^0.25.9",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^3.0.1",
     "react": "^19.1.0",
     "react-datepicker": "^8.4.0",
     "react-dom": "^19.1.0",

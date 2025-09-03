@@ -3,7 +3,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Select from "react-select";
 import { useEffect, useState } from "react";
 import { customSelectStyles, customSelectTheme } from "../../utils/selectTheme";
-import { getPorts } from "../../services/portServices";
 import { getTypes } from "../../services/typeSevices";
 import { getEquipments } from "../../services/equipmentServices";
 
@@ -22,10 +21,21 @@ function Filter(){
   const [showOtherFilters, setShowOtherFilters] = useState(false);
   const [btnShowOtherFilters, setBtnShowOtherFilters] = useState("Plus de filtres");
 
+  // Données mockées pour les ports
+  const mockPorts = [
+    { value: "port-nice", label: "Port de Nice" },
+    { value: "port-cannes", label: "Port de Cannes" },
+    { value: "port-saint-tropez", label: "Port de Saint-Tropez" },
+    { value: "port-monaco", label: "Port de Monaco" },
+    { value: "port-antibes", label: "Port d'Antibes" },
+    { value: "port-marseille", label: "Port de Marseille" },
+    { value: "port-toulon", label: "Port de Toulon" }
+  ];
+
   useEffect(() => {
-    getPorts().then((data) => {
-      setPorts(data);
-    });
+    // Utiliser les données mockées pour les ports
+    setPorts(mockPorts);
+    
     getTypes().then((data) => {
       setTypes(data);
     });
