@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
 import Header from "../../components/common/Header";
 import Banner from "../../components/common/Banner";
 import ScrollToTop from "../../components/common/ScrollToTop";
@@ -11,16 +11,9 @@ import {
   faCreditCard,
   faArrowLeft,
   faInfoCircle,
-  faLock,
-  faExclamationTriangle,
   faFileUpload,
-  faFilePdf,
 } from "@fortawesome/free-solid-svg-icons";
-import {
-  faCcVisa,
-  faCcMastercard,
-  faCcAmex,
-} from "@fortawesome/free-brands-svg-icons";
+
 
 // Import des composants Stripe
 import {
@@ -30,43 +23,31 @@ import {
   useElements,
 } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
+import { fetchBoatBySlug } from "../../services/boatServices";
 
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+
 import { Step1Dates } from "../../components/common/booking/Step1Dates";
+import { Step2PersonalInfo } from "../../components/common/booking/Step2PersonalInfo";
+import { Step3Documents } from "../../components/common/booking/Step3Documents";
+import { Step4Summary } from "../../components/common/booking/Step4Summary";
+import { Step5Payment } from "../../components/common/booking/Step5Payment";
 
 // Initialisation de Stripe avec la clé publique depuis les variables d'environnement
 const stripePromise = loadStripe(import.meta.env.VITE_PUBLIC_STRIPE_TEST_DEV);
 
+
 const Booking = () => {
   const navigate = useNavigate();
+  const { slug } = useParams();
   const location = useLocation();
   const stripe = useStripe();
   const elements = useElements();
 
-  // Récupération des données du bateau depuis l'état de navigation ou props
-  const boat = location.state?.boat || {
-    id: 1,
-    name: "Sunset Dream",
-    brand: "Jeanneau",
-    model: "Sun Odyssey 449",
-    length: 13.5,
-    engine_type: "Diesel",
-    skipper_required: false,
-    description:
-      "Magnifique voilier idéal pour une croisière en Méditerranée. Parfait pour 10 personnes avec tout le confort nécessaire à bord.",
-    max_passengers: 10,
-    daily_price: 450,
-    port: { name: "Port de Marseille" },
-    boat_type: { name: "Voilier" },
-    photos: [
-      {
-        photo_url:
-          "https://images.unsplash.com/photo-1500514966906-fe367bfb0d0b",
-        is_main: true,
-      },
-    ],
-  };
+  const [boat, setBoat] = useState(location.state?.boat || null);
+  const [availabilities, setAvailabilities] = useState([]);
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   // États pour le formulaire de réservation
   const [startDate, setStartDate] = useState(null);
@@ -89,6 +70,35 @@ const Booking = () => {
   const [addressFile, setAddressFile] = useState(null);
   const [uploadProgress, setUploadProgress] = useState({});
 
+  // Charger les données du bateau
+  useEffect(() => {
+    const loadBoatData = async () => {
+      try {
+        setLoading(true);
+        
+        if (!boat && slug) {
+          const boatData = await fetchBoatBySlug(`/${slug}`);
+          setBoat(boatData);
+          
+          // Les disponibilités sont incluses dans la réponse
+          if (boatData && boatData.Availabilities) {
+            setAvailabilities(boatData.Availabilities);
+          }
+        } else if (boat && boat.Availabilities) {
+          // Si le bateau est passé via props
+          setAvailabilities(boat.Availabilities);
+        }
+      } catch (err) {
+        console.error("Erreur lors du chargement des données:", err);
+        setError("Impossible de charger les données du bateau");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadBoatData();
+  }, [slug, boat]);
+
   // Validation du formulaire
   const validateStep = (step) => {
     const errors = {};
@@ -99,6 +109,18 @@ const Booking = () => {
       if (startDate && endDate && startDate >= endDate) {
         errors.dateRange =
           "La date de fin doit être postérieure à la date de début";
+      }
+
+      if (startDate && endDate) {
+        const isPeriodAvailable = availabilities.some(availability => {
+          const availStart = new Date(availability.start_date);
+          const availEnd = new Date(availability.end_date);
+          return startDate >= availStart && endDate <= availEnd && availability.status === 'available';
+        });
+        
+        if (!isPeriodAvailable) {
+          errors.dateRange = "La période sélectionnée n'est pas disponible";
+        }
       }
     }
 
@@ -134,8 +156,6 @@ const Booking = () => {
   };
 
   const days = calculateDays();
-  const basePrice = days * boat.daily_price;
-  const totalPrice = basePrice;
 
   // Fonctions de navigation entre les étapes
   const nextStep = () => {
@@ -173,26 +193,7 @@ const Booking = () => {
       }, 200);
     }
   };
-
-  // Style personnalisé pour l'élément de carte Stripe
-  const CARD_ELEMENT_OPTIONS = {
-    style: {
-      base: {
-        color: "#32325d",
-        fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
-        fontSmoothing: "antialiased",
-        fontSize: "16px",
-        "::placeholder": {
-          color: "#aab7c4",
-        },
-      },
-      invalid: {
-        color: "#fa755a",
-        iconColor: "#fa755a",
-      },
-    },
-  };
-
+  
   // Soumission du formulaire
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -303,10 +304,47 @@ const Booking = () => {
     }
   }, []);
 
+  
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <Banner title="Réservation" />
+        <div className="max-w-6xl mx-auto px-4 py-8">
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-mocha"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !boat) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <Banner title="Réservation" />
+        <div className="max-w-6xl mx-auto px-4 py-8">
+          <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+            <p className="text-red-700">{error || "Bateau non trouvé"}</p>
+            <button
+              onClick={() => navigate("/")}
+              className="mt-4 px-6 py-2 bg-mocha text-white rounded-md hover:bg-mocha/90"
+            >
+              Retour à l'accueil
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const basePrice = days * boat.daily_price;
+  const totalPrice = basePrice;
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
-      <Banner title="Réservation" />
 
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Navigation */}
@@ -402,24 +440,7 @@ const Booking = () => {
                 </div>
               </div>
 
-              {/* Avertissement si Stripe n'est pas configuré */}
-              {!import.meta.env.VITE_PUBLIC_STRIPE_TEST_DEV && step >= 5 && (
-                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6 flex items-start">
-                  <FontAwesomeIcon
-                    icon={faExclamationTriangle}
-                    className="text-yellow-600 mr-2 mt-0.5"
-                  />
-                  <div>
-                    <p className="font-medium text-yellow-800">
-                      Mode démonstration
-                    </p>
-                    <p className="text-sm text-yellow-700">
-                      Le paiement n'est pas réellement traité car les clés
-                      Stripe ne sont pas configurées.
-                    </p>
-                  </div>
-                </div>
-              )}
+          
               {/* Formulaire d'étape 1: Sélection des dates */}
               {step === 1 && (
                 <Step1Dates
@@ -432,513 +453,84 @@ const Booking = () => {
                   formErrors={formErrors}
                   nextStep={nextStep}
                   boat={boat}
+                  availabilities={availabilities}
                 />
               )}
 
               {/* Formulaire d'étape 2: Informations personnelles */}
               {step === 2 && (
-                <div>
-                  <h2 className="text-2xl font-bold mb-6">Vos informations</h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Prénom
-                      </label>
-                      <input
-                        type="text"
-                        value={firstName}
-                        onChange={(e) => setFirstName(e.target.value)}
-                        className="w-full p-3 border border-gray-300 rounded-md focus:ring-mocha focus:border-mocha transition-colors"
-                        required
-                      />
-                      {formErrors.firstName && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {formErrors.firstName}
-                        </p>
-                      )}
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Nom
-                      </label>
-                      <input
-                        type="text"
-                        value={lastName}
-                        onChange={(e) => setLastName(e.target.value)}
-                        className="w-full p-3 border border-gray-300 rounded-md focus:ring-mocha focus:border-mocha transition-colors"
-                        required
-                      />
-                      {formErrors.lastName && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {formErrors.lastName}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Email
-                      </label>
-                      <input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        className="w-full p-3 border border-gray-300 rounded-md focus:ring-mocha focus:border-mocha transition-colors"
-                        required
-                      />
-                      {formErrors.email && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {formErrors.email}
-                        </p>
-                      )}
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Téléphone
-                      </label>
-                      <input
-                        type="tel"
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        className="w-full p-3 border border-gray-300 rounded-md focus:ring-mocha focus:border-mocha transition-colors"
-                        required
-                      />
-                      {formErrors.phone && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {formErrors.phone}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="flex justify-between">
-                    <button
-                      onClick={prevStep}
-                      className="px-6 py-3 rounded-md bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium transition-colors"
-                    >
-                      Retour
-                    </button>
-                    <button
-                      onClick={nextStep}
-                      disabled={!firstName || !lastName || !email || !phone}
-                      className={`px-6 py-3 rounded-md transition-colors ${
-                        !firstName || !lastName || !email || !phone
-                          ? "bg-gray-400 cursor-not-allowed"
-                          : "bg-mocha hover:bg-mocha/90"
-                      } text-white font-medium`}
-                    >
-                      Continuer
-                    </button>
-                  </div>
-                </div>
+                <Step2PersonalInfo
+                  firstName={firstName}
+                  setFirstName={setFirstName}
+                  lastName={lastName}
+                  setLastName={setLastName}
+                  email={email}
+                  setEmail={setEmail}
+                  phone={phone}
+                  setPhone={setPhone}
+                  formErrors={formErrors}
+                  prevStep={prevStep}
+                  nextStep={nextStep}
+                />
               )}
 
               {/* Formulaire d'étape 3: Documents */}
               {step === 3 && (
-                <div>
-                  <h2 className="text-2xl font-bold mb-6">Vos documents</h2>
-                  <p className="text-gray-600 mb-6">
-                    Pour finaliser votre réservation, veuillez provide les
-                    documents suivants :
-                  </p>
-
-                  <div className="space-y-6">
-                    {/* Pièce d'identité */}
-                    <div className="form-group">
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Pièce d'identité (Carte d'identité ou Passeport)
-                      </label>
-                      <div className="flex items-center justify-center w-full">
-                        <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer border-gray-300 hover:border-mocha">
-                          <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                            <FontAwesomeIcon
-                              icon={faFileUpload}
-                              className="w-8 h-8 mb-3 text-gray-400"
-                            />
-                            <p className="mb-2 text-sm text-gray-500">
-                              {identityFile
-                                ? identityFile.name
-                                : "Cliquez pour télécharger"}
-                            </p>
-                            <p className="text-xs text-gray-500">
-                              PDF, JPG ou PNG (MAX. 5MB)
-                            </p>
-                          </div>
-                          <input
-                            type="file"
-                            className="hidden"
-                            accept=".pdf,.jpg,.jpeg,.png"
-                            onChange={(e) =>
-                              handleFileUpload(
-                                e.target.files[0],
-                                setIdentityFile,
-                                "identity"
-                              )
-                            }
-                          />
-                        </label>
-                      </div>
-                      {uploadProgress.identity > 0 &&
-                        uploadProgress.identity < 100 && (
-                          <div className="w-full bg-gray-200 rounded-full h-2.5 mt-2">
-                            <div
-                              className="bg-mocha h-2.5 rounded-full"
-                              style={{ width: `${uploadProgress.identity}%` }}
-                            ></div>
-                          </div>
-                        )}
-                      {formErrors.identityFile && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {formErrors.identityFile}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Permis nautique */}
-                    <div className="form-group">
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Permis nautique ou CV (Carte de Vocation)
-                      </label>
-                      <div className="flex items-center justify-center w-full">
-                        <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer border-gray-300 hover:border-mocha">
-                          <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                            <FontAwesomeIcon
-                              icon={faFileUpload}
-                              className="w-8 h-8 mb-3 text-gray-400"
-                            />
-                            <p className="mb-2 text-sm text-gray-500">
-                              {licenseFile
-                                ? licenseFile.name
-                                : "Cliquez pour télécharger"}
-                            </p>
-                            <p className="text-xs text-gray-500">
-                              PDF, JPG ou PNG (MAX. 5MB)
-                            </p>
-                          </div>
-                          <input
-                            type="file"
-                            className="hidden"
-                            accept=".pdf,.jpg,.jpeg,.png"
-                            onChange={(e) =>
-                              handleFileUpload(
-                                e.target.files[0],
-                                setLicenseFile,
-                                "license"
-                              )
-                            }
-                          />
-                        </label>
-                      </div>
-                      {uploadProgress.license > 0 &&
-                        uploadProgress.license < 100 && (
-                          <div className="w-full bg-gray-200 rounded-full h-2.5 mt-2">
-                            <div
-                              className="bg-mocha h-2.5 rounded-full"
-                              style={{ width: `${uploadProgress.license}%` }}
-                            ></div>
-                          </div>
-                        )}
-                      {formErrors.licenseFile && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {formErrors.licenseFile}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Justificatif de domicile */}
-                    <div className="form-group">
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Justificatif de domicile (de moins de 3 mois)
-                      </label>
-                      <div className="flex items-center justify-center w-full">
-                        <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer border-gray-300 hover:border-mocha">
-                          <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                            <FontAwesomeIcon
-                              icon={faFileUpload}
-                              className="w-8 h-8 mb-3 text-gray-400"
-                            />
-                            <p className="mb-2 text-sm text-gray-500">
-                              {addressFile
-                                ? addressFile.name
-                                : "Cliquez pour télécharger"}
-                            </p>
-                            <p className="text-xs text-gray-500">
-                              PDF, JPG ou PNG (MAX. 5MB)
-                            </p>
-                          </div>
-                          <input
-                            type="file"
-                            className="hidden"
-                            accept=".pdf,.jpg,.jpeg,.png"
-                            onChange={(e) =>
-                              handleFileUpload(
-                                e.target.files[0],
-                                setAddressFile,
-                                "address"
-                              )
-                            }
-                          />
-                        </label>
-                      </div>
-                      {uploadProgress.address > 0 &&
-                        uploadProgress.address < 100 && (
-                          <div className="w-full bg-gray-200 rounded-full h-2.5 mt-2">
-                            <div
-                              className="bg-mocha h-2.5 rounded-full"
-                              style={{ width: `${uploadProgress.address}%` }}
-                            ></div>
-                          </div>
-                        )}
-                      {formErrors.addressFile && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {formErrors.addressFile}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="flex justify-between mt-8">
-                    <button
-                      onClick={prevStep}
-                      className="px-6 py-3 rounded-md bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium transition-colors"
-                    >
-                      Retour
-                    </button>
-                    <button
-                      onClick={nextStep}
-                      disabled={!identityFile || !licenseFile || !addressFile}
-                      className={`px-6 py-3 rounded-md transition-colors ${
-                        !identityFile || !licenseFile || !addressFile
-                          ? "bg-gray-400 cursor-not-allowed"
-                          : "bg-mocha hover:bg-mocha/90"
-                      } text-white font-medium`}
-                    >
-                      Continuer
-                    </button>
-                  </div>
-                </div>
+                <Step3Documents
+                  identityFile={identityFile}
+                  setIdentityFile={setIdentityFile}
+                  licenseFile={licenseFile}
+                  setLicenseFile={setLicenseFile}
+                  addressFile={addressFile}
+                  setAddressFile={setAddressFile}
+                  uploadProgress={uploadProgress}
+                  formErrors={formErrors}
+                  prevStep={prevStep}
+                  nextStep={nextStep}
+                  handleFileUpload={handleFileUpload}
+                />
               )}
 
               {/* Étape 4: Récapitulatif */}
               {step === 4 && (
-                <div>
-                  <h2 className="text-2xl font-bold mb-6">
-                    Récapitulatif de votre réservation
-                  </h2>
-
-                  <div className="bg-gray-50 p-6 rounded-lg mb-6">
-                    <h3 className="font-medium text-lg mb-4">
-                      Informations personnelles
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                      <div>
-                        <p className="text-sm text-gray-600">Prénom</p>
-                        <p className="font-medium">{firstName}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-600">Nom</p>
-                        <p className="font-medium">{lastName}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-600">Email</p>
-                        <p className="font-medium">{email}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-600">Téléphone</p>
-                        <p className="font-medium">{phone}</p>
-                      </div>
-                    </div>
-
-                    <h3 className="font-medium text-lg mb-4 mt-6">
-                      Détails de la location
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <p className="text-sm text-gray-600">Bateau</p>
-                        <p className="font-medium">{boat.name}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-600">Dates</p>
-                        <p className="font-medium">
-                          {startDate?.toLocaleDateString()} au{" "}
-                          {endDate?.toLocaleDateString()} ({days} jours)
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-600">Passagers</p>
-                        <p className="font-medium">
-                          {passengers}{" "}
-                          {passengers === 1 ? "personne" : "personnes"}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-600">Port</p>
-                        <p className="font-medium">{boat.port?.name}</p>
-                      </div>
-                    </div>
-
-                    <h3 className="font-medium text-lg mb-4 mt-6">
-                      Documents fournis
-                    </h3>
-                    <div className="space-y-2">
-                      <div className="flex items-center">
-                        <FontAwesomeIcon
-                          icon={faFilePdf}
-                          className="text-red-500 mr-2"
-                        />
-                        <span className="text-sm">{identityFile?.name}</span>
-                      </div>
-                      <div className="flex items-center">
-                        <FontAwesomeIcon
-                          icon={faFilePdf}
-                          className="text-red-500 mr-2"
-                        />
-                        <span className="text-sm">{licenseFile?.name}</span>
-                      </div>
-                      <div className="flex items-center">
-                        <FontAwesomeIcon
-                          icon={faFilePdf}
-                          className="text-red-500 mr-2"
-                        />
-                        <span className="text-sm">{addressFile?.name}</span>
-                      </div>
-                    </div>
-
-                    <div className="border-t border-gray-200 pt-4 mt-6">
-                      <div className="flex justify-between items-center">
-                        <span className="text-lg font-semibold">Total</span>
-                        <span className="text-xl font-bold">{totalPrice}€</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex justify-between">
-                    <button
-                      onClick={prevStep}
-                      className="px-6 py-3 rounded-md bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium transition-colors"
-                    >
-                      Retour
-                    </button>
-                    <button
-                      onClick={nextStep}
-                      className="px-6 py-3 rounded-md bg-mocha hover:bg-mocha/90 text-white font-medium transition-colors"
-                    >
-                      Procéder au paiement
-                    </button>
-                  </div>
-                </div>
+                <Step4Summary
+                  firstName={firstName}
+                  lastName={lastName}
+                  email={email}
+                  phone={phone}
+                  boat={boat}
+                  startDate={startDate}
+                  endDate={endDate}
+                  days={days}
+                  passengers={passengers}
+                  identityFile={identityFile}
+                  licenseFile={licenseFile}
+                  addressFile={addressFile}
+                  totalPrice={totalPrice}
+                  prevStep={prevStep}
+                  nextStep={nextStep}
+                />
               )}
 
               {/* Formulaire d'étape 5: Paiement avec Stripe */}
               {step === 5 && (
-                <div>
-                  <h2 className="text-2xl font-bold mb-6">Paiement sécurisé</h2>
-
-                  <div className="bg-blue-50 p-4 rounded-lg mb-6 flex items-start">
-                    <FontAwesomeIcon
-                      icon={faLock}
-                      className="text-mocha mr-2 mt-1"
-                    />
-                    <p className="text-sm text-slate-blue">
-                      <span className="font-semibold">Paiement sécurisé</span> -
-                      Toutes vos informations sont cryptées et sécurisées.
-                    </p>
-                  </div>
-
-                  <div className="mb-6 p-4 border border-gray-200 rounded-lg bg-gray-50">
-                    <label className="block text-sm font-medium text-gray-700 mb-3">
-                      Informations de carte bancaire
-                    </label>
-                    <div className="p-3 border border-gray-300 rounded-md bg-white">
-                      <CardElement
-                        options={CARD_ELEMENT_OPTIONS}
-                        onChange={(e) => setCardComplete(e.complete)}
-                      />
-                    </div>
-                    <div className="flex mt-2">
-                      <FontAwesomeIcon
-                        icon={faCcVisa}
-                        size="1x"
-                        className="text-slate-blue"
-                      />
-                      <FontAwesomeIcon
-                        icon={faCcMastercard}
-                        size="1x"
-                        className="mx-2 text-slate-blue"
-                      />
-                      <FontAwesomeIcon
-                        icon={faCcAmex}
-                        size="1x"
-                        className="text-slate-blue"
-                      />
-                    </div>
-                  </div>
-
-                  {paymentError && (
-                    <div className="bg-red-50 p-4 rounded-lg mb-6">
-                      <p className="text-red-700 text-sm">{paymentError}</p>
-                    </div>
-                  )}
-
-                  <div className="flex items-start mb-6">
-                    <FontAwesomeIcon
-                      icon={faInfoCircle}
-                      className="text-mocha mr-2 mt-1"
-                    />
-                    <p className="text-sm text-slate-blue font-bold">
-                      Votre carte ne sera débitée qu'après confirmation de la
-                      réservation par le propriétaire.
-                    </p>
-                  </div>
-
-                  <div className="flex justify-between">
-                    <button
-                      onClick={prevStep}
-                      className="px-6 py-3 rounded-md bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium transition-colors"
-                    >
-                      Retour
-                    </button>
-                    <button
-                      onClick={handleSubmit}
-                      disabled={!stripe || !cardComplete || processing}
-                      className={`px-6 py-3 rounded-md flex items-center justify-center transition-colors ${
-                        !stripe || !cardComplete || processing
-                          ? "bg-gray-400 cursor-not-allowed"
-                          : "bg-mocha hover:bg-mocha/90"
-                      } text-white font-medium min-w-[200px]`}
-                    >
-                      {processing || isLoading ? (
-                        <>
-                          <svg
-                            className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                          >
-                            <circle
-                              className="opacity-25"
-                              cx="12"
-                              cy="12"
-                              r="10"
-                              stroke="currentColor"
-                              strokeWidth="4"
-                            ></circle>
-                            <path
-                              className="opacity-75"
-                              fill="currentColor"
-                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                            ></path>
-                          </svg>
-                          Traitement...
-                        </>
-                      ) : (
-                        `Payer ${totalPrice}€`
-                      )}
-                    </button>
-                  </div>
-                </div>
+                <Step5Payment
+                  firstName={firstName}
+                  lastName={lastName}
+                  email={email}
+                  phone={phone}
+                  totalPrice={totalPrice}
+                  paymentError={paymentError}
+                  processing={processing}
+                  isLoading={isLoading}
+                  cardComplete={cardComplete}
+                  setCardComplete={setCardComplete}
+                  formErrors={formErrors}
+                  prevStep={prevStep}
+                  handleSubmit={handleSubmit}
+                  stripe={stripe}
+                  elements={elements}
+                />
               )}
 
               {/* Étape 6: Confirmation */}
@@ -956,7 +548,7 @@ const Booking = () => {
                   <p className="text-gray-600 mb-6">
                     Votre réservation pour le{" "}
                     <span className="font-semibold">{boat.name}</span> a été
-                    confirmée. Un email de confirmation a été envoyé à{" "}
+                    confirmée. Un email de confirmation a été envoyé à {" "}
                     <span className="font-semibold">{email}</span>.
                   </p>
                   <div className="bg-gray-50 p-4 rounded-lg mb-6">
@@ -999,7 +591,7 @@ const Booking = () => {
                 <div className="flex mb-4">
                   <img
                     src={
-                      boat.photos[0]?.photo_url ||
+                      boat.photos?.[0]?.photo_url ||
                       "https://images.unsplash.com/photo-1500514966906-fe367bfb0d0b"
                     }
                     alt={boat.name}
