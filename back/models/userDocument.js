@@ -13,7 +13,7 @@ export default (sequelize, DataTypes) => {
   }
   UserDocument.init({
     type: {
-      type: DataTypes.ENUM('licence', 'insurance', 'id_card'),
+      type: DataTypes.ENUM('licence', 'insurance', 'id_card', 'cv', 'proof_of_address'),
       allowNull: false
     },
     file_url: {
@@ -36,7 +36,9 @@ export default (sequelize, DataTypes) => {
     sequelize,
     modelName: 'UserDocument',
     tableName: 'UserDocuments',
-    timestamps: true
+    timestamps: true,
+    createdAt: 'created_at',
+    updatedAt: 'updated_at'
   });
   return UserDocument;
 };

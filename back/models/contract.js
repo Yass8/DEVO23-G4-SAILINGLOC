@@ -41,7 +41,9 @@ export default (sequelize, DataTypes) => {
     sequelize,
     modelName: 'Contract',
     tableName: 'Contracts',
-    timestamps: true
+    timestamps: true,
+    createdAt: 'created_at',
+    updatedAt: 'updated_at'
   });
 
   return Contract;

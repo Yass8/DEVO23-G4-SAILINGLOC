@@ -10,6 +10,8 @@ import Details from '../pages/public/Details.jsx';
 import Contact from '../pages/public/Contact.jsx';
 import Login from '../pages/public/Login.jsx';
 import Register from '../pages/public/Register.jsx';
+import ForgotPasswordEmail from "../pages/public/ForgotPassword.jsx";
+import ResetPassword from "../pages/public/ResetPassword.jsx";
 import Page404 from '../pages/public/Page404.jsx';
 
 // Espace client
@@ -50,6 +52,8 @@ import BoatTypesAdmin from "../pages/admin/BoatTypesAdmin.jsx";
 import ReservationsAdmin from "../pages/admin/Reservations.jsx";
 import ContractsAdmin from "../pages/admin/Contracts.jsx";
 import AdminLayout from "../pages/admin/AdminLayout.jsx";
+import LoginAdmin from "../pages/admin/LoginAdmin.jsx";
+import Booking from "../pages/public/Booking.jsx";
 
 export default function AppRoutes() {
     return (
@@ -60,10 +64,13 @@ export default function AppRoutes() {
             <Route path="/about" element={<About />} />
             <Route path="/category" element={<Category />} />
             <Route path="/boats" element={<Boats />} />
-            <Route path="/details" element={<Details />} />
+            <Route path="/boat/:slug" element={<Details />} />
+            <Route path="/booking/:slug" element={<Booking />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/forgot-password-email" element={<ForgotPasswordEmail />} />
+            <Route path="/reset-password/:token" element={<ResetPassword />} />
             <Route path="/404" element={<Page404 />} />
 
             {/* Espace client */}
@@ -88,10 +95,11 @@ export default function AppRoutes() {
                 <Route path="reservations/:id/details" element={<ReservationDetails />} />
                 <Route path="reservations/:id/chat" element={<ReservationChat />} />
             </Route>
+            <Route path="/admin/sl/login" element={<LoginAdmin/>} />
 
             {/* Routes administrateur */}
             <Route path="/admin/sl" element={<AdminLayout />}>
-                <Route index element={<Navigate to="dashboard" replace />} />
+                <Route index element={<Navigate to="/admin/sl/login" replace />} />
                 <Route path="dashboard" element={<AdminDashboard />} />
                 <Route path="users" element={<UsersAdmin />} />
                 <Route path="ports" element={<PortsAdmin />} />

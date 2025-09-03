@@ -30,7 +30,9 @@ export default (sequelize, DataTypes) => {
     sequelize,
     modelName: 'BoatPhoto',
     tableName: 'BoatPhotos',
-    timestamps: true
+    timestamps: true,
+    createdAt: 'created_at',
+    updatedAt: 'updated_at'
   });
 
   return BoatPhoto;
