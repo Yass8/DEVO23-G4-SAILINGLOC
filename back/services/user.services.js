@@ -69,9 +69,9 @@ const uploadUserPhoto = async (userId, file) => {
     const user = await User.findByPk(userId);
     if (!user) throw new Error("Utilisateur non trouvé");
 
-    if(user.photo && !user.photo.startsWith("avatar")) {
+    if (user.photo && !user.photo.startsWith("avatar")) {
         const oldFilePath = path.join(process.cwd(), user.photo);
-       
+
         if (fs.existsSync(oldFilePath)) fs.unlinkSync(oldFilePath);
     }
 
