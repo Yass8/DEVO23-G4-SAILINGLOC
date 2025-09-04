@@ -1,0 +1,53 @@
+version: "3.8"
+
+services:
+  postgres: 
+    image: postgres:latest
+    container_name: postgres_container
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+      POSTGRES_DB: sailingLocDB
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    networks:
+      - sailingLocNet
+    
+  server:
+    build: ./back
+    container_name: server_container
+    depends_on:
+      - postgres
+    env_file:
+      - back/.env
+    networks:
+      - sailingLocNet
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./back:/app
+      - /app/node_modules
+    
+  client:
+    build: ./front
+    container_name: client_container
+    depends_on:
+      - server
+    networks:
+      - sailingLocNet
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./front:/app
+      - /app/node_modules
+    
+
+volumes:
+  pg_data:
+
+networks:
+  sailingLocNet:
+    driver: bridge
+  
