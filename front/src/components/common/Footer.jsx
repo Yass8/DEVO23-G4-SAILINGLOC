@@ -5,65 +5,93 @@ import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 
 const Footer = () => {
   return (
-    <footer className="text-white py-3 px-4" style={{ backgroundColor: '#4B6A88' }}>
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-3">
+    
+    <footer className="bg-[#445A6E] text-[#DCDCDC] px-6 py-1 relative">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12">
 
+        {/* Section SAILINGLOC */}
         <div>
-          <h2 className="text-base font-bold mb-1">SAILINGLOC</h2>
-          <p className="text-xs">Suivez-nous sur les réseaux sociaux et plongez dans l'univers SailingLoc.</p>
-          <div className="flex gap-2 mt-2">
-            <a href="#" className="w-10 h-10 flex items-center justify-center rounded-full border border-[#AD7C59]">
-              <FontAwesomeIcon icon={faInstagram} className="text-white text-xl" />
+          <h3 className="text-xl font-bold mb-4 uppercase">SAILINGLOC</h3>
+          <p className="text-sm leading-relaxed mb-6">
+            Suivez-nous sur les réseaux sociaux et plongez dans l'univers SailingLoc. Partagez vos expériences, découvrez nos meilleurs destinations et restez informé des nouveautés
+          </p>
+          <div className="flex space-x-4">
+            <a  className="w-10 h-10 flex items-center justify-center rounded-full border border-[#AD7C59] text-white hover:bg-[#AD7C59] hover:text-white transition-colors duration-300">
+              <FontAwesomeIcon icon={faInstagram} size="lg" />
             </a>
-            <a href="#" className="w-10 h-10 flex items-center justify-center rounded-full border border-[#AD7C59]">
-              <FontAwesomeIcon icon={faFacebookF} className="text-white text-xl" />
+            <a  className="w-10 h-10 flex items-center justify-center rounded-full border border-[#AD7C59] text-white hover:bg-[#AD7C59] hover:text-white transition-colors duration-300">
+              <FontAwesomeIcon icon={faFacebookF} size="lg" />
             </a>
-            <a href="#" className="w-10 h-10 flex items-center justify-center rounded-full border border-[#AD7C59]">
-              <FontAwesomeIcon icon={faLinkedinIn} className="text-white text-xl" />
+            <a  className="w-10 h-10 flex items-center justify-center rounded-full border border-[#AD7C59] text-white hover:bg-[#AD7C59] hover:text-white transition-colors duration-300">
+              <FontAwesomeIcon icon={faLinkedinIn} size="lg" />
             </a>
           </div>
         </div>
 
+        {/* Section Liens Rapides */}
         <div>
-          <h2 className="text-base font-bold mb-1">Liens Rapides</h2>
-          <ul className="space-y-0.5 text-xs">
-            <li><a href="#">À Propos</a></li>
-            <li><a href="#">CGU</a></li>
-            <li><a href="#">Mentions Légales</a></li>
-            <li><a href="#">Cookies</a></li>
-            <li><a href="#">Confidentialité</a></li>
-            <li><a href="#">Plan du site</a></li>
-            <li><a href="#">Contact</a></li>
+          <h3 className="text-xl font-bold mb-4">Liens Rapides</h3>
+          <ul className="space-y-2 text-sm">
+            <li className="flex items-center">
+              <span className="w-1.5 h-1.5 bg-[#DCDCDC] rounded-full mr-3"></span>
+              <a href="#" className="hover:text-[#C88C50] transition-colors">À Propos</a>
+            </li>
+            <li className="flex items-center">
+              <span className="w-1.5 h-1.5 bg-[#DCDCDC] rounded-full mr-3"></span>
+              <a href="#" className="hover:text-[#C88C50] transition-colors">CGU</a>
+            </li>
+            <li className="flex items-center">
+              <span className="w-1.5 h-1.5 bg-[#DCDCDC] rounded-full mr-3"></span>
+              <a href="#" className="hover:text-[#C88C50] transition-colors">Mentions Légales</a>
+            </li>
+            <li className="flex items-center">
+              <span className="w-1.5 h-1.5 bg-[#DCDCDC] rounded-full mr-3"></span>
+              <a href="#" className="hover:text-[#C88C50] transition-colors">Politique des Cookies</a>
+            </li>
+            <li className="flex items-center">
+              <span className="w-1.5 h-1.5 bg-[#DCDCDC] rounded-full mr-3"></span>
+              <a href="#" className="hover:text-[#C88C50] transition-colors">Politiques de Confidentialité</a>
+            </li>
+            <li className="flex items-center">
+              <span className="w-1.5 h-1.5 bg-[#DCDCDC] rounded-full mr-3"></span>
+              <a href="#" className="hover:text-[#C88C50] transition-colors">Plan du site</a>
+            </li>
+            <li className="flex items-center">
+              <span className="w-1.5 h-1.5 bg-[#DCDCDC] rounded-full mr-3"></span>
+              <a href="#" className="hover:text-[#C88C50] transition-colors">Contact</a>
+            </li>
           </ul>
         </div>
 
+        {/* Section Newsletter */}
         <div>
-          <h2 className="text-base font-bold mb-1">Ne manquez rien</h2>
-          <p className="text-xs">Recevez nos meilleures offres par email.</p>
-          <p className='text-xs'>Inscrivez-vous à notre newsletter et recevez en avant-première les meilleures offres de location, conseils de navigation et actualités exclusives.</p>
-          <form className="mt-2 flex flex-col sm:flex-row gap-1">
-            <div className="relative flex items-center">
-              <div className="relative w-full max-w-xs">
-                <input
-                  type="email"
-                  placeholder="Entrez votre email"
-                  className="w-full p-2 pr-12 text-xs text-black rounded-md border"
-                  style={{ borderColor: '#AD7C59' }}
-                />
-                <button
-                  type="submit"
-                  className="absolute top-1/2 right-2 -translate-y-1/2 w-8 h-8 flex items-center justify-center rounded-full border border-[#AD7C59] bg-transparent"
-                >
-                  <FontAwesomeIcon icon={faArrowRight} className="text-white text-base" style={{ transform: 'rotate(-45deg)' }} />
-                </button>
-              </div>
+          <h3 className="text-xl font-bold mb-4">Ne manquez aucune opportunité</h3>
+          <p className="text-sm mb-6 leading-relaxed">
+            Inscrivez-vous à notre newsletter et recevez en avant-première les meilleures offres de location, conseils de navigation et actualités exclusives.
+          </p>
+          <form className="w-full max-w-sm">
+            <div className="flex">
+              <input
+                type="email"
+                placeholder="Entrez votre email"
+                className="flex-1 p-3 px-4 text-sm bg-[#445A6E] text-[#DCDCDC] placeholder-[#DCDCDC] border border-[#C88C50] rounded-l-lg focus:outline-none focus:border-[#C88C50]"
+              />
+              <button
+                type="submit"
+                className="bg-[#C88C50] text-white px-4 py-3 rounded-r-lg border border-[#C88C50] border-l-0 flex items-center justify-center hover:bg-[#B07A40] transition-colors"
+              >
+                <FontAwesomeIcon icon={faArrowRight} />
+              </button>
             </div>
           </form>
         </div>
       </div>
 
-      <div className="mt-4 text-center text-xs text-gray-300">
-        ©2023 Pandawan. Tous droits réservés.
+      {/* Copyright Section */}
+      <div className="mt-12 pt-6 border-t border-[#506A80]">
+        <p className="text-center text-xs text-[#DCDCDC]">
+          ©2025 Pandawan. All rights reserved.
+        </p>
       </div>
     </footer>
   );
