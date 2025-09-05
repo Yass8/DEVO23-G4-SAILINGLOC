@@ -26,12 +26,14 @@ const getBoatBySlug = async (slug) => {
       { model: BoatType, attributes: ["id", "name"] },
       { model: BoatPhoto, attributes: ["id", "photo_url", "is_main"] },
       { model: BoatEquipment, attributes: ["id", "equipment_name"] },
-      
-      { model: Availability,
+
+      {
+        model: Availability,
         attributes: ["id", "start_date", "end_date", "status"],
-      where: { 
-        end_date: { [Op.gte]: new Date() }
-      }}
+        where: {
+          end_date: { [Op.gte]: new Date() }
+        }
+      }
     ]
   });
 };
@@ -123,14 +125,14 @@ const getFilteredBoats = async ({
   const includeAvailability =
     startDate && endDate
       ? {
-          model: Availability,
-          where: {
-            status: "available",
-            start_date: { [Op.lte]: new Date(startDate) },
-            end_date: { [Op.gte]: new Date(endDate) },
-          },
-          required: true,
-        }
+        model: Availability,
+        where: {
+          status: "available",
+          start_date: { [Op.lte]: new Date(startDate) },
+          end_date: { [Op.gte]: new Date(endDate) },
+        },
+        required: true,
+      }
       : null;
 
   const include = [
