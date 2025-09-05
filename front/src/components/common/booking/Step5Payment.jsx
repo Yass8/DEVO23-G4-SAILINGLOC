@@ -125,3 +125,17 @@ export const Step5Payment = ({
     </div>
   );
 };
+
+{/* <Step5Payment
+                  totalPrice={totalPrice}
+                  paymentError={paymentError}
+                  processing={processing}
+                  isLoading={isLoading}
+                  cardComplete={cardComplete}
+                  setCardComplete={setCardComplete}
+                  formErrors={formErrors}
+                  prevStep={prevStep}
+                  handleSubmit={handleSubmit}
+                  stripe={stripe}
+                  elements={elements}
+                /> */}

@@ -1,55 +1,48 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import Header from "../../components/common/Header";
-import Banner from "../../components/common/Banner";
 import ScrollToTop from "../../components/common/ScrollToTop";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheckCircle,
   faCalendarAlt,
   faUser,
-  faCreditCard,
   faArrowLeft,
   faInfoCircle,
   faFileUpload,
+  faClock,
 } from "@fortawesome/free-solid-svg-icons";
 
-
-// Import des composants Stripe
-import {
-  Elements,
-  CardElement,
-  useStripe,
-  useElements,
-} from "@stripe/react-stripe-js";
-import { loadStripe } from "@stripe/stripe-js";
 import { fetchBoatBySlug } from "../../services/boatServices";
-
+import { createReservation } from "../../services/reservationServices";
+// import { updateUser } from "../../services/userServices";
+import { createUserDocument } from "../../services/userDocument";
 
 import { Step1Dates } from "../../components/common/booking/Step1Dates";
 import { Step2PersonalInfo } from "../../components/common/booking/Step2PersonalInfo";
 import { Step3Documents } from "../../components/common/booking/Step3Documents";
-import { Step4Summary } from "../../components/common/booking/Step4Summary";
-import { Step5Payment } from "../../components/common/booking/Step5Payment";
-
-// Initialisation de Stripe avec la clé publique depuis les variables d'environnement
-const stripePromise = loadStripe(import.meta.env.VITE_PUBLIC_STRIPE_TEST_DEV);
-
+import { Step4Confirmation } from "../../components/common/booking/Step4Confirmation";
+import {
+  isAuthenticated,
+  isTokenValid,
+  getCurrentUser,
+} from "../../services/authService";
+import { SuccessAlert2 } from "../../components/common/SweetAlertComponents";
 
 const Booking = () => {
   const navigate = useNavigate();
   const { slug } = useParams();
   const location = useLocation();
-  const stripe = useStripe();
-  const elements = useElements();
 
   const [boat, setBoat] = useState(location.state?.boat || null);
   const [availabilities, setAvailabilities] = useState([]);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   // États pour le formulaire de réservation
+  const [user, setUser] = useState({});
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [passengers, setPassengers] = useState(2);
@@ -57,10 +50,9 @@ const Booking = () => {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [birthDate, setBirthDate] = useState("");
+  const [address, setAddress] = useState("");
   const [step, setStep] = useState(1);
-  const [paymentError, setPaymentError] = useState(null);
-  const [processing, setProcessing] = useState(false);
-  const [cardComplete, setCardComplete] = useState(false);
   const [formErrors, setFormErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
 
@@ -70,16 +62,32 @@ const Booking = () => {
   const [addressFile, setAddressFile] = useState(null);
   const [uploadProgress, setUploadProgress] = useState({});
 
+  useEffect(() => {
+    const checkAuthentication = () => {
+      if (!isAuthenticated() || !isTokenValid()) {
+        // Rediriger vers login avec le slug pour pouvoir revenir
+        navigate("/login", {
+          state: {
+            from: location.pathname,
+            message: "Veuillez vous connecter pour effectuer une réservation",
+          },
+        });
+      }
+    };
+
+    checkAuthentication();
+  }, [navigate, location.pathname]);
+
   // Charger les données du bateau
   useEffect(() => {
     const loadBoatData = async () => {
       try {
         setLoading(true);
-        
+
         if (!boat && slug) {
-          const boatData = await fetchBoatBySlug(`/${slug}`);
+          const boatData = await fetchBoatBySlug(`${slug}`);
           setBoat(boatData);
-          
+
           // Les disponibilités sont incluses dans la réponse
           if (boatData && boatData.Availabilities) {
             setAvailabilities(boatData.Availabilities);
@@ -99,6 +107,33 @@ const Booking = () => {
     loadBoatData();
   }, [slug, boat]);
 
+  useEffect(() => {
+    // Charger les données de l'utilisateur connecté
+    const loadUserData = () => {
+      if (isAuthenticated() && isTokenValid()) {
+        const user = getCurrentUser();
+        if (user) {
+          // Pré-remplir les champs avec les données de l'utilisateur
+          setFirstName(user.firstname || "");
+          setLastName(user.lastname || "");
+          setEmail(user.email || "");
+          setPhone(user.phone || "");
+          setBirthDate(user.birth_date || "");
+          setAddress(user.address || "");
+          setUser(user);
+        }
+      }
+    };
+
+    loadUserData();
+  }, []);
+
+  useEffect(() => {
+    if (showSuccess) {
+      handleSuccess();
+    }
+  }, [showSuccess]);
+
   // Validation du formulaire
   const validateStep = (step) => {
     const errors = {};
@@ -112,12 +147,16 @@ const Booking = () => {
       }
 
       if (startDate && endDate) {
-        const isPeriodAvailable = availabilities.some(availability => {
+        const isPeriodAvailable = availabilities.some((availability) => {
           const availStart = new Date(availability.start_date);
           const availEnd = new Date(availability.end_date);
-          return startDate >= availStart && endDate <= availEnd && availability.status === 'available';
+          return (
+            startDate >= availStart &&
+            endDate <= availEnd &&
+            availability.status === "available"
+          );
         });
-        
+
         if (!isPeriodAvailable) {
           errors.dateRange = "La période sélectionnée n'est pas disponible";
         }
@@ -133,12 +172,33 @@ const Booking = () => {
         errors.email = "L'email n'est pas valide";
       }
       if (!phone) errors.phone = "Le téléphone est requis";
+      if (!address) errors.address = "L'adresse est requise";
+      if (!birthDate) {
+        errors.birthDate = "La date de naissance est requise";
+      } else {
+        const birth = new Date(birthDate);
+        const today = new Date();
+
+        if (birth >= today) {
+          errors.birthDate = "La date de naissance doit être dans le passé";
+        } else {
+          const age = Math.floor(
+            (today - birth) / (365.25 * 24 * 60 * 60 * 1000)
+          );
+          if (age < 18) {
+            errors.birthDate = "Vous devez avoir au moins 18 ans";
+          }
+        }
+      }
     }
 
     if (step === 3) {
       if (!identityFile)
         errors.identityFile = "La pièce d'identité est requise";
-      if (!licenseFile) errors.licenseFile = "Le permis nautique est requis";
+
+      if (!licenseFile)
+        errors.licenseFile = "Le permis nautique ou CV est requis";
+
       if (!addressFile)
         errors.addressFile = "Le justificatif de domicile est requis";
     }
@@ -171,7 +231,17 @@ const Booking = () => {
   const prevStep = () => {
     setStep(step - 1);
     setFormErrors({});
-    setPaymentError(null);
+  };
+
+  const handleSuccess = () => {
+    SuccessAlert2(
+      "Demande envoyée !",
+      "Votre demande de réservation a bien été transmise au propriétaire."
+    ).then((result) => {
+      if (result.isConfirmed) {
+        navigate("/my-space");
+      }
+    });
   };
 
   // Gestion du téléchargement des fichiers
@@ -193,123 +263,63 @@ const Booking = () => {
       }, 200);
     }
   };
-  
-  // Soumission du formulaire
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setProcessing(true);
-    setPaymentError(null);
 
-    if (!stripe || !elements) {
-      // Stripe.js n'est pas encore chargé
-      setProcessing(false);
-      return;
-    }
+  // Soumission de la demande de réservation
+  const handleSubmitBookingRequest = async () => {
+    setIsLoading(true);
 
     try {
-      // Créer un PaymentMethod avec les détails de la carte
-      const { error: stripeError, paymentMethod } =
-        await stripe.createPaymentMethod({
-          type: "card",
-          card: elements.getElement(CardElement),
-          billing_details: {
-            name: `${firstName} ${lastName}`,
-            email: email,
-            phone: phone,
-          },
-        });
+      const formatDate = (date) =>
+        date ? date.toISOString().split("T")[0] : "";
 
-      if (stripeError) {
-        setPaymentError(stripeError.message);
-        setProcessing(false);
-        return;
-      }
+      // Mettre à jour l'utilisateur
+      // await updateUser(user.id, {
+      //   firstname: firstName,
+      //   lastname: lastName,
+      //   email,
+      //   phone,
+      //   birth_date: birthDate,
+      //   address,
+      // });
 
-      // Envoyer les données de réservation à l'API
-      setIsLoading(true);
+      // Uploader les documents avec FormData
+      const uploadDocument = async (file, type) => {
+        const formData = new FormData();
+        formData.append("user_id", user.id.toString());
+        formData.append("type", type);
+        formData.append("documents", file); // Important: le nom doit correspondre à ce qu'attend express-fileupload
 
-      // Formater les dates pour l'envoi à l'API
-      const formatDate = (date) => {
-        return date ? date.toISOString().split("T")[0] : "";
+        return createUserDocument(formData);
       };
 
-      const bookingData = {
+      // Uploader chaque document séquentiellement pour éviter les conflits
+      if (identityFile) await uploadDocument(identityFile, "id_card");
+      if (licenseFile) await uploadDocument(licenseFile, "licence");
+      if (addressFile) await uploadDocument(addressFile, "insurance");
+
+      // Créer la réservation
+      await createReservation({
         boat_id: boat.id,
+        user_id: user.id,
         start_date: formatDate(startDate),
         end_date: formatDate(endDate),
         passengers,
         total_price: totalPrice,
-        payment_method_id: paymentMethod.id,
-        customer: {
-          first_name: firstName,
-          last_name: lastName,
-          email,
-          phone,
-        },
-        documents: {
-          identity: identityFile?.name,
-          license: licenseFile?.name,
-          address_proof: addressFile?.name,
-        },
-      };
-
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/bookings`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(bookingData),
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        // Confirmer le paiement avec Stripe
-        const { error: confirmError } = await stripe.confirmCardPayment(
-          data.client_secret,
-          {
-            payment_method: paymentMethod.id,
-          }
-        );
-
-        if (confirmError) {
-          setPaymentError(confirmError.message);
-          setProcessing(false);
-        } else {
-          // Paiement réussi
-          nextStep();
-        }
-      } else {
-        setPaymentError(
-          data.message || "Erreur lors de la création de la réservation"
-        );
-      }
+      // nextStep();
+      setShowSuccess(true);
     } catch (error) {
-      console.error("Erreur de réservation:", error);
-      setPaymentError(
-        "Une erreur s'est produite lors du traitement de votre paiement. Veuillez réessayer."
-      );
+      console.error("Erreur:", error);
+      setFormErrors({ submit: "Erreur lors de la création de la demande" });
     } finally {
-      setProcessing(false);
       setIsLoading(false);
     }
   };
-
-  // Vérifier si Stripe est correctement configuré
-  useEffect(() => {
-    if (!import.meta.env.VITE_PUBLIC_STRIPE_TEST_DEV) {
-      console.warn(
-        "Clé Stripe publique non configurée. Utilisation du mode démo."
-      );
-    }
-  }, []);
-
-  
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
         <Header />
-        <Banner title="Réservation" />
         <div className="max-w-6xl mx-auto px-4 py-8">
           <div className="flex justify-center items-center h-64">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-mocha"></div>
@@ -323,7 +333,6 @@ const Booking = () => {
     return (
       <div className="min-h-screen bg-gray-50">
         <Header />
-        <Banner title="Réservation" />
         <div className="max-w-6xl mx-auto px-4 py-8">
           <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
             <p className="text-red-700">{error || "Bateau non trouvé"}</p>
@@ -420,27 +429,10 @@ const Booking = () => {
                   >
                     <FontAwesomeIcon icon={faInfoCircle} />
                   </div>
-                  <span className="text-sm font-medium">Récapitulatif</span>
-                  {step > 4 && (
-                    <div className="absolute top-5 left-0 w-full h-0.5 bg-mocha -z-10"></div>
-                  )}
-                </div>
-
-                <div className="flex-1 flex flex-col items-center relative">
-                  <div
-                    className={`w-10 h-10 rounded-full flex items-center justify-center mb-2 ${
-                      step >= 5
-                        ? "bg-slate-blue text-white"
-                        : "bg-gray-200 text-gray-500"
-                    } transition-colors`}
-                  >
-                    <FontAwesomeIcon icon={faCreditCard} />
-                  </div>
-                  <span className="text-sm font-medium">Paiement</span>
+                  <span className="text-sm font-medium">Confirmation</span>
                 </div>
               </div>
 
-          
               {/* Formulaire d'étape 1: Sélection des dates */}
               {step === 1 && (
                 <Step1Dates
@@ -468,6 +460,10 @@ const Booking = () => {
                   setEmail={setEmail}
                   phone={phone}
                   setPhone={setPhone}
+                  birthDate={birthDate}
+                  setBirthDate={setBirthDate}
+                  address={address}
+                  setAddress={setAddress}
                   formErrors={formErrors}
                   prevStep={prevStep}
                   nextStep={nextStep}
@@ -491,13 +487,15 @@ const Booking = () => {
                 />
               )}
 
-              {/* Étape 4: Récapitulatif */}
+              {/* Étape 4: Confirmation de la demande */}
               {step === 4 && (
-                <Step4Summary
+                <Step4Confirmation
                   firstName={firstName}
                   lastName={lastName}
                   email={email}
                   phone={phone}
+                  birthDate={birthDate}
+                  address={address}
                   boat={boat}
                   startDate={startDate}
                   endDate={endDate}
@@ -508,82 +506,16 @@ const Booking = () => {
                   addressFile={addressFile}
                   totalPrice={totalPrice}
                   prevStep={prevStep}
-                  nextStep={nextStep}
-                />
-              )}
-
-              {/* Formulaire d'étape 5: Paiement avec Stripe */}
-              {step === 5 && (
-                <Step5Payment
-                  firstName={firstName}
-                  lastName={lastName}
-                  email={email}
-                  phone={phone}
-                  totalPrice={totalPrice}
-                  paymentError={paymentError}
-                  processing={processing}
+                  handleSubmit={handleSubmitBookingRequest}
                   isLoading={isLoading}
-                  cardComplete={cardComplete}
-                  setCardComplete={setCardComplete}
                   formErrors={formErrors}
-                  prevStep={prevStep}
-                  handleSubmit={handleSubmit}
-                  stripe={stripe}
-                  elements={elements}
                 />
-              )}
-
-              {/* Étape 6: Confirmation */}
-              {step === 6 && (
-                <div className="text-center py-8">
-                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <FontAwesomeIcon
-                      icon={faCheckCircle}
-                      className="text-green-600 text-3xl"
-                    />
-                  </div>
-                  <h2 className="text-2xl font-bold mb-2">
-                    Réservation confirmée !
-                  </h2>
-                  <p className="text-gray-600 mb-6">
-                    Votre réservation pour le{" "}
-                    <span className="font-semibold">{boat.name}</span> a été
-                    confirmée. Un email de confirmation a été envoyé à {" "}
-                    <span className="font-semibold">{email}</span>.
-                  </p>
-                  <div className="bg-gray-50 p-4 rounded-lg mb-6">
-                    <h3 className="font-medium mb-2">
-                      Récapitulatif de votre réservation
-                    </h3>
-                    <p className="text-sm">
-                      <span className="font-medium">Bateau:</span> {boat.name}
-                    </p>
-                    <p className="text-sm">
-                      <span className="font-medium">Dates:</span>{" "}
-                      {startDate?.toLocaleDateString()} au{" "}
-                      {endDate?.toLocaleDateString()} ({days} jours)
-                    </p>
-                    <p className="text-sm">
-                      <span className="font-medium">Passagers:</span>{" "}
-                      {passengers}
-                    </p>
-                    <p className="text-sm mt-2">
-                      <span className="font-medium">Total:</span> {totalPrice}€
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => navigate("/")}
-                    className="px-6 py-3 rounded-md bg-mocha hover:bg-mocha/90 text-white font-medium transition-colors"
-                  >
-                    Retour à l'accueil
-                  </button>
-                </div>
               )}
             </div>
           </div>
 
           {/* Récapitulatif de la réservation */}
-          {step < 6 && (
+          {step < 5 && (
             <div className="lg:w-1/3">
               <div className="bg-white rounded-lg shadow-md p-6 sticky top-6">
                 <h3 className="text-xl font-bold mb-4">Votre réservation</h3>
@@ -621,7 +553,21 @@ const Booking = () => {
                   </div>
                 </div>
 
-                <div className="text-sm text-gray-500">
+                {step === 4 && (
+                  <div className="bg-blue-50 border border-blue-200 rounded-md p-4 mt-4">
+                    <div className="flex items-center text-slate-blue mb-2">
+                      <FontAwesomeIcon icon={faClock} className="mr-2" />
+                      {/* <span className="font-medium">En attente d'approbation</span> */}
+                    </div>
+                    <p className="text-sm text-slate-blue">
+                      Votre demande sera examinée par le propriétaire. Vous
+                      recevrez un email pour finaliser le paiement une fois
+                      approuvée.
+                    </p>
+                  </div>
+                )}
+
+                <div className="text-sm text-gray-500 mt-4">
                   <p className="mb-2">
                     <FontAwesomeIcon
                       icon={faCheckCircle}
@@ -649,13 +595,4 @@ const Booking = () => {
   );
 };
 
-// Wrapper pour fournir le contexte Stripe
-const BookingWrapper = () => {
-  return (
-    <Elements stripe={stripePromise}>
-      <Booking />
-    </Elements>
-  );
-};
-
-export default BookingWrapper;
+export default Booking;

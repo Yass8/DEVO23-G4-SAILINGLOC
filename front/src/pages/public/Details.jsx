@@ -22,7 +22,7 @@ function Details() {
   const buildImageUrl = (path) => `${api_base_url}${path}`;
 
   useEffect(() => {
-    fetchBoatBySlug(`/${slug}`)
+    fetchBoatBySlug(`${slug}`)
       .then((data) => {
         setBoat(data);
         return fetchBoatPhotos(data.id);

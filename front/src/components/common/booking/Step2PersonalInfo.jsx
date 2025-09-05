@@ -7,6 +7,10 @@ export const Step2PersonalInfo = ({
   setEmail,
   phone,
   setPhone,
+  birthDate,
+  setBirthDate,
+  address,
+  setAddress,
   formErrors,
   prevStep,
   nextStep
@@ -23,6 +27,7 @@ export const Step2PersonalInfo = ({
             onChange={(e) => setFirstName(e.target.value)}
             className="w-full p-3 border border-gray-300 rounded-md focus:ring-mocha focus:border-mocha transition-colors"
             required
+            disabled
           />
           {formErrors.firstName && <p className="text-red-500 text-xs mt-1">{formErrors.firstName}</p>}
         </div>
@@ -34,6 +39,7 @@ export const Step2PersonalInfo = ({
             onChange={(e) => setLastName(e.target.value)}
             className="w-full p-3 border border-gray-300 rounded-md focus:ring-mocha focus:border-mocha transition-colors"
             required
+            disabled
           />
           {formErrors.lastName && <p className="text-red-500 text-xs mt-1">{formErrors.lastName}</p>}
         </div>
@@ -46,10 +52,12 @@ export const Step2PersonalInfo = ({
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full p-3 border border-gray-300 rounded-md focus:ring-mocha focus:border-mocha transition-colors"
+            className="w-full p-3 border border-gray-300 rounded-md focus:ring-mocha focus:border-mocha transition-colors bg-gray-100"
             required
+            disabled
           />
           {formErrors.email && <p className="text-red-500 text-xs mt-1">{formErrors.email}</p>}
+          <p className="text-xs text-gray-500 mt-1">L'email ne peut pas être modifié</p>
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Téléphone</label>
@@ -62,6 +70,28 @@ export const Step2PersonalInfo = ({
           />
           {formErrors.phone && <p className="text-red-500 text-xs mt-1">{formErrors.phone}</p>}
         </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Date de naissance</label>
+          <input
+            type="date"
+            value={birthDate}
+            onChange={(e) => setBirthDate(e.target.value)}
+            className="w-full p-3 border border-gray-300 rounded-md focus:ring-mocha focus:border-mocha transition-colors"
+            required
+          />
+          {formErrors.birthDate && <p className="text-red-500 text-xs mt-1">{formErrors.birthDate}</p>}
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Adresse</label>
+          <input
+            type="text"
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
+            className="w-full p-3 border border-gray-300 rounded-md focus:ring-mocha focus:border-mocha transition-colors"
+            required
+          />
+          {formErrors.address && <p className="text-red-500 text-xs mt-1">{formErrors.address}</p>}
+        </div>
       </div>
       
       <div className="flex justify-between">
@@ -73,8 +103,12 @@ export const Step2PersonalInfo = ({
         </button>
         <button
           onClick={nextStep}
-          disabled={!firstName || !lastName || !email || !phone}
-          className={`px-6 py-3 rounded-md transition-colors ${!firstName || !lastName || !email || !phone ? 'bg-gray-400 cursor-not-allowed' : 'bg-mocha hover:bg-mocha/90'} text-white font-medium`}
+          disabled={!firstName || !lastName || !email || !phone || !birthDate || !address}
+          className={`px-6 py-3 rounded-md transition-colors ${
+            !firstName || !lastName || !email || !phone || !birthDate || !address
+              ? 'bg-gray-400 cursor-not-allowed'
+              : 'bg-mocha hover:bg-mocha/90'
+          } text-white font-medium`}
         >
           Continuer
         </button>

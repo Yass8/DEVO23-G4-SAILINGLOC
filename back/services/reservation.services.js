@@ -1,5 +1,6 @@
 import db from "../models/index.js";
 const { Reservation, User, Boat, Payment, Contract } = db;
+import uploadFile from "../utils/uploadFile.js";
 
 const getAllReservations = async () => {
     return await Reservation.findAll({
@@ -8,7 +9,9 @@ const getAllReservations = async () => {
 };
 
 const createReservation = async (data) => {
-    return await Reservation.create(data);
+    const reference = uploadFile.uniqid('RES')
+    const reservationData = {...data, reference };
+    return await Reservation.create(reservationData);
 };
 
 const getReservationById = async (id) => {

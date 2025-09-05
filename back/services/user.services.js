@@ -16,12 +16,26 @@ const showUser = async (id) => {
     return await User.findByPk(id);
 };
 
+// const updateUser = async (id, data) => {
+//     const user = await User.findByPk(id);
+//     if (!user) return null;
+//     return await user.update(data);
+// };
+// user.services.js - MODIFIEZ updateUser avec des logs
 const updateUser = async (id, data) => {
-    const user = await User.findByPk(id);
-    if (!user) return null;
-    return await user.update(data);
+  console.log('Début updateUser - ID:', id, 'Data:', data);
+  
+  const user = await User.findByPk(id);
+  console.log('User trouvé:', user ? user.id : 'null');
+  
+  if (!user) return null;
+  
+  console.log('Avant update - données:', data);
+  const updatedUser = await user.update(data);
+  console.log('Après update - succès');
+  
+  return updatedUser;
 };
-
 const removeUser = async (id) => {
     const user = await User.findByPk(id);
     if (!user) return null;
@@ -59,9 +73,12 @@ const getUserReviews = async (userId) => {
 
 const getUserDocuments = async (userId) => {
     const user = await User.findByPk(userId, {
-        include: UserDocument
+        include: {
+            model: UserDocument,
+            as: 'userDocuments'
+        }
     });
-    return user ? user.UserDocuments : null;
+    return user ? user.userDocuments : null;
 };
 
 const uploadUserPhoto = async (userId, file) => {

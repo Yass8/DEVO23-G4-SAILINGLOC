@@ -16,6 +16,7 @@ import Banner from "../../components/common/Banner";
 import Preloader from "../../components/common/Preloader";
 import ScrollToTop from "../../components/common/ScrollToTop";
 import { useNavigate } from "react-router-dom";
+import { useBreadcrumbBoats } from "../../utils/useQuery"; 
 
 function Boats() {
   const [boats, setBoats] = useState([]);
@@ -24,8 +25,13 @@ function Boats() {
   const [totalBoats, setTotalBoats] = useState(0);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  // const [searchParams] = useSearchParams();
+  // console.log('searchParams', Object.fromEntries(searchParams));
   const boatsPerPage = 9;
   const navigate = useNavigate();
+
+
+  const breadcrumbItems = useBreadcrumbBoats();
 
   // lire les paramètres de l'url
   const buildQuery = (page = 0) => {
@@ -129,13 +135,7 @@ function Boats() {
           </div>
           <div className="w-full lg:w-9/12 flex justify-center lg:block p-4 lg:mt-24">
             <div className="">
-              <Breadcrumb
-                items={[
-                  { label: "Marseille", href: "/search?port=marseille" },
-                  { label: "Voiliers", href: "/search?type=voilier" },
-                  { label: "Luxe", href: "#" },
-                ]}
-              />
+              <Breadcrumb items={breadcrumbItems} />
               {/* Nombre de bateaux trouver dans un span ex. 1245 bateaux */}
               <div className="mt-4">
                 <span className="text-sm font-bold mt-20">

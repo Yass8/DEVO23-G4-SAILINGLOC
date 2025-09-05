@@ -15,6 +15,11 @@ export default (sequelize, DataTypes) => {
         foreignKey: 'user_id',
         as: 'reviews'
       });
+
+      User.hasMany(models.UserDocument, {
+        foreignKey: 'user_id',
+        as: 'userDocuments'
+      });
     }
     checkPassword(plainPassword) {
       return bcrypt.compareSync(plainPassword, this.password);

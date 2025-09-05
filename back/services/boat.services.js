@@ -19,6 +19,7 @@ const getBoatById = async (id) => {
 };
 
 const getBoatBySlug = async (slug) => {
+  console.log('[getBoatBySlug] slug reçu :', slug);
   return await Boat.findOne({
     where: { slug },
     include: [
@@ -29,9 +30,9 @@ const getBoatBySlug = async (slug) => {
       
       { model: Availability,
         attributes: ["id", "start_date", "end_date", "status"],
-      where: { 
-        end_date: { [Op.gte]: new Date() }
-      }}
+        where: { end_date: { [Op.gte]: new Date() } },
+        required: false
+    }
     ]
   });
 };
