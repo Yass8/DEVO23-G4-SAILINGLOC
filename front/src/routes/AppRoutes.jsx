@@ -1,6 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 
-
 // Pages publiques
 import Home from '../pages/public/Home.jsx';
 import About from '../pages/public/About.jsx';
@@ -13,6 +12,7 @@ import Register from '../pages/public/Register.jsx';
 import ForgotPasswordEmail from "../pages/public/ForgotPassword.jsx";
 import ResetPassword from "../pages/public/ResetPassword.jsx";
 import Page404 from '../pages/public/Page404.jsx';
+import Destinations from "../pages/public/Destinations.jsx";
 
 // Espace client
 import Customer from "../pages/client/Customer.jsx";
@@ -58,6 +58,7 @@ export default function AppRoutes() {
             <Route path="/" element={<Navigate to="/home" replace />} />
             <Route path="/home" element={<Home />} />
             <Route path="/about" element={<About />} />
+            <Route path="/destination" element={<Destinations />} />
             <Route path="/category" element={<Category />} />
             <Route path="/boats" element={<Boats />} />
             <Route path="/boat/:slug" element={<Details />} />
