@@ -6,3 +6,5 @@ export const createPayment = (data) => request('/payments/new', { method: 'POST'
 export const updatePayment = (id, data) => request(`/payments/${id}/edit`, { method: 'PUT', body: JSON.stringify(data) });
 export const deletePayment = (id) => request(`/payments/${id}/delete`, { method: 'DELETE' });
 export const fetchReservationPayments = (reservationId) => request(`/payments/reservation/${reservationId}`);
+export const createPaymentIntent = (amountCentimes) =>
+  request('/payments/create-intent', { method: 'POST', body: JSON.stringify({ amount: amountCentimes }) });

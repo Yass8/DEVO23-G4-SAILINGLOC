@@ -147,9 +147,9 @@ const deleteUserDocument = async (id) => {
     }
 };
 
-const getUserDocuments = async (userId) => {
+const getUserDocuments = async (user_id) => {
     return await UserDocument.findAll({
-        where: { user_id: userId }
+        where: { user_id: user_id }
     });
 };
 

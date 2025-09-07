@@ -30,6 +30,7 @@ const getCsrfToken = async () => {
 // );
 
 export const request = async (endpoint, options = {}) => {
+
   const token = getToken();
   const method = options.method || 'GET';
 
@@ -63,14 +64,14 @@ export const request = async (endpoint, options = {}) => {
 
   } catch (err) {
     if (err.response) {
-      // Erreur HTTP avec code
-      throw new Error(err.response.data?.message || `Erreur ${err.response.status}`);
+        // Erreur HTTP avec code - on propage toute la réponse
+        const error = new Error(err.response.data?.message || `Erreur ${err.response.status}`);
+        error.response = err.response; // On ajoute la réponse complète à l'erreur
+        throw error;
     } else if (err.request) {
-      // Pas de réponse du serveur
-      throw new Error("Impossible de contacter le serveur");
+        throw new Error("Impossible de contacter le serveur");
     } else {
-      // Autre erreur
-      throw new Error(err.message);
+        throw new Error(err.message);
     }
-  }
+}
 };

@@ -15,6 +15,6 @@ router.post("/new", isAuthenticated, validateCreateUserDocument, validate, userD
 router.get("/:id/show", isAuthenticated, validateUserDocumentId, validate, userDocumentController.show);
 router.put("/:id/edit", isAuthenticated, validateUserDocumentId, validateUpdateUserDocument, validate, userDocumentController.update);
 router.delete("/:id/delete", isAuthenticated, validateUserDocumentId, validate, userDocumentController.remove);
-router.get("/user/:userId", isAuthenticated, validateUserId, validate, userDocumentController.getUserDocuments);
+router.get("/user/:user_id", isAuthenticated, validateUserId, validate, userDocumentController.getUserDocuments);
 
 export default router;

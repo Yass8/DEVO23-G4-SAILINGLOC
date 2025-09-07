@@ -1,7 +1,16 @@
 import { useState } from 'react';
+import Select from 'react-select';
 
-export default function Step1Infos({ data, setData, errors }) {
+// Formater les options pour react-select
+const formatOptions = (items) => 
+  items.map(item => ({ value: item.id, label: item.name }));
+
+export default function Step1Infos({ data, setData, errors, boatTypes, ports }) {
+
   const [focusedFields, setFocusedFields] = useState({});
+
+  const BOAT_TYPES = boatTypes;
+  const PORTS = ports;
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -11,16 +20,55 @@ export default function Step1Infos({ data, setData, errors }) {
     });
   };
 
+  const handleSelectChange = (name, selectedOption) => {
+    setData({
+      ...data,
+      [name]: selectedOption ? selectedOption.value : ""
+    });
+  };
+
   const handleFocus = (field) => setFocusedFields({ ...focusedFields, [field]: true });
   const handleBlur = (field) => setFocusedFields({ ...focusedFields, [field]: false });
 
   const shouldFloat = (field) => focusedFields[field] || data[field];
+
+  // Trouver l'option sélectionnée pour chaque select
+  const selectedType = data.type_id ? { value: parseInt(data.type_id), label: BOAT_TYPES.find(type => type.id === parseInt(data.type_id))?.name } : null;
+  const selectedPort = data.port_id ? { value: parseInt(data.port_id), label: PORTS.find(port => port.id === parseInt(data.port_id))?.name } : null;
 
   return (
     <div className="space-y-4">
       <h2 className="text-xl font-semibold text-mocha">Informations générales</h2>
       
       <div className="grid md:grid-cols-2 gap-4">
+        {/* Numéro d'immatriculation */}
+        <div className="relative">
+          <label
+            htmlFor="registration_number"
+            className={`absolute left-3 transition-all duration-200 pointer-events-none ${
+              shouldFloat('registration_number') 
+                ? '-top-2 text-xs bg-white px-1 text-mocha'
+                : 'top-3 text-gray-500'
+            } ${errors.registration_number ? 'text-red-500' : ''}`}
+          >
+            Numéro d'immatriculation*
+          </label>
+          <input
+            id="registration_number"
+            name="registration_number"
+            className={`w-full p-3 border rounded focus:outline-none focus:ring-1 ${
+              errors.registration_number 
+                ? 'border-red-500 focus:ring-red-500' 
+                : 'border-gray-300 focus:ring-mocha'
+            }`}
+            value={data.registration_number}
+            onChange={handleChange}
+            onFocus={() => handleFocus('registration_number')}
+            onBlur={() => handleBlur('registration_number')}
+          />
+          {errors.registration_number && <p className="mt-1 text-sm text-red-500">{errors.registration_number}</p>}
+        </div>
+
         {/* Nom */}
         <div className="relative">
           <label
@@ -49,32 +97,81 @@ export default function Step1Infos({ data, setData, errors }) {
           {errors.name && <p className="mt-1 text-sm text-red-500">{errors.name}</p>}
         </div>
 
-        {/* Type */}
+        {/* Type de bateau avec react-select */}
         <div className="relative">
           <label
-            htmlFor="type"
-            className={`absolute left-3 transition-all duration-200 pointer-events-none ${
-              shouldFloat('type') 
-                ? '-top-2 text-xs bg-white px-1 text-mocha'
-                : 'top-3 text-gray-500'
-            } ${errors.type ? 'text-red-500' : ''}`}
-          >
-            Type*
-          </label>
-          <input
-            id="type"
-            name="type"
-            className={`w-full p-3 border rounded focus:outline-none focus:ring-1 ${
-              errors.type 
-                ? 'border-red-500 focus:ring-red-500' 
-                : 'border-gray-300 focus:ring-mocha'
+            className={`absolute left-1 -top-2 text-xs bg-white px-1 text-mocha pointer-events-none ${
+              errors.type_id ? 'text-red-500' : ''
             }`}
-            value={data.type}
-            onChange={handleChange}
-            onFocus={() => handleFocus('type')}
-            onBlur={() => handleBlur('type')}
+          >
+            Type de bateau*
+          </label>
+          <Select
+            options={formatOptions(BOAT_TYPES)}
+            value={selectedType}
+            onChange={(selected) => handleSelectChange('type_id', selected)}
+            placeholder="Sélectionnez un type de bateau"
+            className={`react-select-container ${
+              errors.type_id ? 'react-select-error' : ''
+            }`}
+            classNamePrefix="react-select"
+            onFocus={() => handleFocus('type_id')}
+            onBlur={() => handleBlur('type_id')}
+            styles={{
+              control: (base, state) => ({
+                ...base,
+                borderColor: errors.type_id 
+                  ? '#ef4444' 
+                  : state.isFocused ? '#8B7355' : '#d1d5db',
+                boxShadow: state.isFocused && !errors.type_id 
+                  ? '0 0 0 1px #8B7355' 
+                  : 'none',
+                minHeight: '48px',
+                '&:hover': {
+                  borderColor: errors.type_id ? '#ef4444' : '#8B7355'
+                }
+              }),
+              placeholder: (base) => ({
+                ...base,
+                color: '#9ca3af'
+              })
+            }}
           />
-          {errors.type && <p className="mt-1 text-sm text-red-500">{errors.type}</p>}
+          {errors.type_id && <p className="mt-1 text-sm text-red-500">{errors.type_id}</p>}
+        </div>
+
+        {/* Port d'attache avec react-select */}
+        <div className="relative">
+          <label
+            className="absolute left-1 -top-2 text-xs bg-white px-1 text-mocha pointer-events-none"
+          >
+            Port d'attache
+          </label>
+          <Select
+            options={formatOptions(PORTS)}
+            value={selectedPort}
+            onChange={(selected) => handleSelectChange('port_id', selected)}
+            placeholder="Sélectionnez un port d'attache"
+            className="react-select-container"
+            classNamePrefix="react-select"
+            onFocus={() => handleFocus('port_id')}
+            onBlur={() => handleBlur('port_id')}
+            styles={{
+              control: (base, state) => ({
+                ...base,
+                borderColor: state.isFocused ? '#8B7355' : '#d1d5db',
+                boxShadow: state.isFocused ? '0 0 0 1px #8B7355' : 'none',
+                minHeight: '48px',
+                '&:hover': {
+                  borderColor: '#8B7355'
+                }
+              }),
+              placeholder: (base) => ({
+                ...base,
+                color: '#9ca3af'
+              })
+            }}
+          />
         </div>
 
         {/* Marque */}
@@ -162,6 +259,8 @@ export default function Step1Infos({ data, setData, errors }) {
             id="daily_price"
             name="daily_price"
             type="number"
+            step="0.01"
+            min="0"
             className={`w-full p-3 border rounded focus:outline-none focus:ring-1 ${
               errors.daily_price 
                 ? 'border-red-500 focus:ring-red-500' 
@@ -191,6 +290,7 @@ export default function Step1Infos({ data, setData, errors }) {
             id="max_passengers"
             name="max_passengers"
             type="number"
+            min="1"
             className={`w-full p-3 border rounded focus:outline-none focus:ring-1 ${
               errors.max_passengers 
                 ? 'border-red-500 focus:ring-red-500' 
@@ -220,6 +320,8 @@ export default function Step1Infos({ data, setData, errors }) {
             id="length"
             name="length"
             type="number"
+            step="0.01"
+            min="0"
             className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-mocha"
             value={data.length}
             onChange={handleChange}
@@ -228,36 +330,12 @@ export default function Step1Infos({ data, setData, errors }) {
           />
         </div>
 
-        {/* Largeur */}
-        <div className="relative">
-          <label
-            htmlFor="width"
-            className={`absolute left-3 transition-all duration-200 pointer-events-none ${
-              shouldFloat('width') 
-                ? '-top-2 text-xs bg-white px-1 text-mocha'
-                : 'top-3 text-gray-500'
-            }`}
-          >
-            Largeur (m)
-          </label>
-          <input
-            id="width"
-            name="width"
-            type="number"
-            className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-mocha"
-            value={data.width}
-            onChange={handleChange}
-            onFocus={() => handleFocus('width')}
-            onBlur={() => handleBlur('width')}
-          />
-        </div>
-
         {/* Tirant d'eau */}
         <div className="relative">
           <label
-            htmlFor="draft"
+            htmlFor="water_draft"
             className={`absolute left-3 transition-all duration-200 pointer-events-none ${
-              shouldFloat('draft') 
+              shouldFloat('water_draft') 
                 ? '-top-2 text-xs bg-white px-1 text-mocha'
                 : 'top-3 text-gray-500'
             }`}
@@ -265,38 +343,16 @@ export default function Step1Infos({ data, setData, errors }) {
             Tirant d'eau (m)
           </label>
           <input
-            id="draft"
-            name="draft"
+            id="water_draft"
+            name="water_draft"
             type="number"
+            step="0.01"
+            min="0"
             className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-mocha"
-            value={data.draft}
+            value={data.water_draft}
             onChange={handleChange}
-            onFocus={() => handleFocus('draft')}
-            onBlur={() => handleBlur('draft')}
-          />
-        </div>
-
-        {/* Année */}
-        <div className="relative">
-          <label
-            htmlFor="year"
-            className={`absolute left-3 transition-all duration-200 pointer-events-none ${
-              shouldFloat('year') 
-                ? '-top-2 text-xs bg-white px-1 text-mocha'
-                : 'top-3 text-gray-500'
-            }`}
-          >
-            Année
-          </label>
-          <input
-            id="year"
-            name="year"
-            type="number"
-            className="w-full p-3 border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-mocha"
-            value={data.year}
-            onChange={handleChange}
-            onFocus={() => handleFocus('year')}
-            onBlur={() => handleBlur('year')}
+            onFocus={() => handleFocus('water_draft')}
+            onBlur={() => handleBlur('water_draft')}
           />
         </div>
       </div>

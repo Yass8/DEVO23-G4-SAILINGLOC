@@ -1,8 +1,23 @@
+// user.validator.js
 import { body, param } from 'express-validator';
+
+
+const passwordStrength = (minLength = 8) =>
+  body('password')
+    .isLength({ min: minLength })
+    .withMessage(`Le mot de passe doit faire au moins ${minLength} caractères.`)
+    .matches(/[A-Z]/)
+    .withMessage('Le mot de passe doit contenir au moins une majuscule.')
+    .matches(/[a-z]/)
+    .withMessage('Le mot de passe doit contenir au moins une minuscule.')
+    .matches(/\d/)
+    .withMessage('Le mot de passe doit contenir au moins un chiffre.')
+    .matches(/[^A-Za-z0-9]/)
+    .withMessage('Le mot de passe doit contenir au moins un caractère spécial.');
 
 export const validateUserId = [
   param('id')
-    .isInt().withMessage('L\'ID utilisateur doit être un entier.')
+    .isInt().withMessage("L'ID utilisateur doit être un entier.")
 ];
 
 export const validateCreateUser = [
@@ -17,8 +32,7 @@ export const validateCreateUser = [
   body('email')
     .isEmail().withMessage('Veuillez fournir une adresse email valide.'),
 
-  body('password')
-    .isLength({ min: 8 }).withMessage('Le mot de passe doit faire au moins 8 caractères.'),
+  passwordStrength(6),
 
   body('role')
     .isArray().withMessage('Le rôle doit être un tableau.'),
@@ -37,7 +51,7 @@ export const validateCreateUser = [
 
   body('address')
     .optional()
-    .isString().withMessage('L\'adresse doit être une chaîne de caractères.'),
+    .isString().withMessage("L'adresse doit être une chaîne de caractères.")
 ];
 
 export const validateUpdateUser = [
@@ -55,9 +69,7 @@ export const validateUpdateUser = [
     .optional()
     .isEmail().withMessage('Veuillez fournir une adresse email valide.'),
 
-  body('password')
-    .optional()
-    .isLength({ min: 8 }).withMessage('Le mot de passe doit faire au moins 8 caractères.'),
+  passwordStrength(6).optional(),
 
   body('role')
     .optional()
@@ -67,9 +79,9 @@ export const validateUpdateUser = [
     .optional()
     .isString().withMessage('Le téléphone doit être une chaîne de caractères.'),
 
-  body('payment_method')
-    .optional()
-    .isString().withMessage('La méthode de paiement doit être une chaîne de caractères.'),
+  // body('payment_method')
+  //   .optional()
+  //   .isString().withMessage('La méthode de paiement doit être une chaîne de caractères.'),
 
   body('photo')
     .optional()
@@ -77,5 +89,5 @@ export const validateUpdateUser = [
 
   body('address')
     .optional()
-    .isString().withMessage('L\'adresse doit être une chaîne de caractères.'),
+    .isString().withMessage("L'adresse doit être une chaîne de caractères.")
 ];

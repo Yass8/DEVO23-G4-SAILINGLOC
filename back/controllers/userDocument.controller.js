@@ -72,7 +72,7 @@ const remove = async (req, res) => {
 
 const getUserDocuments = async (req, res) => {
   try {
-    const result = await userDocumentService.getUserDocuments(req.params.id);
+    const result = await userDocumentService.getUserDocuments(req.params.user_id);
     res.json(result);
   } catch (error) {
     res.status(500).json({ error: error.message });

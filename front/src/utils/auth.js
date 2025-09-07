@@ -1,18 +1,9 @@
 // Vérifie si l'utilisateur a un rôle spécifique
 export const hasRole = (role) => {
-  const storedRoles = localStorage.getItem('userRoles');
-  if (!storedRoles) return false;
-  
-  try {
-    const roles = JSON.parse(storedRoles);
-    const userRoles = Array.isArray(roles) ? roles : [roles];
-    return userRoles.includes(role);
-  } catch (error) {
-    console.error('Error parsing user roles:', error);
-    return false;
-  }
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const roles = user.roles || [];
+  return roles.includes(role);
 };
-
 
 export const isAdmin = () => hasRole('admin');
 export const isOwner = () => hasRole('owner');
@@ -20,16 +11,8 @@ export const isTenant = () => hasRole('tenant');
 
 // Récupère tous les rôles de l'utilisateur
 export const getUserRoles = () => {
-  const storedRoles = localStorage.getItem('userRoles');
-  if (!storedRoles) return [];
-  
-  try {
-    const roles = JSON.parse(storedRoles);
-    return Array.isArray(roles) ? roles : [roles];
-  } catch (error) {
-    console.error('Error parsing user roles:', error);
-    return [];
-  }
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  return user.roles || [];
 };
 
 

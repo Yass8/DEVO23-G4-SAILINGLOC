@@ -50,6 +50,8 @@ import ContractsAdmin from "../pages/admin/Contracts.jsx";
 import AdminLayout from "../pages/admin/AdminLayout.jsx";
 import LoginAdmin from "../pages/admin/LoginAdmin.jsx";
 import Booking from "../pages/public/Booking.jsx";
+import ReservationOwnerDetail from "../pages/client/proprietaire/ReservationOwnerDetail.jsx";
+import TenantReservationDetail from "../components/client/locataire/TenantReservationDetail.jsx";
 
 export default function AppRoutes() {
     return (
@@ -85,11 +87,14 @@ export default function AppRoutes() {
                 <Route path="boats/:id/edit" element={<EditBoat />} />
                 <Route path="boats/:id/availabilities" element={<AvailabilitiesManagement />} />
                 <Route path="boats/:id/revenus-stats" element={<RevenusStats />} />
-
+                <Route path="reservations/:reference" element={<ReservationOwnerDetail />} />
+                
                 {/* Locataire routes */}
                 <Route path="reservations" element={<MyReservations />} />
-                <Route path="reservations/:id/details" element={<ReservationDetails />} />
+                <Route path="reservations/:id/detail" element={<ReservationDetails />} />
                 <Route path="reservations/:id/chat" element={<ReservationChat />} />
+                <Route path="reservations/:reference/details" element={<TenantReservationDetail />} />
+
             </Route>
             <Route path="/admin/sl/login" element={<LoginAdmin/>} />
 

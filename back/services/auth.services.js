@@ -77,13 +77,13 @@ const getCurrentUser = async (token) => {
   }
 };
 
-const changePassword = async ({ email, oldPassword, newPassword }) => {
+const changePassword = async ({ email, oldPassword, password }) => {
   const user = await User.findOne({ where: { email } });
   if (!user || !user.checkPassword(oldPassword)) {
-    throw new Error("Email ou mot de passe incorrect.");
+    throw new Error("Mot de passe actuel incorrect.");
   }
 
-  user.password = newPassword;
+  user.password = password;
   await user.save();
   return { message: "Mot de passe modifié avec succès." };
 };

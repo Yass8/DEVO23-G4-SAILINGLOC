@@ -1,6 +1,7 @@
 import { Op } from "sequelize";
 import db from "../models/index.js";
 const { Boat, User, Port, BoatType, BoatPhoto, BoatEquipment, Availability, Reservation, Review } = db;
+import uploadFile from "../utils/uploadFile.js";
 
 const getAllBoats = async () => {
   return await Boat.findAll({
@@ -8,8 +9,49 @@ const getAllBoats = async () => {
   });
 };
 
-const createBoat = async (data) => {
-  return await Boat.create(data);
+const createBoat = async (data, files) => {
+  try {
+    // ✅ 1. Créer le bateau
+    const bateau = await Boat.create(data);
+
+    console.log("✅ Bateau créé, ID :", bateau.id);
+
+    // ✅ 2. Sauvegarder les fichiers
+    const insurancePath = await uploadFile.saveFile(
+      "boat",
+      files.insurance_url.data,
+      files.insurance_url.name,
+      `boats/${bateau.id}/insurances`,
+      [".jpg", ".jpeg", ".png", ".pdf"],
+      5
+    );
+
+    console.log("✅ Assurance sauvegardée :", insurancePath);
+
+    const registrationPath = await uploadFile.saveFile(
+      "boat",
+      files.registration_url.data,
+      files.registration_url.name,
+      `boats/${bateau.id}/registration`,
+      [".jpg", ".jpeg", ".png", ".pdf"],
+      5
+    );
+
+    console.log("✅ Immatriculation sauvegardée :", registrationPath);
+
+    // ✅ 3. Mettre à jour le bateau avec les chemins
+    await bateau.update({
+      insurance_url: insurancePath,
+      registration_url: registrationPath,
+    });
+
+    console.log("✅ Bateau mis à jour avec les chemins");
+
+    return bateau;
+  } catch (error) {
+    console.error("❌ ERREUR DANS createBoat :", error);
+    throw error; // ✅ Re-lance l’erreur pour le controller
+  }
 };
 
 const getBoatById = async (id) => {
@@ -19,7 +61,6 @@ const getBoatById = async (id) => {
 };
 
 const getBoatBySlug = async (slug) => {
-  console.log('[getBoatBySlug] slug reçu :', slug);
   return await Boat.findOne({
     where: { slug },
     include: [

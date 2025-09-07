@@ -20,6 +20,19 @@ const getReservationById = async (id) => {
     });
 };
 
+const getReservationByReference = async (reference) => {
+  return await Reservation.findOne({
+    where: { reference },
+    include: [
+      {
+        model: Boat,
+        include: [User]
+      },
+      User
+    ],
+  });
+};
+
 const updateReservation = async (id, data) => {
     const reservation = await Reservation.findByPk(id);
     if (!reservation) return null;
@@ -43,7 +56,7 @@ const getUserBookings = async (userId) => {
 const getBoatReservations = async (boatId) => {
     return await Reservation.findAll({
         where: { boat_id: boatId },
-        include: User
+        include: [User, Boat]
     });
 };
 
@@ -54,5 +67,6 @@ export default {
     updateReservation,
     deleteReservation,
     getUserBookings,
-    getBoatReservations
+    getBoatReservations,
+    getReservationByReference
 };
