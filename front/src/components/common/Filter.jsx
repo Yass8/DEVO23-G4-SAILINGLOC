@@ -20,6 +20,17 @@ function Filter(props){
   const [showOtherFilters, setShowOtherFilters] = useState(false);
   const [btnShowOtherFilters, setBtnShowOtherFilters] = useState("Plus de filtres");
 
+  // Données mockées pour les ports
+  const mockPorts = [
+    { value: "port-nice", label: "Port de Nice" },
+    { value: "port-cannes", label: "Port de Cannes" },
+    { value: "port-saint-tropez", label: "Port de Saint-Tropez" },
+    { value: "port-monaco", label: "Port de Monaco" },
+    { value: "port-antibes", label: "Port d'Antibes" },
+    { value: "port-marseille", label: "Port de Marseille" },
+    { value: "port-toulon", label: "Port de Toulon" }
+  ];
+
   useEffect(() => {
     fetchPorts().then((data) => {
       const formattedPorts = data.map(port => ({
