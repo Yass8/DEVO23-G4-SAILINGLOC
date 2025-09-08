@@ -16,5 +16,6 @@ router.get("/:id/show", isAuthenticated, validatePaymentId, validate, paymentCon
 router.put("/:id/edit", isAuthenticated, validatePaymentId, validateUpdatePayment, validate, paymentController.update);
 router.delete("/:id/delete", isAuthenticated, authorizeUser(['admin']), validatePaymentId, validate, paymentController.remove);
 router.get("/reservation/:reservationId", isAuthenticated, validateReservationId, validate, paymentController.getReservationPayments);
+router.post("/create-intent", paymentController.createPaymentIntent);
 
 export default router;

@@ -14,9 +14,10 @@ const router = express.Router();
 router.get("/", isAuthenticated, reservationController.index);
 router.post("/new", isAuthenticated, validateCreateReservation, validate, reservationController.create);
 router.get("/:id/show", isAuthenticated, validateReservationId, validate, reservationController.show);
+router.get("/:reference", isAuthenticated, reservationController.showByReference);
 router.put("/:id/edit", isAuthenticated, validateReservationId, validateUpdateReservation, validate, reservationController.update);
 router.delete("/:id/delete", isAuthenticated, validateReservationId, validate, reservationController.remove);
 router.get("/user/:userId", isAuthenticated, validateUserId, validate, reservationController.getUserBookings);
-router.get("/boat/:boatId", isAuthenticated, validateBoatId, validate, reservationController.getBoatReservations);
+router.get("/boat/:boat_id", isAuthenticated, validateBoatId, validate, reservationController.getBoatReservations);
 
 export default router;

@@ -16,5 +16,5 @@ router.get("/:id/show", validateBoatEquipmentId, validate, boatEquipmentControll
 router.put("/:id/edit", isAuthenticated, authorizeUser(['admin', 'owner']), validateBoatEquipmentId, validateUpdateBoatEquipment, validate, boatEquipmentController.update);
 router.delete("/:id/delete", isAuthenticated, authorizeUser(['admin', 'owner']), validateBoatEquipmentId, validate, boatEquipmentController.remove);
 router.get("/boat/:boatId", validateBoatId, validate, boatEquipmentController.getBoatEquipments);
-
+router.post("/boat/:boatId/sync", isAuthenticated, authorizeUser(['admin', 'owner']), boatEquipmentController.syncEquipments);
 export default router;

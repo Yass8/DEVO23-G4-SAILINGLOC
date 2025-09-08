@@ -1,5 +1,6 @@
 import db from "../models/index.js";
 const { Reservation, User, Boat, Payment, Contract } = db;
+import uploadFile from "../utils/uploadFile.js";
 
 const getAllReservations = async () => {
     return await Reservation.findAll({
@@ -8,13 +9,28 @@ const getAllReservations = async () => {
 };
 
 const createReservation = async (data) => {
-    return await Reservation.create(data);
+    const reference = uploadFile.uniqid('RES')
+    const reservationData = {...data, reference };
+    return await Reservation.create(reservationData);
 };
 
 const getReservationById = async (id) => {
     return await Reservation.findByPk(id, {
         include: [User, Boat, Payment, Contract]
     });
+};
+
+const getReservationByReference = async (reference) => {
+  return await Reservation.findOne({
+    where: { reference },
+    include: [
+      {
+        model: Boat,
+        include: [User]
+      },
+      User
+    ],
+  });
 };
 
 const updateReservation = async (id, data) => {
@@ -40,7 +56,7 @@ const getUserBookings = async (userId) => {
 const getBoatReservations = async (boatId) => {
     return await Reservation.findAll({
         where: { boat_id: boatId },
-        include: User
+        include: [User, Boat]
     });
 };
 
@@ -51,5 +67,6 @@ export default {
     updateReservation,
     deleteReservation,
     getUserBookings,
-    getBoatReservations
+    getBoatReservations,
+    getReservationByReference
 };

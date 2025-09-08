@@ -214,8 +214,8 @@ const csrfProtection = csurf({ cookie: true });
  *         description: Erreur de validation
  */
 
-router.post("/login", csrfProtection, validateLogin, validate, authController.login);
-router.post("/register", csrfProtection, validateRegister, validate, authController.register);
+router.post("/login",  validateLogin, validate, authController.login);
+router.post("/register", validateRegister, validate, authController.register);
 router.get("/me", authController.getCurrentUser);
 router.get("/confirmation/:token", authController.confirmEmail);
 router.post("/change-password", csrfProtection,isAuthenticated, validateChangePassword, validate, authController.changePassword);

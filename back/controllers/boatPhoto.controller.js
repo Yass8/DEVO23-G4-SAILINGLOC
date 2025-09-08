@@ -1,4 +1,4 @@
-import boatPhotoService from '../services/boatPhoto.services.js';
+import boatPhotoService from "../services/boatPhoto.services.js";
 
 const index = async (req, res) => {
   try {
@@ -28,7 +28,6 @@ const create = async (req, res) => {
   }
 };
 
-
 const show = async (req, res) => {
   try {
     const result = await boatPhotoService.getBoatPhotoById(req.params.id);
@@ -40,7 +39,22 @@ const show = async (req, res) => {
 
 const update = async (req, res) => {
   try {
-    const result = await boatPhotoService.updateBoatPhoto(req.params.id, req.body);
+    const { id } = req.params;
+    const data = req.body;
+
+    // Récupérer le fichier s'il est fourni
+    const file = req.files?.photo ? req.files.photo : null;
+
+    const result = await boatPhotoService.updateBoatPhoto(
+      Number(id),
+      data,
+      file
+    );
+
+    if (!result) {
+      return res.status(404).json({ error: "Photo non trouvée" });
+    }
+
     res.json(result);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -65,7 +79,47 @@ const getBoatPhotos = async (req, res) => {
   }
 };
 
+const setMainPhoto = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const result = await boatPhotoService.updateBoatPhoto(Number(id), {
+      is_main: true,
+    });
+
+    if (!result) {
+      return res.status(404).json({ error: "Photo non trouvée" });
+    }
+
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const syncPhotos = async (req, res) => {
+  try {
+    const { boatId } = req.params;
+    const { keptIds, mainId } = req.body;
+
+    const newFiles = req.files?.files ? (Array.isArray(req.files.files) ? req.files.files : [req.files.files]) : [];
+
+    const keptIdsArray = JSON.parse(keptIds || "[]");
+
+    await boatPhotoService.syncBoatPhotos(boatId, keptIdsArray, newFiles, mainId);
+    res.status(200).json({ message: "Photos synchronisées" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 export default {
-  index, create, show, update, remove,
-  getBoatPhotos
+  index,
+  create,
+  show,
+  update,
+  remove,
+  getBoatPhotos,
+  setMainPhoto,
+  syncPhotos,
 };

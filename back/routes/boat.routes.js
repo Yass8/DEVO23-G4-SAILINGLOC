@@ -11,7 +11,7 @@ import { isAuthenticated, authorizeUser } from "../middlewares/auth/authorize.js
 const router = express.Router();
 
 router.get("/", boatController.index);
-router.post("/new", validateCreateBoat, validate, boatController.create);
+router.post("/new", boatController.create);
 router.get("/:id/show", validateBoatId, validate, boatController.show);
 router.get("/:slug/details", validateBoatSlug, validate, boatController.showBySlug);
 router.put("/:id/edit", isAuthenticated, authorizeUser(['owner', 'admin']), validateBoatId, validateUpdateBoat, validate, boatController.update);

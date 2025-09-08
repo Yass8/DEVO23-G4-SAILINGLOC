@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import logo from "/images/logo.png";
 import { login } from "../../services/authService";
 import FormError from "../../components/common/FormError";
@@ -7,19 +7,20 @@ import PasswordInput from "../../components/common/PasswordInput";
 
 const Login = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-    rememberMe: false
+    rememberMe: false,
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: type === "checkbox" ? checked : value
+      [name]: type === "checkbox" ? checked : value,
     }));
     if (error) setError("");
   };
@@ -32,14 +33,14 @@ const Login = () => {
     try {
       const data = await login({
         email: formData.email,
-        password: formData.password
+        password: formData.password,
       });
 
       // Gestion du token et de l'utilisateur
       if (data?.token || data?.accessToken) {
         localStorage.setItem("token", data.token || data.accessToken);
         localStorage.setItem("user", JSON.stringify(data.user || data));
-        
+
         // Stockage du "remember me" si nécessaire
         if (formData.rememberMe) {
           localStorage.setItem("rememberMe", "true");
@@ -47,13 +48,14 @@ const Login = () => {
           sessionStorage.setItem("token", data.token || data.accessToken);
         }
 
-        navigate("/home");
+        const from = location.state?.from || "/";
+        navigate(from, { replace: true });
       } else {
         setError(data.message || "Erreur lors de la connexion");
       }
     } catch (err) {
       console.error("Login error:", err);
-      
+
       // Gestion détaillée des erreurs
       if (err.response) {
         if (err.response.status === 401) {
@@ -76,10 +78,17 @@ const Login = () => {
   return (
     <div className="min-h-screen bg-[#F5F1EB] flex items-center justify-center py-12 px-4">
       <div className="max-w-md w-full space-y-8">
+        {location.state?.message && (
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+            <p className="text-slate-blue">{location.state.message}</p>
+          </div>
+        )}
         <div className="text-center">
           <img src={logo} alt="SailingLoc" className="mx-auto h-16 mb-6" />
           <h2 className="text-3xl font-bold">Connexion</h2>
-          <p className="text-gray-600">Connectez-vous à votre compte SailingLoc</p>
+          <p className="text-gray-600">
+            Connectez-vous à votre compte SailingLoc
+          </p>
         </div>
 
         <FormError message={error} />
@@ -87,7 +96,10 @@ const Login = () => {
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Adresse email
               </label>
               <input
@@ -126,7 +138,10 @@ const Login = () => {
                 disabled={isLoading}
                 className="h-4 w-4 text-[#AD7C59] focus:ring-[#AD7C59] border-gray-300 rounded"
               />
-              <label htmlFor="rememberMe" className="ml-2 block text-sm text-gray-700">
+              <label
+                htmlFor="rememberMe"
+                className="ml-2 block text-sm text-gray-700"
+              >
                 Se souvenir de moi
               </label>
             </div>

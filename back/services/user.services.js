@@ -1,105 +1,144 @@
 import db from "../models/index.js";
-const { User, Boat, Reservation, Message, Review, UserDocument } = db;
+const { User, Boat, Reservation, Message, Review, UserDocument, Port, BoatPhoto, BoatType } = db;
 import uploadFile from "../utils/uploadFile.js";
 import fs from "fs";
 import path from "path";
 
 const getAllUsers = async () => {
-    return await User.findAll();
+  return await User.findAll();
 };
 
 const createUser = async (data) => {
-    return await User.create(data);
+  return await User.create(data);
 };
 
 const showUser = async (id) => {
-    return await User.findByPk(id);
+  return await User.findByPk(id);
 };
 
 const updateUser = async (id, data) => {
-    const user = await User.findByPk(id);
-    if (!user) return null;
-    return await user.update(data);
+  const user = await User.findByPk(id);
+  if (!user) return null;
+  return await user.update(data);
 };
+// user.services.js - MODIFIEZ updateUser avec des logs
+// const updateUser = async (id, data) => {
+//   console.log('Début updateUser - ID:', id, 'Data:', data);
 
+//   const user = await User.findByPk(id);
+//   console.log('User trouvé:', user ? user.id : 'null');
+
+//   if (!user) return null;
+
+//   console.log('Avant update - données:', data);
+//   const updatedUser = await user.update(data);
+//   console.log('Après update - succès');
+
+//   return updatedUser;
+// };
 const removeUser = async (id) => {
-    const user = await User.findByPk(id);
-    if (!user) return null;
-    await user.destroy();
-    return true;
+  const user = await User.findByPk(id);
+  if (!user) return null;
+  await user.destroy();
+  return true;
 };
 
 const getUserBoats = async (userId) => {
-    const user = await User.findByPk(userId, {
-        include: Boat
-    });
-    return user ? user.Boats : null;
+  const user = await User.findByPk(userId, {
+    include: [{
+      model: Boat,
+      as: 'boats',
+      include : [
+        { model: Port, attributes: ["name"] },
+        { model: BoatPhoto, attributes: ["photo_url", "is_main"] },
+        { model: BoatType, attributes: ["name"] }
+      ] 
+    }]
+  });
+  return user ? user.boats : null; 
 };
 
 const getUserReservations = async (userId) => {
+  try {
     const user = await User.findByPk(userId, {
-        include: Reservation
+      include: [{
+        model: Reservation,
+        as: "reservations",
+        include: [{
+          model: Boat,
+          include: [
+            { model: Port, attributes: ["name"] },
+            { model: BoatPhoto, attributes: ["photo_url", "is_main"] }
+          ]
+        }]
+      }],
     });
-    return user ? user.Reservations : null;
+
+    return user ? user.reservations : [];
+  } catch (error) {
+    console.error('Error in getUserReservations:', error);
+    throw error;
+  }
 };
 
 const getUserMessages = async (userId) => {
-    const user = await User.findByPk(userId, {
-        include: Message
-    });
-    return user ? user.Messages : null;
+  const user = await User.findByPk(userId, {
+    include: Message,
+  });
+  return user ? user.Messages : null;
 };
 
 const getUserReviews = async (userId) => {
-    const user = await User.findByPk(userId, {
-        include: Review
-    });
-    return user ? user.Reviews : null;
+  const user = await User.findByPk(userId, {
+    include: Review,
+  });
+  return user ? user.Reviews : null;
 };
 
 const getUserDocuments = async (userId) => {
-    const user = await User.findByPk(userId, {
-        include: UserDocument
-    });
-    return user ? user.UserDocuments : null;
+  const user = await User.findByPk(userId, {
+    include: {
+      model: UserDocument,
+      as: "userDocuments",
+    },
+  });
+  return user ? user.userDocuments : null;
 };
 
 const uploadUserPhoto = async (userId, file) => {
+  const user = await User.findByPk(userId);
+  if (!user) throw new Error("Utilisateur non trouvé");
 
-    const user = await User.findByPk(userId);
-    if (!user) throw new Error("Utilisateur non trouvé");
+  if (user.photo && !user.photo.startsWith("avatar")) {
+    const oldFilePath = path.join(process.cwd(), user.photo);
 
-    if(user.photo && !user.photo.startsWith("avatar")) {
-        const oldFilePath = path.join(process.cwd(), user.photo);
-       
-        if (fs.existsSync(oldFilePath)) fs.unlinkSync(oldFilePath);
-    }
+    if (fs.existsSync(oldFilePath)) fs.unlinkSync(oldFilePath);
+  }
 
-    const filePath = await uploadFile.saveFile(
-        'user',
-        file.data,
-        file.name,
-        `users/${userId}/profile`,
-        ['.jpg', '.jpeg', '.png',],
-        2
-    );
+  const filePath = await uploadFile.saveFile(
+    "user",
+    file.data,
+    file.name,
+    `users/${userId}/profile`,
+    [".jpg", ".jpeg", ".png"],
+    2
+  );
 
-    await user.update({ photo: filePath });
+  await user.update({ photo: filePath });
 
-    return user;
-
-}
+  return user;
+};
 
 export default {
-    getAllUsers,
-    createUser,
-    showUser,
-    updateUser,
-    removeUser,
-    getUserBoats,
-    getUserReservations,
-    getUserMessages,
-    getUserReviews,
-    getUserDocuments,
-    uploadUserPhoto
+  getAllUsers,
+  createUser,
+  showUser,
+  updateUser,
+  removeUser,
+  getUserBoats,
+  getUserReservations,
+  getUserMessages,
+  getUserReviews,
+  getUserDocuments,
+  uploadUserPhoto,
 };
