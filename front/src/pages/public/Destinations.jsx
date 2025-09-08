@@ -31,14 +31,14 @@ const Destinations = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 max-w-6xl mx-auto">
           {ports.map((port) => (
-            <div key={port.id} className="flex flex-col space-y-4">
+            <div key={port.id} className="flex flex-col space-y-3">
               <Link to={`/boats?port=${port.id}`}>
-                <div className="w-full h-[20rem] bg-gradient-to-br from-blue-400 to-blue-600 rounded-[10px] hover:opacity-90 transition flex items-center justify-center shadow-lg">
+                <div className="w-full h-[12rem] bg-slate-blue rounded-[10px] hover:opacity-90 transition flex items-center justify-center shadow-lg">
                   <FontAwesomeIcon 
                     icon={faMapMarkerAlt} 
-                    className="text-white text-8xl"
+                    className="text-white text-4xl"
                   />
                 </div>
               </Link>
