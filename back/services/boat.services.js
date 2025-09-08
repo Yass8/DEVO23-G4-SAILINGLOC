@@ -11,12 +11,9 @@ const getAllBoats = async () => {
 
 const createBoat = async (data, files) => {
   try {
-    // ✅ 1. Créer le bateau
+    
     const bateau = await Boat.create(data);
 
-    console.log("✅ Bateau créé, ID :", bateau.id);
-
-    // ✅ 2. Sauvegarder les fichiers
     const insurancePath = await uploadFile.saveFile(
       "boat",
       files.insurance_url.data,
@@ -25,8 +22,6 @@ const createBoat = async (data, files) => {
       [".jpg", ".jpeg", ".png", ".pdf"],
       5
     );
-
-    console.log("✅ Assurance sauvegardée :", insurancePath);
 
     const registrationPath = await uploadFile.saveFile(
       "boat",
@@ -37,20 +32,15 @@ const createBoat = async (data, files) => {
       5
     );
 
-    console.log("✅ Immatriculation sauvegardée :", registrationPath);
-
-    // ✅ 3. Mettre à jour le bateau avec les chemins
     await bateau.update({
       insurance_url: insurancePath,
       registration_url: registrationPath,
     });
 
-    console.log("✅ Bateau mis à jour avec les chemins");
-
     return bateau;
   } catch (error) {
-    console.error("❌ ERREUR DANS createBoat :", error);
-    throw error; // ✅ Re-lance l’erreur pour le controller
+    console.error("ERREUR DANS createBoat :", error);
+    throw error;
   }
 };
 

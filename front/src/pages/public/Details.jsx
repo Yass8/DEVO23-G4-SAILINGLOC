@@ -38,7 +38,7 @@ function Details() {
       });
   }, [slug]);
 
-  if (loading) return <p className="text-center mt-10">Chargement…</p>;
+  if (loading) return <Preloader />;
   if (!boat) return <p className="text-center mt-10">Bateau introuvable.</p>;
 
   return (

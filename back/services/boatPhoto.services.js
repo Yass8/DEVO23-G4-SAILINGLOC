@@ -1,21 +1,25 @@
 import db from "../models/index.js";
-const { BoatPhoto, Boat } = db;
+import { Op } from "sequelize";
 import uploadFile from "../utils/uploadFile.js";
 import fs from "fs";
 import path from "path";
 
+const { BoatPhoto, Boat } = db;
+
 const getAllBoatPhotos = async () => {
   return await BoatPhoto.findAll({
-    include: Boat
+    include: Boat,
   });
 };
 
 const createBoatPhotos = async (boatId, files, mainIndex = 0) => {
-  if (!files?.length) throw new Error('Aucune photo fournie');
+  if (!files?.length) throw new Error("Aucune photo fournie");
 
   if (mainIndex < 0 || mainIndex >= files.length) {
     throw new Error(
-      `mainIndex (${mainIndex}) invalide : doit être entre 0 et ${files.length - 1}`
+      `mainIndex (${mainIndex}) invalide : doit être entre 0 et ${
+        files.length - 1
+      }`
     );
   }
 
@@ -25,11 +29,11 @@ const createBoatPhotos = async (boatId, files, mainIndex = 0) => {
     const photos = await Promise.all(
       files.map(async (file, idx) => {
         const filePath = await uploadFile.saveFile(
-          'boat',
+          "boat",
           file.data,
           file.name,
           `boats/${boatId}/photos`,
-          ['.jpg', '.jpeg', '.png', '.gif'],
+          [".jpg", ".jpeg", ".png", ".gif"],
           2
         );
 
@@ -54,13 +58,13 @@ const createBoatPhotos = async (boatId, files, mainIndex = 0) => {
 
 const getBoatPhotoById = async (id) => {
   return await BoatPhoto.findByPk(id, {
-    include: Boat
+    include: Boat,
   });
 };
 
 const updateBoatPhoto = async (id, data, file) => {
   const t = await db.sequelize.transaction();
-  
+
   try {
     const photo = await BoatPhoto.findByPk(id, { transaction: t });
     if (!photo) {
@@ -72,7 +76,11 @@ const updateBoatPhoto = async (id, data, file) => {
     if (file) {
       // Supprimer l'ancien fichier
       if (photo.photo_url) {
-        const oldFilePath = path.join(process.cwd(), 'uploads', photo.photo_url);
+        const oldFilePath = path.join(
+          process.cwd(),
+          "uploads",
+          photo.photo_url
+        );
         if (fs.existsSync(oldFilePath)) {
           fs.unlinkSync(oldFilePath);
         }
@@ -80,11 +88,11 @@ const updateBoatPhoto = async (id, data, file) => {
 
       // Uploader le nouveau fichier
       const filePath = await uploadFile.saveFile(
-        'boat',
+        "boat",
         file.data,
         file.name,
         `boats/${photo.boat_id}/photos`,
-        ['.jpg', '.jpeg', '.png', '.gif'],
+        [".jpg", ".jpeg", ".png", ".gif"],
         2
       );
 
@@ -101,9 +109,9 @@ const updateBoatPhoto = async (id, data, file) => {
         {
           where: {
             boat_id: photo.boat_id,
-            id: { [db.Sequelize.Op.ne]: id }
+            id: { [db.Sequelize.Op.ne]: id },
           },
-          transaction: t
+          transaction: t,
         }
       );
     }
@@ -118,7 +126,7 @@ const updateBoatPhoto = async (id, data, file) => {
 
 const deleteBoatPhoto = async (id) => {
   const t = await db.sequelize.transaction();
-  
+
   try {
     const photo = await BoatPhoto.findByPk(id, { transaction: t });
     if (!photo) {
@@ -128,7 +136,7 @@ const deleteBoatPhoto = async (id) => {
 
     // Supprimer le fichier physique
     if (photo.photo_url) {
-      const filePath = path.join(process.cwd(), 'uploads', photo.photo_url);
+      const filePath = path.join(process.cwd(), "uploads", photo.photo_url);
       if (fs.existsSync(filePath)) {
         fs.unlinkSync(filePath);
       }
@@ -147,8 +155,71 @@ const deleteBoatPhoto = async (id) => {
 
 const getBoatPhotos = async (boatId) => {
   return await BoatPhoto.findAll({
-    where: { boat_id: boatId }
+    where: { boat_id: boatId },
   });
+};
+
+const syncBoatPhotos = async (boatId, keptIds, newFiles, mainId) => {
+  const t = await db.sequelize.transaction();
+
+  try {
+    // Supprimer les photos non gardées
+    const toDelete = await db.BoatPhoto.findAll({
+      where: { boat_id: boatId, id: { [Op.notIn]: keptIds } },
+      transaction: t,
+    });
+
+    for (const ph of toDelete) {
+      const fullPath = path.join(process.cwd(), "uploads", ph.photo_url);
+      if (fs.existsSync(fullPath)) fs.unlinkSync(fullPath);
+      await ph.destroy({ transaction: t });
+    }
+
+    // Désactiver is_main sur toutes les photos du bateau
+    await db.BoatPhoto.update(
+      { is_main: false },
+      { where: { boat_id: boatId }, transaction: t }
+    );
+
+    // Ajouter les nouvelles photos
+    if (newFiles?.length) {
+      await Promise.all(
+        newFiles.map(async (file, idx) => {
+          const filePath = await uploadFile.saveFile(
+            "boat",
+            file.data,
+            file.name,
+            `boats/${boatId}/photos`,
+            [".jpg", ".jpeg", ".png", ".gif"],
+            2
+          );
+
+          await db.BoatPhoto.create(
+            {
+              boat_id: boatId,
+              photo_url: filePath,
+              is_main: false,
+            },
+            { transaction: t }
+          );
+        })
+      );
+    }
+
+    // Définir la photo principale
+    if (mainId) {
+      await db.BoatPhoto.update(
+        { is_main: true },
+        { where: { id: mainId, boat_id: boatId }, transaction: t }
+      );
+    }
+
+    await t.commit();
+    return true;
+  } catch (err) {
+    await t.rollback();
+    throw err;
+  }
 };
 
 export default {
@@ -157,5 +228,6 @@ export default {
   getBoatPhotoById,
   updateBoatPhoto,
   deleteBoatPhoto,
-  getBoatPhotos
+  getBoatPhotos,
+  syncBoatPhotos
 };

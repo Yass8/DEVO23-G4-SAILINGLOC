@@ -4,7 +4,7 @@ import { isAdmin, isOwner, isTenant, getUserRoles } from "../../utils/auth";
 import OwnerDashboard from "./proprietaire/OwnerDashboard";
 import TenantDashboard from "./locataire/TenantDashboard";
 import ViewSelector from "./ViewSelector";
-import LoadingSpinner from "../common/LoadingSpinner";
+import Preloader from "../common/Preloader";
 
 export default function DashboardClient() {
   const [userRoles, setUserRoles] = useState([]);
@@ -49,7 +49,7 @@ export default function DashboardClient() {
   };
 
   if (loading) {
-    return <LoadingSpinner />;
+    return <Preloader />;
   }
 
   // Redirection pour admin seul (APRÈS le loading)

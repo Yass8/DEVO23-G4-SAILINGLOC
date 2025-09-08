@@ -17,6 +17,7 @@ import {
   updateUserDocument,
 } from "../../../services/userDocument";
 import { updateReservation } from "../../../services/reservationServices";
+import Preloader from "../../../components/common/Preloader";
 
 const BASE_API = import.meta.env.VITE_API_BASE_URL;
 
@@ -106,7 +107,7 @@ export default function ReservationOwnerDetail() {
   const openFileModal = (doc) => setModalFile(doc);
   const closeFileModal = () => setModalFile(null);
 
-  if (loading) return <div className="text-center mt-10">Chargement...</div>;
+  if (loading) return <Preloader />;
   if (!reservation)
     return <div className="text-center mt-10">Réservation introuvable.</div>;
 

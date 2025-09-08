@@ -16,5 +16,6 @@ router.get("/:id/show", validateBoatPhotoId, validate, boatPhotoController.show)
 router.put("/:id/edit", isAuthenticated, authorizeUser(['admin', 'owner']), validateBoatPhotoId, validateUpdateBoatPhotos, validate, boatPhotoController.update);
 router.delete("/:id/delete", isAuthenticated, authorizeUser(['admin', 'owner']), validateBoatPhotoId, validate, boatPhotoController.remove);
 router.get("/boat/:boatId", validateBoatId, validate, boatPhotoController.getBoatPhotos);
+router.post("/:boatId/photos/sync", isAuthenticated, authorizeUser(['admin', 'owner']), boatPhotoController.syncPhotos);
 
 export default router;

@@ -5,7 +5,7 @@ import {
   faCalendarAlt,
   faTimesCircle,
 } from "@fortawesome/free-solid-svg-icons";
-import LoadingSpinner from "../../../components/common/LoadingSpinner";
+
 import { fetchUserReservations } from "../../../services/userServices";
 import { getCurrentUser } from "../../../services/authService";
 import {
@@ -13,6 +13,7 @@ import {
   GeneralConfirmation,
 } from "../../../components/common/SweetAlertComponents";
 import { updateReservation } from "../../../services/reservationServices";
+import Preloader from "../../../components/common/Preloader";
 
 export default function MyReservations() {
   const [reservations, setReservations] = useState([]);
@@ -83,7 +84,7 @@ export default function MyReservations() {
     }
   };
 
-  if (loading) return <LoadingSpinner />;
+  if (loading) return <Preloader />;
   if (reservations.length === 0)
     return (
       <div className="text-center mt-10">

@@ -1,5 +1,5 @@
 import db from "../models/index.js";
-const { User, Boat, Reservation, Message, Review, UserDocument, Port, BoatPhoto } = db;
+const { User, Boat, Reservation, Message, Review, UserDocument, Port, BoatPhoto, BoatType } = db;
 import uploadFile from "../utils/uploadFile.js";
 import fs from "fs";
 import path from "path";
@@ -47,7 +47,12 @@ const getUserBoats = async (userId) => {
   const user = await User.findByPk(userId, {
     include: [{
       model: Boat,
-      as: 'boats'  
+      as: 'boats',
+      include : [
+        { model: Port, attributes: ["name"] },
+        { model: BoatPhoto, attributes: ["photo_url", "is_main"] },
+        { model: BoatType, attributes: ["name"] }
+      ] 
     }]
   });
   return user ? user.boats : null; 

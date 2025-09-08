@@ -54,7 +54,20 @@ const getBoatEquipments = async (req, res) => {
   }
 };
 
+const syncEquipments = async (req, res) => {
+  try {
+
+    const { boatId } = req.params;
+    const { equipment } = req.body;
+    await boatEquipmentService.syncBoatEquipments(boatId, equipment);
+    res.json({ message: 'Équipements synchronisés' });
+  } catch (err) {
+    console.error('ERREUR SYNC EQUIP :', err);  // <-- ajoute ce log
+    res.status(500).json({ error: err.message });
+  }
+};
+
 export default {
   index, create, show, update, remove,
-  getBoatEquipments
+  getBoatEquipments, syncEquipments
 };
