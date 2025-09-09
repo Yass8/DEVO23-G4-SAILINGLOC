@@ -5,7 +5,7 @@ export const validateAvailabilityId = [
 ];
 
 export const validateBoatId = [
-  param('boatId').isInt().withMessage('L\'ID du bateau doit être un entier')
+  param('boat_id').isInt().withMessage('L\'ID du bateau doit être un entier')
 ];
 
 export const validateCreateAvailability = [

@@ -17,6 +17,6 @@ router.get("/:id/show", validateAvailabilityId, validate, validateAvailabilityId
 router.put("/:id/edit", isAuthenticated, validateUpdateAvailability, validate, availabilityController.update);
 router.delete("/:id/delete", isAuthenticated, authorizeUser(['admin', 'owner']), validateAvailabilityId, validate, availabilityController.remove);
 
-router.get("/boat/:boatId", validateBoatId, validate, availabilityController.getBoatAvailabilities);
+router.get("/boat/:boat_id", validateBoatId, validate, availabilityController.getBoatAvailabilities);
 
 export default router;

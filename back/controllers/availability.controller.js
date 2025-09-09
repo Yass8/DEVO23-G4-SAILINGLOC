@@ -11,6 +11,8 @@ const index = async (req, res) => {
 
 const create = async (req, res) => {
   try {
+    console.log("Reçu: ", req.body);
+    
     const result = await availabilityService.createAvailability(req.body);
     res.status(201).json(result);
   } catch (error) {
@@ -47,7 +49,7 @@ const remove = async (req, res) => {
 
 const getBoatAvailabilities = async (req, res) => {
   try {
-    const result = await availabilityService.getBoatAvailabilities(req.params.id);
+    const result = await availabilityService.getBoatAvailabilities(req.params.boat_id);
     res.json(result);
   } catch (error) {
     res.status(500).json({ error: error.message });
