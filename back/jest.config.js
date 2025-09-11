@@ -3,13 +3,14 @@ export default {
   collectCoverageFrom: [
     'controllers/**/*.js',
     'services/**/*.js',
+    'routes/**/*.js', // ← Ajoutez cette ligne
     '!**/node_modules/**',
   ],
   coverageDirectory: './coverage',
   testMatch: ['**/tests/unit/**/*.test.js'],
   transform: {},
   testTimeout: 30000,
-  moduleNameMapper: {
+  moduleNameMapping: {
     '^(\\.{1,2}/.*)\\.js$': '$1'
   },
   clearMocks: true,
