@@ -8,6 +8,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheckCircle } from "@fortawesome/free-solid-svg-icons";
 import { fetchBoatBySlug, fetchBoatPhotos } from "../../services/boatServices";
 import { useNavigate } from "react-router-dom";
+import Seo from "../../components/common/Seo";
+import { getMainPhotoUrl } from "../../utils/mainPhoto";
 
 function Details() {
   const { slug } = useParams();
@@ -43,8 +45,14 @@ function Details() {
 
   return (
     <>
+      <Seo
+       title={boat.name}
+       description={boat.description}
+       canonical={`https://dsp-dev-o24a-g4.fr/boat/${slug}`}
+       ogImage={getMainPhotoUrl(boat)}
+      />
       <ScrollToTop />
-      <Header />
+      <Header activeBtn={true} />
 
       <div className="max-w-7xl mx-auto px-4 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">

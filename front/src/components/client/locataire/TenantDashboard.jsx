@@ -12,6 +12,7 @@ import {
 import { fetchUserReservations } from "../../../services/userServices";
 import { getCurrentUser } from "../../../services/authService";
 import Card from "./Card";
+import Preloader from "../../common/Preloader";
 
 export default function TenantDashboard() {
   const [stats, setStats] = useState({
@@ -78,10 +79,7 @@ export default function TenantDashboard() {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <FontAwesomeIcon
-          icon={faHourglassHalf}
-          className="animate-spin text-4xl text-mocha"
-        />
+        <Preloader />
       </div>
     );
   }

@@ -15,6 +15,7 @@ import { fetchUserBoats } from "../../../services/userServices";
 import { fetchBoatReservations } from "../../../services/reservationServices";
 import { getCurrentUser } from "../../../services/authService";
 import Card from "../Card";
+import Preloader from "../../common/Preloader";
 
 export default function OwnerDashboard() {
   const [stats, setStats] = useState({
@@ -86,9 +87,7 @@ export default function OwnerDashboard() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <FontAwesomeIcon icon={faHourglassHalf} className="animate-spin text-4xl text-mocha" />
-      </div>
+      <Preloader />
     );
   }
 
@@ -232,7 +231,7 @@ function NoPendingDemandsSection({ stats, userBoats }) {
                 <h3 className="font-semibold mb-2 text-gray-800">{boat.name}</h3>
                 <p className="text-sm text-gray-600 mb-3">{boat.location}</p>
                 <Link
-                  to={`/boats/${boat.id}/edit`}
+                  to={`/my-space/boats/${boat.slug}/edit`}
                   className="inline-block mt-2 text-mocha hover:text-mocha-dark text-sm font-medium"
                 >
                   Optimiser cette annonce
@@ -258,7 +257,7 @@ function UserBoatsSection({ boats }) {
             <p className="text-gray-600 text-sm">{boat.type}</p>
             <p className="text-gray-600 text-sm">{boat.location}</p>
             <Link
-              to={`/boats/${boat.id}`}
+              to={`/my-space/boats/${boat.slug}`}
               className="text-mocha hover:text-mocha-dark text-sm underline mt-2 block"
             >
               Voir détails
@@ -268,7 +267,7 @@ function UserBoatsSection({ boats }) {
       </div>
       {boats.length > 3 && (
         <div className="mt-4 text-center">
-          <Link to="/my-boats" className="text-mocha hover:text-mocha-dark underline">
+          <Link to="/my-space/boats" className="text-mocha hover:text-mocha-dark underline">
             Voir tous mes bateaux ({boats.length})
           </Link>
         </div>

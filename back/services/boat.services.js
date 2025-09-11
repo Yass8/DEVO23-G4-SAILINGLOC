@@ -168,6 +168,7 @@ const getFilteredBoats = async ({
   const include = [
     { model: Port, attributes: ["id", "name", "city"] },
     { model: BoatType, attributes: ["id", "name"] },
+    { model: BoatPhoto, attributes: ['id', 'photo_url', 'is_main'] },
     ...(includeAvailability ? [includeAvailability] : []),
   ];
 

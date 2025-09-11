@@ -10,7 +10,7 @@ export default {
         type: Sequelize.BIGINT
       },
       type: {
-        type: Sequelize.ENUM('licence', 'insurance', 'id_card', 'cv','proof_of_address'),
+        type: Sequelize.ENUM('licence', 'insurance', 'id_card', 'cv','proof_of_address','other'),
         allowNull: false
       },
       file_url: {

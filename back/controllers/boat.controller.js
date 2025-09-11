@@ -11,34 +11,9 @@ const index = async (req, res) => {
   }
 };
 
-// const create = async (req, res) => {
-//   try {
-//     // Données texte
-//     const data = req.body;
-
-//     // Fichiers
-//     const insuranceFile = req.files?.insurance_url;
-//     const registrationFile = req.files?.registration_url;
-
-//     if (!insuranceFile || !registrationFile) {
-//       return res.status(400).json({ error: 'Les fichiers insurance et registration sont requis.' });
-//     }
-
-//     // Envoi au service
-//     const result = await boatService.createBoat(data, {
-//       insurance_url: insuranceFile,
-//       registration_url: registrationFile,
-//     });
-
-//     res.status(201).json(result);
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//   }
-// };
-
 const create = async (req, res) => {
   try {
-    // 1. Parser le JSON depuis req.body.data
+    //  Parser le JSON depuis req.body.data
     let data = {};
     if (req.body.data) {
       try {
@@ -50,17 +25,17 @@ const create = async (req, res) => {
       return res.status(400).json({ error: "Le champ 'data' est manquant" });
     }
 
-    // 2. Injecter les champs parsés dans req.body pour la validation
+    //  Injecter les champs parsés dans req.body pour la validation
     req.body = data;
 
-    // 3. Valider manuellement
+    //  Valider manuellement
     await Promise.all(validateCreateBoat.map(validation => validation.run(req)));
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(422).json({ errors: errors.array() });
     }
 
-    // 4. Récupérer les fichiers
+    //  Récupérer les fichiers
     const insuranceFile = req.files?.insurance_url;
     const registrationFile = req.files?.registration_url;
 
@@ -68,7 +43,7 @@ const create = async (req, res) => {
       return res.status(400).json({ error: "Les fichiers insurance et registration sont requis." });
     }
 
-    // 5. Appeler le service
+    //  Appeler le service
     const result = await boatService.createBoat(req.body, {
       insurance_url: insuranceFile,
       registration_url: registrationFile,
@@ -121,7 +96,6 @@ const remove = async (req, res) => {
 const getFilteredBoats = async (req, res) => {
   try {
     const filters = req.query;
-    console.log(filters);
     
     const result = await boatService.getFilteredBoats(filters);
     res.json(result);

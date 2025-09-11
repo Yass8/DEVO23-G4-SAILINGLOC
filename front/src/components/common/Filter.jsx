@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { customSelectStyles, customSelectTheme } from "../../utils/selectTheme";
 import { fetchPorts } from "../../services/portServices";
 import { fetchBoatTypes } from "../../services/boatTypeSevices";
+import { useNavigate } from "react-router-dom";
 
 function Filter(props){
 
@@ -19,6 +20,7 @@ function Filter(props){
 
   const [showOtherFilters, setShowOtherFilters] = useState(false);
   const [btnShowOtherFilters, setBtnShowOtherFilters] = useState("Plus de filtres");
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchPorts().then((data) => {
@@ -72,7 +74,12 @@ const handleSubmit = (e) => {
 
   // Type
   const selectedType = document.querySelector('input[name="boatType"]:checked')?.value;
-  if (selectedType && selectedType !== "all") params.set("type", selectedType);
+  if (selectedType === "all") {
+    params.delete("type");
+  } else if (selectedType) {
+    params.set("type", selectedType);
+  }
+
 
   // Range filters
   params.set("length", length);
@@ -84,7 +91,8 @@ const handleSubmit = (e) => {
   if (searchInput?.value.trim()) params.set("search", searchInput.value.trim());
 
   // Appliquer et recharger
-  window.history.replaceState(null, "", `?${params.toString()}`);
+  // window.history.replaceState(null, "", `?${params.toString()}`);
+  navigate(`?${params.toString()}`);
   props.onFilterChange(0);
 };
 

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import {
@@ -18,6 +18,10 @@ import {
   faCcMastercard,
   faCcAmex,
 } from "@fortawesome/free-brands-svg-icons";
+import { generateContractPdf } from "../../utils/pdf";
+import { createContract } from "../../services/contractServices";
+import ContractTemplate from "./ContractTemplate";
+import { uniqid } from "../../utils/uniqid";
 
 export default function Payment({ reservation }) {
   const stripe = useStripe();
@@ -26,6 +30,10 @@ export default function Payment({ reservation }) {
 
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState(null);
+  const [referenceContract, setReferenceContract] = useState('');
+
+  const [showTemplate, setShowTemplate] = useState(false);
+  const templateRef = useRef(null);
 
   const amount = parseFloat(reservation.total_price);
   const commission = (amount * 0.1).toFixed(2);
@@ -96,6 +104,21 @@ export default function Payment({ reservation }) {
       end_date: maintenanceEnd.toISOString(),
       status: "maintenance",
     });
+    
+    setReferenceContract(uniqid("CONTRACT"));
+    
+    //  génération du PDF
+    const pdfBlob = await generateContractPdf(reservation, referenceContract);
+
+    //  préparation du FormData
+    const fd = new FormData();
+    fd.append('contract_pdf', pdfBlob, 'contrat.pdf');
+    // on envoie aussi la reservation complète (id suffit, mais on met tout)
+    const data = { reservation_id: reservation.id, reference:  referenceContract};
+    fd.append("data", JSON.stringify(data));
+
+    //  envoi au back
+    await createContract(fd);
 
     SuccessAlert(
       "Paiement réussi !",
@@ -116,6 +139,25 @@ export default function Payment({ reservation }) {
     },
   };
 
+  
+
+  /* ---------- BOUTON TEST RAPIDE ---------- */
+  const testPdf = async () => {
+    setShowTemplate(true);                 // 2. on affiche le template
+
+    await new Promise(res => setTimeout(res, 100)); // 3. laisse React renderer
+
+    try {
+      const blob = await generateContractPdf(reservation, uniqid("CONTRACT")); // 4. génère le PDF
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_blank');
+    } catch (err) {
+      console.error(err);
+      alert('Erreur génération PDF : ' + err.message);
+    } finally {
+      setShowTemplate(false);              // 5. on le cache à nouveau
+    }
+  };
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="bg-blue-50 p-4 rounded-lg flex items-start gap-3">
@@ -158,6 +200,18 @@ export default function Payment({ reservation }) {
       {error && (
         <div className="bg-red-50 text-red-700 p-3 rounded-md text-sm">
           {error}
+        </div>
+      )}
+
+      
+      {/* BOUTON TEST */}
+      <button type="button" onClick={testPdf} className="bg-blue-600 text-white px-4 py-2 rounded">
+        Voir le PDF avant envoi
+      </button>
+
+      {showTemplate && (
+        <div ref={templateRef} style={{ position: 'absolute', left: '-9999px' }}>
+          <ContractTemplate reservation={reservation} referenceContract={referenceContract} />
         </div>
       )}
 

@@ -13,7 +13,7 @@ export default (sequelize, DataTypes) => {
   }
   UserDocument.init({
     type: {
-      type: DataTypes.ENUM('licence', 'insurance', 'id_card', 'cv','proof_of_address'),
+      type: DataTypes.ENUM('licence', 'insurance', 'id_card', 'cv','proof_of_address', 'other'),
       allowNull: false
     },
     file_url: {

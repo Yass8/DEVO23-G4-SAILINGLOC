@@ -15,8 +15,9 @@ import { useEffect, useState } from "react";
 import Banner from "../../components/common/Banner";
 import Preloader from "../../components/common/Preloader";
 import ScrollToTop from "../../components/common/ScrollToTop";
-import { useNavigate } from "react-router-dom";
 import { useBreadcrumbBoats } from "../../utils/useQuery"; 
+import { getMainPhotoUrl } from "../../utils/mainPhoto";
+import { useLocation } from "react-router-dom";
 
 function Boats() {
   const [boats, setBoats] = useState([]);
@@ -25,10 +26,8 @@ function Boats() {
   const [totalBoats, setTotalBoats] = useState(0);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  // const [searchParams] = useSearchParams();
-  // console.log('searchParams', Object.fromEntries(searchParams));
+ const location = useLocation();
   const boatsPerPage = 9;
-  const navigate = useNavigate();
 
 
   const breadcrumbItems = useBreadcrumbBoats();
@@ -73,7 +72,7 @@ function Boats() {
 
   useEffect(() => {
     loadBoats();
-  }, [window.location.search]);
+  }, [location.search]);
 
   // Pagination logic
   const pageCount = Math.ceil(boats.length / boatsPerPage);
@@ -97,7 +96,7 @@ function Boats() {
   return (
     <>
       <Header />
-      <Banner />
+      <Banner activeBtn={true} />
       <Preloader />
       <ScrollToTop />
       <div className="relative bottom-27">
@@ -152,11 +151,11 @@ function Boats() {
                       <CardProduct
                         key={index}
                         name={boat.name}
-                        image={boat.image}
+                        image={getMainPhotoUrl(boat)}
                         length={boat.length}
                         capacity={boat.max_passengers}
                         price={boat.daily_price}
-                        onClick={() => navigate(`/boat/${boat.slug}`)}
+                        slug={boat.slug}
                       />
                     ))}
                   </div>

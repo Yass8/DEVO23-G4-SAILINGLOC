@@ -1,40 +1,51 @@
-import { useMemo } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useMemo, useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import { fetchPorts } from '../services/portServices';
+import { fetchBoatTypes } from '../services/boatTypeSevices';
 
-/* renvoie un tableau prêt pour <Breadcrumb items={...}> */
 export const useBreadcrumbBoats = () => {
-  const [searchParams] = useSearchParams();
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+
+  const [ports, setPorts] = useState([]);
+  const [types, setTypes] = useState([]);
+
+  useEffect(() => {
+    fetchPorts().then(setPorts);
+    fetchBoatTypes().then(setTypes);
+  }, []);
 
   return useMemo(() => {
-    const items = [{ label: 'Accueil', href: '/' }]; // première maille
+    const items = [{ label: 'Accueil', href: '/' }];
 
-    /* 1 - port */
-    const port = searchParams.get('port');
-    if (port) items.push({ label: `Port : ${port}`, href: `?port=${port}` });
+    const portId = searchParams.get('port');
+    if (portId) {
+      const port = ports.find(p => String(p.id) === portId);
+      const portLabel = port ? `${port.name} (${port.country})` : `Port : ${portId}`;
+      items.push({ label: portLabel, href: `?port=${portId}` });
+    }
 
-    /* 2 - type */
-    const type = searchParams.get('type');
-    if (type) items.push({ label: `Type : ${type}`, href: `?type=${type}` });
+    const typeId = searchParams.get('type');
+    if (typeId) {
+      const type = types.find(t => String(t.id) === typeId);
+      const typeLabel = type ? type.name : `Type : ${typeId}`;
+      items.push({ label: typeLabel, href: `?type=${typeId}` });
+    }
 
-    /* 3 - capacité */
     const capacity = searchParams.get('capacity');
     if (capacity) items.push({ label: `Capacité : ${capacity} pers.`, href: `?capacity=${capacity}` });
 
-    /* 4 - prix */
     const price = searchParams.get('price');
     if (price) items.push({ label: `Prix ≤ ${price} €`, href: `?price=${price}` });
 
-    /* 5 - longueur */
     const length = searchParams.get('length');
     if (length) items.push({ label: `Longueur ≤ ${length} m`, href: `?length=${length}` });
 
-    /* 6 - recherche libre */
     const search = searchParams.get('search');
     if (search) items.push({ label: `Recherche : ${search}`, href: `?search=${search}` });
 
-    /* dernière maille = page courante (non cliquable) */
     items.push({ label: 'Bateaux' });
 
     return items;
-  }, [searchParams]);
+  }, [location.search, ports, types]);
 };

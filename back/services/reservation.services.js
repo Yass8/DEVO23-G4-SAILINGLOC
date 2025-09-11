@@ -1,5 +1,5 @@
 import db from "../models/index.js";
-const { Reservation, User, Boat, Payment, Contract } = db;
+const { Reservation, User, Boat, Payment, Contract, Port } = db;
 import uploadFile from "../utils/uploadFile.js";
 
 const getAllReservations = async () => {
@@ -26,7 +26,7 @@ const getReservationByReference = async (reference) => {
     include: [
       {
         model: Boat,
-        include: [User]
+        include: [User, Port]
       },
       User
     ],

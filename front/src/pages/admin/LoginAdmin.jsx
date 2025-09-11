@@ -1,5 +1,4 @@
-// LoginAdmin.jsx
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { login } from '../../services/authService';
 import { isAdmin } from '../../utils/auth';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -10,16 +9,21 @@ import {
   faSpinner,
   faEye,
   faEyeSlash,
-  faExclamationTriangle,
+  faCircleExclamation,
 } from '@fortawesome/free-solid-svg-icons';
+import ReCAPTCHA from 'react-google-recaptcha';
 import logo from '/images/logo.png';
 
 const LoginAdmin = () => {
+  const recaptchaRef = useRef(null);
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [apiError, setApiError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState('');
+
+  const SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -44,15 +48,14 @@ const LoginAdmin = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validateForm()) return;
+    if (!validateForm() || !captchaToken) return;
 
     setIsLoading(true);
     setApiError('');
 
     try {
-      const response = await login(formData);
+      const response = await login({ ...formData, 'g-recaptcha-response': captchaToken });
       const { user, token } = response;
-
       if (!user || !token) throw new Error('Réponse invalide du serveur');
 
       localStorage.setItem('token', token);
@@ -62,27 +65,37 @@ const LoginAdmin = () => {
         window.location.replace('/admin/sl/dashboard');
         return;
       }
-
       setApiError("Vous n'avez pas accès à l'interface admin");
       setTimeout(() => (window.location.href = '/home'), 2000);
-    } catch (error) {
-      console.error('Login error:', error);
+    } catch (err) {
+      console.error('Login error:', err);
+      let msg = "Une erreur est survenue.";
 
-      if (error.response?.data?.errors) {
-        const formatted = {};
-        error.response.data.errors.forEach((err) => (formatted[err.param] = err.msg));
-        setErrors(formatted);
-      } else if (error.response?.data?.message) {
-        setApiError(error.response.data.message);
-      } else if (error.response?.status === 401) {
-        setApiError('Email ou mot de passe incorrect');
-      } else if (error.response?.status === 403) {
-        setApiError('Accès interdit. Vous ne disposez pas des permissions nécessaires.');
-      } else if (error.response?.status === 429) {
-        setApiError('Trop de tentatives de connexion. Veuillez réessayer plus tard.');
+      if (err.response?.status === 422) {
+        const { data } = err.response;
+        if (Array.isArray(data.errors)) {
+          msg = data.errors.map((e) => e.title || e.detail || e.message || `${e.param} : ${e.msg}`).join(', ');
+        } else if (typeof data.errors === 'object') {
+          msg = Object.values(data.errors).flat().join(', ');
+        } else if (data.message) {
+          msg = data.message;
+        }
+      } else if (err.response?.status === 401) {
+        msg = 'Email ou mot de passe incorrect';
+      } else if (err.response?.status === 403) {
+        msg = 'Accès interdit. Vous ne disposez pas des permissions nécessaires.';
+      } else if (err.response?.status === 429) {
+        msg = 'Trop de tentatives de connexion. Veuillez réessayer plus tard.';
+      } else if (err.response?.data?.message) {
+        msg = err.response.data.message;
+      } else if (err.request) {
+        msg = 'Pas de réponse du serveur - vérifiez votre connexion';
       } else {
-        setApiError("Une erreur est survenue. Veuillez réessayer.");
+        msg = err.message || "Erreur lors de la configuration de la requête";
       }
+
+      setApiError(msg);
+      recaptchaRef.current?.reset();
     } finally {
       setIsLoading(false);
     }
@@ -91,19 +104,17 @@ const LoginAdmin = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-sand">
       <div className="max-w-md w-full mx-4">
-        {/* Header */}
         <div className="text-center mb-8">
-          <img src={logo} alt="SailingLoc logo" className="mx-auto h-16 mb-6" />
+          <a href='/'><img src={logo} alt="SailingLoc logo" className="mx-auto h-16 mb-6" /></a>
           <h1 className="text-3xl font-bold">Admin Port de Plaisance</h1>
           <p className="mt-2 text-slate-blue">Connectez-vous à votre espace administrateur</p>
         </div>
 
-        {/* Card */}
         <div className="bg-white rounded-lg shadow-lg p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
             {apiError && (
               <div className="bg-red-50 border border-red-200 p-4 rounded-md flex items-start">
-                <FontAwesomeIcon icon={faExclamationTriangle} className="text-red-500 mt-0.5 mr-3" />
+                <FontAwesomeIcon icon={faCircleExclamation} className="text-red-500 mt-0.5 mr-3" />
                 <p className="text-sm text-red-600">{apiError}</p>
               </div>
             )}
@@ -122,9 +133,7 @@ const LoginAdmin = () => {
                 onChange={handleChange}
                 placeholder="admin@votre-site.com"
                 className={`w-full px-4 py-3 rounded-md border transition-colors ${
-                  errors.email
-                    ? 'border-red-400 focus:ring-red-500 focus:border-red-500'
-                    : 'border-gray-300 focus:outline-none focus:ring-2 focus:ring-mocha'
+                  errors.email ? 'border-red-400 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:outline-none focus:ring-2 focus:ring-mocha'
                 }`}
               />
               {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
@@ -145,9 +154,7 @@ const LoginAdmin = () => {
                   onChange={handleChange}
                   placeholder="••••••••"
                   className={`w-full px-4 py-3 pr-12 rounded-md border transition-colors ${
-                    errors.password
-                      ? 'border-red-400 focus:ring-red-500 focus:border-red-500'
-                      : 'border-gray-300 focus:outline-none focus:ring-2 focus:ring-mocha'
+                    errors.password ? 'border-red-400 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:outline-none focus:ring-2 focus:ring-mocha'
                   }`}
                 />
                 <button
@@ -162,10 +169,20 @@ const LoginAdmin = () => {
               {errors.password && <p className="mt-1 text-sm text-red-600">{errors.password}</p>}
             </div>
 
+            {/* reCAPTCHA v2 */}
+            <div className="flex justify-center">
+              <ReCAPTCHA
+                ref={recaptchaRef}
+                sitekey={SITE_KEY}
+                onChange={(token) => setCaptchaToken(token)}
+                theme="light"
+              />
+            </div>
+
             {/* Submit */}
             <button
               type="submit"
-              disabled={isLoading}
+              disabled={isLoading || !captchaToken}
               className="w-full py-3 px-4 bg-mocha text-white rounded-md font-medium hover:bg-mocha/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center"
             >
               {isLoading ? (
