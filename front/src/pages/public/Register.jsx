@@ -2,9 +2,10 @@ import React, { useState, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import ReCAPTCHA from "react-google-recaptcha";
 import logo from "/images/logo.png";
-import { register } from "../../services/authService";
+import { isTokenValid, register } from "../../services/authService";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash, faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
+import { useEffect } from "react";
 
 const FormError = ({ message }) => {
   if (!message) return null;
@@ -40,6 +41,12 @@ const Register = () => {
   const [captchaToken, setCaptchaToken] = useState("");
 
   const SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
+
+  useEffect(() => {
+    if (isTokenValid()) {
+      navigate('/');
+    }
+  }, [navigate]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -318,9 +325,9 @@ const Register = () => {
             />
             <label htmlFor="acceptTerms" className="ml-2 text-sm">
               J'accepte les{" "}
-              <Link to="/terms" className="text-[#AD7C59] hover:underline">conditions d'utilisation</Link>{" "}
+              <Link to="/CGU" className="text-[#AD7C59] hover:underline">conditions d'utilisation</Link>{" "}
               et la{" "}
-              <Link to="/privacy" className="text-[#AD7C59] hover:underline">politique de confidentialité</Link>.
+              <Link to="/politique-cookies" className="text-[#AD7C59] hover:underline">politique de confidentialité</Link>.
             </label>
           </div>
 

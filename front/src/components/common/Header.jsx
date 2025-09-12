@@ -67,14 +67,8 @@ const Header = () => {
         <div className="hidden md:flex items-center space-x-3">
           <select className="border text-sm px-2 py-1 rounded">
             <option value="fr">FR</option>
-            <option value="en">EN</option>
+            <option value="en" disabled>EN</option>
           </select>
-          <Link
-            to="/register"
-            className="border-none px-3 py-1 rounded text-sm text-gray-700 hover:bg-gray-100"
-          >
-            Enregistrer votre bateau
-          </Link>
 
           {(!user || !tokenValid) ? (
             <Link
@@ -156,15 +150,8 @@ const Header = () => {
           <div className="pt-6 flex flex-col space-y-4">
             <select className="border text-base px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-[#AD7C59] w-20 sm:w-24 md:w-32">
               <option value="fr">FR</option>
-              <option value="en">EN</option>
+              <option value="en" disabled>EN</option>
             </select>
-            <Link
-              to="/register"
-              onClick={() => setMenuOpen(false)}
-              className="text-gray-700 text-base hover:underline px-2 py-1 rounded"
-            >
-              Enregistrer votre bateau
-            </Link>
             {(!user || !tokenValid) ? (
               <Link
                 to="/login"

@@ -2,9 +2,10 @@ import React, { useState, useRef } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import ReCAPTCHA from 'react-google-recaptcha';
 import logo from "/images/logo.png";
-import { login } from "../../services/authService";
+import { isTokenValid, login } from "../../services/authService";
 import FormError from "../../components/common/FormError";
 import PasswordInput from "../../components/common/PasswordInput";
+import { useEffect } from "react";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -19,6 +20,12 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [captchaToken, setCaptchaToken] = useState("");
+
+  useEffect(() => {
+    if (isTokenValid()) {
+      navigate('/');
+    }
+  }, [navigate]);
 
   const SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
 

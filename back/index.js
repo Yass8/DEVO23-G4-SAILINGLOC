@@ -64,11 +64,14 @@ const credentials = { key: privateKey, cert: certificate };
 const httpsServer = https.createServer(credentials, app); 
 
 const PORT = process.env.PORT || 3000;
+const USE_HTTPS = process.env.USE_HTTPS === 'true';
 
-// httpsServer.listen(PORT, () => { 
-//     console.log(`Secure app is running on port ${PORT}`);
-//  });
-
-app.listen(PORT, () => {
-    console.log(`App is running on port ${PORT}`);
-});
+if (USE_HTTPS) {
+  httpsServer.listen(PORT, () => {
+    console.log(`Secure HTTPS server running on port ${PORT}`);
+  });
+} else {
+  app.listen(PORT, () => {
+    console.log(`App server running on port ${PORT}`);
+  });
+}

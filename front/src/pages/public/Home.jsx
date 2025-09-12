@@ -107,7 +107,7 @@ function Home() {
             sécuriser vos transactions et maximiser vos revenus en toute
             sérénité.
           </p>
-          <button className="custom-button">Enregistrer votre bateau</button>
+          {/* <button className="custom-button">Enregistrer votre bateau</button> */}
         </div>
       </AnimatedSection>
 
