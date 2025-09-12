@@ -82,18 +82,25 @@ const UsersAdmin = () => {
   };
 
   const transformToApiData = (userData) => {
-    return {
+    const apiData = {
       firstname: userData.firstName,
       lastname: userData.lastName,
       email: userData.email,
-      password: userData.password || 'MotDePasse123!', 
       phone: userData.phone || null,
       address: userData.address || null,
       roles: Array.isArray(userData.roles) ? userData.roles : [], 
       is_active: userData.active !== false
     };
+  
+    // Pour la création, utiliser un mot de passe valide
+    if (!userData.password || userData.password.trim() === '') {
+      apiData.password = 'MotDePasse123!@'; // Mot de passe valide avec caractère spécial
+    } else {
+      apiData.password = userData.password;
+    }
+  
+    return apiData;
   };
-
   // Charger les utilisateurs depuis l'API
   useEffect(() => {
     const loadUsers = async () => {
