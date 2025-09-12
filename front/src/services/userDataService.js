@@ -10,7 +10,7 @@ const mockUsers = [
     email: 'jean.dupont@example.com',
     phone: '0612345678',
     avatar: 'https://randomuser.me/api/portraits/men/1.jpg',
-    roles: ['Administrateur'],
+    roles: ['admin'],
     active: true,
     createdAt: '2023-01-15T10:30:00Z',
     lastLogin: '2023-06-20T14:25:00Z',

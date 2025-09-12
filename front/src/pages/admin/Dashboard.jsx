@@ -1,9 +1,10 @@
-import { faCalendarCheck, faCheckCircle, faEnvelope, faFileContract, faHourglassHalf, faMoneyBillWave, faShip, faSpinner, faStar, faUsers } from "@fortawesome/free-solid-svg-icons";
+import { faCalendarCheck, faCheckCircle, faEnvelope, faFileContract, faHourglassHalf, faMoneyBillWave, faShip, faSpinner, faStar, faUsers, faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { getAdminStats, getDetailedStats } from "../../services/adminServices";
 
-function Card({ icon, value, label, color = "text-slate-blue", loading = false }) {
+function Card({ icon, value, label, color = "text-slate-blue", loading = false, error = false }) {
   return (
     <div className="bg-white p-4 rounded-xl shadow flex items-center space-x-3">
       <FontAwesomeIcon icon={icon} className={`text-2xl ${color}`} />
@@ -12,6 +13,11 @@ function Card({ icon, value, label, color = "text-slate-blue", loading = false }
           <div className="flex items-center space-x-2">
             <FontAwesomeIcon icon={faSpinner} className="animate-spin text-[#AD7C59]" />
             <span className="text-sm text-gray-500">Chargement...</span>
+          </div>
+        ) : error ? (
+          <div className="flex items-center space-x-2">
+            <FontAwesomeIcon icon={faExclamationTriangle} className="text-red-500" />
+            <span className="text-sm text-red-500">Erreur de chargement</span>
           </div>
         ) : (
           <>
@@ -34,27 +40,51 @@ const AdminDashboard = () => {
     unreadMessages: 0,
     totalReviews: 0
   });
+  const [detailedStats, setDetailedStats] = useState({
+    activeUsers: 0,
+    boatsInRental: 0,
+    pendingPayments: 0,
+    unreadMessages: 0,
+    pendingReviews: 0,
+    scheduledMaintenance: 0
+  });
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
-    // Données simulées
-    setTimeout(() => {
-      setStats({
-        totalBoats: 25,
-        totalReservations: 150,
-        totalContracts: 120,
-        totalRevenue: 15000,
-        pendingReservations: 8,
-        unreadMessages: 12,
-        totalReviews: 45
-      });
-      setLoading(false);
-    }, 1000);
+    const loadDashboardData = async () => {
+      try {
+        setLoading(true);
+        setError(false);
+        
+        // Charger les statistiques principales
+        const mainStats = await getAdminStats();
+        setStats(mainStats);
+        
+        // Charger les statistiques détaillées
+        const detailed = await getDetailedStats();
+        setDetailedStats(detailed);
+        
+      } catch (err) {
+        console.error('Erreur lors du chargement du dashboard:', err);
+        setError(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadDashboardData();
   }, []);
 
   return (
     <div className="space-y-6">
-      {/* Stats Admin */}
+      {/* En-tête du dashboard */}
+      <div className="bg-white p-6 rounded-xl shadow">
+        <h1 className="text-2xl font-bold text-gray-900 mb-2">Tableau de bord administrateur</h1>
+        <p className="text-gray-600">Vue d'ensemble de l'activité de la plateforme SailingLoc</p>
+      </div>
+
+      {/* Stats principales */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card 
           icon={faShip} 
@@ -62,6 +92,7 @@ const AdminDashboard = () => {
           label="Bateaux actifs" 
           color="text-[#AD7C59]" 
           loading={loading}
+          error={error}
         />
         <Card 
           icon={faCalendarCheck} 
@@ -69,6 +100,7 @@ const AdminDashboard = () => {
           label="Réservations totales" 
           color="text-[#AD7C59]" 
           loading={loading}
+          error={error}
         />
         <Card 
           icon={faFileContract} 
@@ -76,6 +108,7 @@ const AdminDashboard = () => {
           label="Contrats actifs" 
           color="text-[#AD7C59]" 
           loading={loading}
+          error={error}
         />
         <Card 
           icon={faMoneyBillWave} 
@@ -83,6 +116,7 @@ const AdminDashboard = () => {
           label="Revenus totaux" 
           color="text-[#AD7C59]" 
           loading={loading}
+          error={error}
         />
       </div>
 
@@ -129,7 +163,7 @@ const AdminDashboard = () => {
               <div>
                 <p className="font-semibold">Contrats</p>
                 <p className="text-sm text-gray-600">Gérer les contrats</p>
-                <p className="text-xs text-[#AD7C59] mt-1">🔄 En développement</p>
+                <p className="text-xs text-green-600 mt-1">✅ Disponible</p>
               </div>
             </div>
           </Link>
@@ -146,38 +180,137 @@ const AdminDashboard = () => {
                 <FontAwesomeIcon icon={faCheckCircle} className="text-green-600" />
                 <span>Confirmées</span>
               </div>
-              <span className="font-bold text-green-600">{stats.totalReservations - stats.pendingReservations}</span>
+              <span className="font-bold text-green-600">
+                {loading ? (
+                  <FontAwesomeIcon icon={faSpinner} className="animate-spin" />
+                ) : (
+                  stats.totalReservations - stats.pendingReservations
+                )}
+              </span>
             </div>
             <div className="flex items-center justify-between p-3 bg-yellow-50 rounded-lg">
               <div className="flex items-center space-x-3">
                 <FontAwesomeIcon icon={faHourglassHalf} className="text-yellow-600" />
                 <span>En attente</span>
               </div>
-              <span className="font-bold text-yellow-600">{stats.pendingReservations}</span>
+              <span className="font-bold text-yellow-600">
+                {loading ? (
+                  <FontAwesomeIcon icon={faSpinner} className="animate-spin" />
+                ) : (
+                  stats.pendingReservations
+                )}
+              </span>
             </div>
           </div>
         </div>
 
         <div className="bg-white p-6 rounded-xl shadow">
-          <h2 className="text-xl font-bold mb-4">Messages non lus</h2>
+          <h2 className="text-xl font-bold mb-4">Messages et avis</h2>
           <div className="space-y-3">
             <div className="flex items-center justify-between p-3 border rounded-lg">
               <div>
                 <p className="font-semibold">Support client</p>
-                <p className="text-sm text-gray-600">{stats.unreadMessages} messages non lus</p>
+                <p className="text-sm text-gray-600">
+                  {loading ? (
+                    <span className="flex items-center space-x-2">
+                      <FontAwesomeIcon icon={faSpinner} className="animate-spin text-sm" />
+                      <span>Chargement...</span>
+                    </span>
+                  ) : (
+                    `${detailedStats.unreadMessages} messages non lus`
+                  )}
+                </p>
               </div>
               <FontAwesomeIcon icon={faEnvelope} className="text-[#AD7C59]" />
             </div>
             <div className="flex items-center justify-between p-3 border rounded-lg">
               <div>
-                <p className="font-semibold">Avis récents</p>
-                <p className="text-sm text-gray-600">{stats.totalReviews} avis au total</p>
+                <p className="font-semibold">Avis en attente</p>
+                <p className="text-sm text-gray-600">
+                  {loading ? (
+                    <span className="flex items-center space-x-2">
+                      <FontAwesomeIcon icon={faSpinner} className="animate-spin text-sm" />
+                      <span>Chargement...</span>
+                    </span>
+                  ) : (
+                    `${detailedStats.pendingReviews} avis en attente`
+                  )}
+                </p>
               </div>
               <FontAwesomeIcon icon={faStar} className="text-yellow-500" />
             </div>
           </div>
         </div>
       </div>
+
+      {/* Statistiques supplémentaires */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="bg-white p-6 rounded-xl shadow">
+          <h3 className="text-lg font-bold mb-4">Utilisateurs actifs</h3>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-3xl font-bold text-[#AD7C59]">
+                {loading ? (
+                  <FontAwesomeIcon icon={faSpinner} className="animate-spin" />
+                ) : (
+                  detailedStats.activeUsers
+                )}
+              </p>
+              <p className="text-sm text-gray-600">Utilisateurs connectés</p>
+            </div>
+            <FontAwesomeIcon icon={faUsers} className="text-4xl text-[#AD7C59] opacity-20" />
+          </div>
+        </div>
+
+        <div className="bg-white p-6 rounded-xl shadow">
+          <h3 className="text-lg font-bold mb-4">Bateaux en location</h3>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-3xl font-bold text-[#AD7C59]">
+                {loading ? (
+                  <FontAwesomeIcon icon={faSpinner} className="animate-spin" />
+                ) : (
+                  detailedStats.boatsInRental
+                )}
+              </p>
+              <p className="text-sm text-gray-600">Actuellement loués</p>
+            </div>
+            <FontAwesomeIcon icon={faShip} className="text-4xl text-[#AD7C59] opacity-20" />
+          </div>
+        </div>
+
+        <div className="bg-white p-6 rounded-xl shadow">
+          <h3 className="text-lg font-bold mb-4">Paiements en attente</h3>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-3xl font-bold text-[#AD7C59]">
+                {loading ? (
+                  <FontAwesomeIcon icon={faSpinner} className="animate-spin" />
+                ) : (
+                  detailedStats.pendingPayments
+                )}
+              </p>
+              <p className="text-sm text-gray-600">En attente de validation</p>
+            </div>
+            <FontAwesomeIcon icon={faMoneyBillWave} className="text-4xl text-[#AD7C59] opacity-20" />
+          </div>
+        </div>
+      </div>
+
+      {/* Message d'erreur global */}
+      {error && (
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <div className="flex items-center">
+            <FontAwesomeIcon icon={faExclamationTriangle} className="text-red-500 mr-3" />
+            <div>
+              <h3 className="text-red-800 font-semibold">Erreur de chargement</h3>
+              <p className="text-red-700 text-sm">
+                Impossible de charger les données du tableau de bord. Veuillez vérifier votre connexion et réessayer.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

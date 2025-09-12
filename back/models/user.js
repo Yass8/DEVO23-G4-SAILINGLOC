@@ -69,20 +69,21 @@ export default (sequelize, DataTypes) => {
           },
         },
       },
-      password: {
-        type: DataTypes.STRING,
-        set(value) {
-          const hashed = bcrypt.hashSync(value, bcrypt.genSaltSync(10));
-          this.setDataValue("password", hashed);
-        },
-      },
+password: {
+  type: DataTypes.STRING,
+  allowNull: true, // ← AJOUTÉ : permettre les valeurs nulles
+  set(value) {
+    if (value) { // ← MODIFIÉ : ne hasher que si une valeur est fournie
+      const hashed = bcrypt.hashSync(value, bcrypt.genSaltSync(10));
+      this.setDataValue("password", hashed);
+    }
+  },
+},
       roles: {
         type: DataTypes.ARRAY(DataTypes.STRING),
         allowNull: false,
-      },
-      phone: DataTypes.STRING,
-
-      payment_method: DataTypes.STRING,
+      },      
+ payment_method: DataTypes.STRING,
       phone: {
         type: DataTypes.STRING,
         validate: {
