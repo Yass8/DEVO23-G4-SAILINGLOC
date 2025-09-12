@@ -10,6 +10,7 @@ import Banner from "../../components/common/Banner";
 import Footer from "../../components/common/Footer";
 import Header from "../../components/common/Header";
 import AnimatedSection from "../../components/common/AnimateCard";
+import CbNotification from "../../components/common/CbNotification";
 
 function Home() {
   return (
@@ -112,6 +113,7 @@ function Home() {
       </AnimatedSection>
 
       <AnimatedSection delay={500}><Footer/></AnimatedSection>
+      <CbNotification />
     </>
   );
 }
