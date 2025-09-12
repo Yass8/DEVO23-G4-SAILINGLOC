@@ -53,16 +53,16 @@ function Home() {
       {/* Section aide */}
       <AnimatedSection className="bg-sage-green py-5">
         <div className="text-center">
-          <h2>Louer votre bateau en 3 étapes </h2>
-          <h3>Simple, rapide et sécurisé</h3>
+          <h2>Louer votre bateau en 3 etapes </h2>
+          <h3>Simple, rapide et securise</h3>
         </div>
         <div className="container mx-auto flex flex-col lg:flex-row items-center justify-center mt-10">
           <AnimatedSection delay={0} className="text-center mb-8 lg:mb-0 lg:mx-6 lg:w-3/12 sm:w-6/12 w-10/12">
             <span className="text-2xl text-mocha border-2 border-dashed rounded-full p-3 px-5 font-bold">1</span>
             <h4 className="font-bold mt-5">Choisir votre bateau</h4>
             <p>
-              Parcourez notre sélection et trouvez le bateau idéal selon vos
-              besoins : voilier, catamaran, bateau à moteur…
+              Parcourez notre selection et trouvez le bateau ideal selon vos
+              besoins : voilier, catamaran, bateau a moteur…
             </p>
           </AnimatedSection>
 
@@ -70,8 +70,8 @@ function Home() {
             <span className="text-2xl text-mocha border-2 border-dashed rounded-full p-3 px-5 font-bold">2</span>
             <h4 className="font-bold mt-5">Réservez en ligne</h4>
             <p>
-              Sélectionnez vos dates, ajoutez les options souhaitées et
-              effectuez votre paiement en toute sécurité.
+              Selectionnez vos dates, ajoutez les options souhaitees et
+              effectuez votre paiement en toute securite.
             </p>
           </AnimatedSection>
 
@@ -79,8 +79,8 @@ function Home() {
             <span className="text-2xl text-mocha border-2 border-dashed rounded-full p-3 px-5 font-bold">3</span>
             <h4 className="font-bold mt-5">Embarquer et profiter</h4>
             <p>
-              Rendez-vous au port, récupérez votre bateau et vivez une
-              expérience inoubliable sur l’eau !
+              Rendez-vous au port, recuperez votre bateau et vivez une
+              experience inoubliable sur l'eau !
             </p>
           </AnimatedSection>
         </div>
@@ -100,13 +100,13 @@ function Home() {
       {/* Section propriétaire */}
       <AnimatedSection className="py-10">
         <div className="container mx-auto text-center">
-          <h2>Devenez propriétaire sur SailingLoc</h2>
-          <h3>Rentabilisez votre bateau en toute simplicité</h3>
+          <h2>Devenez proprietaire sur SailingLoc</h2>
+          <h3>Rentabilisez votre bateau en toute simplicite</h3>
           <p className="mt-5 w-full sm:w-10/12 lg:w-8/12 mx-auto">
-            Mettez votre bateau en location et rejoignez une communauté de
-            passionnés. SailingLoc vous permet de gérer vos disponibilités,
-            sécuriser vos transactions et maximiser vos revenus en toute
-            sérénité.
+            Mettez votre bateau en location et rejoignez une communaute de
+            passionnes. SailingLoc vous permet de gerer vos disponibilites,
+            securiser vos transactions et maximiser vos revenus en toute
+            serenite.
           </p>
           {/* <button className="custom-button">Enregistrer votre bateau</button> */}
         </div>

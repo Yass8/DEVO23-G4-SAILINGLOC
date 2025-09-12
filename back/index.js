@@ -44,7 +44,7 @@ app.use(cors({
 
 app.use('/api/v1', routes);
 
-app.use('api/v1/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use('/api/v1/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 const csrfProtection = csurf({ cookie: true });
 

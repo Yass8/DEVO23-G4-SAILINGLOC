@@ -29,119 +29,97 @@ import {
   SuccessAlert, 
   ErrorAlert 
 } from '../../components/common/SweetAlertComponents';
-import userDataService from '../../services/userDataService';
+import { 
+  fetchUserById, 
+  updateUser,
+  fetchUserBoats,
+  fetchUserReservations,
+  fetchUserDocuments
+} from '../../services/userServices';
+import Preloader from '../../components/common/Preloader';
 
 const DetailsUsers = () => {
   const navigate = useNavigate();
+  const { id } = useParams();
   const [user, setUser] = useState(null);
-  const [activeTab] = useState('profile');
+  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('profile');
 
-  // Récupérer l'ID depuis l'URL directement
-  const userId = window.location.pathname.split('/').pop();
-  
-  console.log('DetailsUsers - userId extrait:', userId, 'Type:', typeof userId);
-  console.log('URL complète:', window.location.pathname);
+  // Fonction pour transformer les données de l'API
+  const transformUserData = (apiUser) => {
+    return {
+      id: apiUser.id.toString(),
+      firstName: apiUser.firstname,
+      lastName: apiUser.lastname,
+      email: apiUser.email,
+      phone: apiUser.phone || '',
+      avatar: apiUser.photo || `https://ui-avatars.com/api/?name=${apiUser.firstname}+${apiUser.lastname}&background=4B6A88&color=fff`,
+      roles: apiUser.roles || [],
+      active: apiUser.is_active,
+      createdAt: apiUser.created_at,
+      lastLogin: apiUser.updated_at,
+      address: apiUser.address || '',
+      boats: [],
+      reservations: [],
+      documents: [],
+      totalSpent: 0,
+      totalEarned: 0
+    };
+  };
 
-  // Charger l'utilisateur depuis le service
+  // Charger l'utilisateur depuis l'API
   useEffect(() => {
-    const loadUser = () => {
-      // Vérifier que le service est prêt
-      if (!userDataService.getAllUsers || userDataService.getAllUsers().length === 0) {
-        console.log('Service pas encore prêt, attente...');
-        setTimeout(loadUser, 100);
-        return;
-      }
+    const loadUser = async () => {
+      try {
+        setLoading(true);
+        console.log('�� Chargement des détails pour l\'utilisateur:', id);
+        
+        // Charger les détails complets de l'utilisateur
+        const [userDetails, boats, reservations, documents] = await Promise.all([
+          fetchUserById(id),
+          fetchUserBoats(id).catch(err => {
+            console.warn('⚠️ Erreur boats:', err);
+            return [];
+          }),
+          fetchUserReservations(id).catch(err => {
+            console.warn('⚠️ Erreur reservations:', err);
+            return [];
+          }),
+          fetchUserDocuments(id).catch(err => {
+            console.warn('⚠️ Erreur documents:', err);
+            return [];
+          })
+        ]);
 
-      const userData = userDataService.getUserById(userId);
-      console.log('Tentative de chargement de l\'utilisateur:', userId, 'Données trouvées:', userData);
-      
-      if (userData) {
-        // Données simulées pour les réservations (si locataire)
-        const mockReservations = [
-          {
-            id: 1,
-            boatName: 'Bateau de Plaisance',
-            port: 'Port de Nice',
-            startDate: '2024-02-15',
-            endDate: '2024-02-20',
-            status: 'Terminée',
-            totalPrice: 300,
-            rating: 5
-          },
-          {
-            id: 2,
-            boatName: 'Voilier Classique',
-            port: 'Port de Marseille',
-            startDate: '2024-01-10',
-            endDate: '2024-01-15',
-            status: 'Terminée',
-            totalPrice: 450,
-            rating: 4
-          },
-          {
-            id: 3,
-            boatName: 'Catamaran Luxe',
-            port: 'Port de Cannes',
-            startDate: '2024-03-01',
-            endDate: '2024-03-05',
-            status: 'En cours',
-            totalPrice: 600,
-            rating: null
-          }
-        ];
-
-        // Données simulées pour les bateaux (si propriétaire)
-        const mockBoats = [
-          {
-            id: 1,
-            name: 'Bateau de Plaisance',
-            type: 'Moteur',
-            length: '12m',
-            capacity: 8,
-            port: 'Port de Nice',
-            status: 'Disponible',
-            totalEarnings: 1500,
-            totalReservations: 12,
-            rating: 4.8
-          },
-          {
-            id: 2,
-            name: 'Voilier Classique',
-            type: 'Voilier',
-            length: '15m',
-            capacity: 6,
-            port: 'Port de Marseille',
-            status: 'En maintenance',
-            totalEarnings: 800,
-            totalReservations: 8,
-            rating: 4.6
-          }
-        ];
-
-        setUser({
-          ...userData,
-          reservations: mockReservations,
-          boats: mockBoats,
+        // Transformer les données
+        const transformedUser = transformUserData(userDetails);
+        const userWithDetails = {
+          ...transformedUser,
+          boats: boats || [],
+          reservations: reservations || [],
+          documents: documents || [],
+          // Calculer les totaux
+          totalSpent: reservations?.reduce((sum, res) => sum + (res.total_price || 0), 0) || 0,
+          totalEarned: boats?.reduce((sum, boat) => sum + (boat.total_earnings || 0), 0) || 0,
           // Déduire isOwner et isRenter des rôles
-          isOwner: userData.roles.includes('Propriétaire'),
-          isRenter: userData.roles.includes('Locataire')
-        });
-      } else {
-        console.log('Aucun utilisateur trouvé pour l\'ID:', userId);
-        console.log('Utilisateurs disponibles:', userDataService.getAllUsers());
+          isOwner: transformedUser.roles.includes('Propriétaire'),
+          isRenter: transformedUser.roles.includes('Locataire')
+        };
+
+        console.log('✅ Détails chargés:', userWithDetails);
+        setUser(userWithDetails);
+      } catch (error) {
+        console.error('❌ Erreur lors du chargement des détails:', error);
+        ErrorAlert('Erreur !', `Impossible de charger les détails: ${error.message}`);
+      } finally {
+        setLoading(false);
       }
     };
 
-    // Charger l'utilisateur au montage
-    loadUser();
-
-    // Écouter les changements
-    const unsubscribe = userDataService.addListener(() => {
+    if (id) {
       loadUser();
-    });
-
-    return unsubscribe;
-  }, [userId]);
+    }
+  }, [id]);
 
   // Fonction pour activer/désactiver l'utilisateur
   const handleToggleStatus = async () => {
@@ -150,13 +128,19 @@ const DetailsUsers = () => {
       const confirmed = await ActivationConfirmation(action, 1, 'utilisateur');
       
       if (confirmed) {
-        userDataService.updateUserStatus(user.id, !user.active);
+        const userData = { is_active: !user.active };
+        await updateUser(user.id, userData);
+        
+        // Mettre à jour l'état local
+        setUser(prev => ({ ...prev, active: !prev.active }));
+        
         SuccessAlert(
           `Utilisateur ${user.active ? 'désactivé' : 'activé'} !`,
           `Le compte a été ${user.active ? 'désactivé' : 'activé'} avec succès.`
         );
       }
     } catch (error) {
+      console.error('❌ Erreur lors du changement de statut:', error);
       ErrorAlert('Erreur !', 'Impossible de modifier le statut de l\'utilisateur.');
     }
   };
@@ -170,7 +154,7 @@ const DetailsUsers = () => {
     };
     
     if (!Array.isArray(roles)) {
-      roles = [roles]; // Fallback pour la compatibilité
+      roles = [roles];
     }
     
     return (
@@ -203,7 +187,10 @@ const DetailsUsers = () => {
     </span>
   );
 
-  
+  // Afficher le preloader pendant le chargement
+  if (loading) {
+    return <Preloader />;
+  }
 
   if (!user) {
     return (
@@ -223,11 +210,7 @@ const DetailsUsers = () => {
           <div className="text-center">
             <FontAwesomeIcon icon={faUser} className="w-16 h-16 text-gray-400 mb-4" />
             <h2 className="text-xl font-semibold text-gray-700 mb-2">Utilisateur non trouvé</h2>
-            <p className="text-gray-500 mb-4">L'utilisateur avec l'ID {userId} n'existe pas ou n'a pas pu être chargé.</p>
-            <div className="text-sm text-gray-400 space-y-1">
-              <p>ID recherché: {userId}</p>
-              <p>Utilisateurs disponibles: {userDataService.getAllUsers().length}</p>
-            </div>
+            <p className="text-gray-500 mb-4">L'utilisateur avec l'ID {id} n'existe pas ou n'a pas pu être chargé.</p>
             <button
               onClick={() => navigate('/admin/sl/users')}
               className="mt-4 bg-[#AD7C59] hover:bg-[#8B6B4A] text-white px-4 py-2 rounded-lg transition-colors"
@@ -339,12 +322,12 @@ const DetailsUsers = () => {
                   <div className="flex items-center space-x-3">
                     <FontAwesomeIcon icon={faPhone} className="w-4 h-4 text-gray-400" />
                     <span className="text-gray-600">Téléphone :</span>
-                    <span className="font-medium">{user.phone}</span>
+                    <span className="font-medium">{user.phone || 'Non renseigné'}</span>
                   </div>
                   <div className="flex items-center space-x-3">
                     <FontAwesomeIcon icon={faMapMarkerAlt} className="w-4 h-4 text-gray-400" />
                     <span className="text-gray-600">Adresse :</span>
-                    <span className="font-medium">{user.address}</span>
+                    <span className="font-medium">{user.address || 'Non renseignée'}</span>
                   </div>
                 </div>
               </div>
@@ -377,8 +360,8 @@ const DetailsUsers = () => {
 
             {/* Statistiques */}
             <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-                          {user.roles?.includes('Locataire') && (
-              <div className="bg-[#87CEEB]/10 p-4 rounded-lg border border-[#87CEEB]/20">
+              {user.roles?.includes('Locataire') && (
+                <div className="bg-[#87CEEB]/10 p-4 rounded-lg border border-[#87CEEB]/20">
                   <div className="flex items-center">
                     <FontAwesomeIcon icon={faCalendarCheck} className="w-8 h-8 text-[#87CEEB]" />
                     <div className="ml-4">
@@ -389,8 +372,8 @@ const DetailsUsers = () => {
                 </div>
               )}
               
-                          {user.roles?.includes('Propriétaire') && (
-              <div className="bg-[#C1D0C4]/10 p-4 rounded-lg border border-[#C1D0C4]/20">
+              {user.roles?.includes('Propriétaire') && (
+                <div className="bg-[#C1D0C4]/10 p-4 rounded-lg border border-[#C1D0C4]/20">
                   <div className="flex items-center">
                     <FontAwesomeIcon icon={faShip} className="w-8 h-8 text-[#C1D0C4]" />
                     <div className="ml-4">
@@ -445,45 +428,54 @@ const DetailsUsers = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {user.reservations.map((reservation) => (
-                    <tr key={reservation.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">{reservation.boatName}</div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">{reservation.port}</div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">
-                          {new Date(reservation.startDate).toLocaleDateString('fr-FR')} - {new Date(reservation.endDate).toLocaleDateString('fr-FR')}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          reservation.status === 'Terminée' 
-                            ? 'bg-[#C1D0C4] text-[#4B6A88]' 
-                            : reservation.status === 'En cours'
-                            ? 'bg-[#87CEEB] text-[#4B6A88]'
-                            : 'bg-gray-100 text-gray-800'
-                        }`}>
-                          {reservation.status}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">{reservation.totalPrice} €</div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        {reservation.rating ? (
-                          <div className="flex items-center">
-                            <FontAwesomeIcon icon={faStar} className="w-4 h-4 text-yellow-400 mr-1" />
-                            <span className="text-sm text-gray-900">{reservation.rating}/5</span>
+                  {user.reservations.length > 0 ? (
+                    user.reservations.map((reservation, index) => (
+                      <tr key={index} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm font-medium text-gray-900">{reservation.boat_name || 'Bateau'}</div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm text-gray-900">{reservation.port_name || 'Port'}</div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm text-gray-900">
+                            {new Date(reservation.start_date).toLocaleDateString('fr-FR')} - {new Date(reservation.end_date).toLocaleDateString('fr-FR')}
                           </div>
-                        ) : (
-                          <span className="text-sm text-gray-400">Pas encore noté</span>
-                        )}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                            reservation.status === 'completed' 
+                              ? 'bg-[#C1D0C4] text-[#4B6A88]' 
+                              : reservation.status === 'active'
+                              ? 'bg-[#87CEEB] text-[#4B6A88]'
+                              : 'bg-gray-100 text-gray-800'
+                          }`}>
+                            {reservation.status === 'completed' ? 'Terminée' : 
+                             reservation.status === 'active' ? 'En cours' : reservation.status}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm font-medium text-gray-900">{reservation.total_price || 0} €</div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          {reservation.rating ? (
+                            <div className="flex items-center">
+                              <FontAwesomeIcon icon={faStar} className="w-4 h-4 text-yellow-400 mr-1" />
+                              <span className="text-sm text-gray-900">{reservation.rating}/5</span>
+                            </div>
+                          ) : (
+                            <span className="text-sm text-gray-400">Pas encore noté</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="6" className="px-6 py-4 text-center text-gray-500">
+                        Aucune réservation trouvée
                       </td>
                     </tr>
-                  ))}
+                  )}
                 </tbody>
               </table>
             </div>
@@ -524,41 +516,49 @@ const DetailsUsers = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {user.boats.map((boat) => (
-                    <tr key={boat.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">{boat.name}</div>
-                        <div className="text-sm text-gray-500">{boat.length} • {boat.capacity} pers.</div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">{boat.type}</div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">{boat.port}</div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          boat.status === 'Disponible' 
-                            ? 'bg-[#C1D0C4] text-[#4B6A88]' 
-                            : 'bg-[#AD7C59] text-white'
-                        }`}>
-                          {boat.status}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">{boat.totalReservations}</div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">{boat.totalEarnings} €</div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <FontAwesomeIcon icon={faStar} className="w-4 h-4 text-yellow-400 mr-1" />
-                          <span className="text-sm text-gray-900">{boat.rating}/5</span>
-                        </div>
+                  {user.boats.length > 0 ? (
+                    user.boats.map((boat, index) => (
+                      <tr key={index} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm font-medium text-gray-900">{boat.name || 'Bateau'}</div>
+                          <div className="text-sm text-gray-500">{boat.length || 'N/A'} • {boat.capacity || 'N/A'} pers.</div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm text-gray-900">{boat.type || 'Type inconnu'}</div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm text-gray-900">{boat.port_name || 'Port inconnu'}</div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                            boat.is_available 
+                              ? 'bg-[#C1D0C4] text-[#4B6A88]' 
+                              : 'bg-[#AD7C59] text-white'
+                          }`}>
+                            {boat.is_available ? 'Disponible' : 'Indisponible'}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm font-medium text-gray-900">{boat.total_reservations || 0}</div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm font-medium text-gray-900">{boat.total_earnings || 0} €</div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center">
+                            <FontAwesomeIcon icon={faStar} className="w-4 h-4 text-yellow-400 mr-1" />
+                            <span className="text-sm text-gray-900">{boat.rating || 'N/A'}/5</span>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="7" className="px-6 py-4 text-center text-gray-500">
+                        Aucun bateau trouvé
                       </td>
                     </tr>
-                  ))}
+                  )}
                 </tbody>
               </table>
             </div>

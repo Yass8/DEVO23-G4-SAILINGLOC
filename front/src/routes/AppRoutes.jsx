@@ -1,6 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 
-
 // Pages publiques
 import Home from '../pages/public/Home.jsx';
 import About from '../pages/public/About.jsx';
@@ -13,7 +12,12 @@ import Register from '../pages/public/Register.jsx';
 import ForgotPasswordEmail from "../pages/public/ForgotPassword.jsx";
 import ResetPassword from "../pages/public/ResetPassword.jsx";
 import Page404 from '../pages/public/Page404.jsx';
-
+import Destinations from "../pages/public/Destinations.jsx";
+import CGU from '../pages/public/cgu.jsx';
+import MentionsLegales from '../pages/public/Mentions-legales.jsx';
+import PolitiqueCookies from '../pages/public/politique-cookies.jsx';
+import PolitiqueConfidentialite from '../pages/public/politique-confidentialite.jsx';
+import PlanDuSite from '../pages/public/plan-site.jsx';
 // Espace client
 import Customer from "../pages/client/Customer.jsx";
 import DashboardClient from "../components/client/DashboardClient.jsx";
@@ -44,10 +48,14 @@ import ReservationChat from "../pages/client/locataire/ReservationChat.jsx";
 import AdminDashboard from "../pages/admin/Dashboard.jsx";
 import UsersAdmin from "../pages/admin/UsersAdmin.jsx";
 import PortsAdmin from "../pages/admin/Ports.jsx";
-import ReviewsAdmin from "../pages/admin/Review.jsx";
+import ReviewsAdmin from "../pages/admin/ReviewsAdmin.jsx";
 import PaymentsAdmin from "../pages/admin/PaymentsAdmin.jsx";
+import MessagesAdmin from "../pages/admin/MessagesAdmin.jsx";
 import DetailsUsers from "../pages/admin/DetailsUsers.jsx";
 import BoatsAdmin from "../pages/admin/BoatsAdmin.jsx";
+import AddBoatAdmin from "../pages/admin/AddBoatAdmin.jsx";
+import EditBoatAdmin from "../pages/admin/EditBoatAdmin.jsx";
+import BoatTypesAdmin from "../pages/admin/BoatTypesAdmin.jsx";
 import ReservationsAdmin from "../pages/admin/Reservations.jsx";
 import ContractsAdmin from "../pages/admin/Contracts.jsx";
 import AdminLayout from "../pages/admin/AdminLayout.jsx";
@@ -60,6 +68,7 @@ export default function AppRoutes() {
             <Route path="/" element={<Navigate to="/home" replace />} />
             <Route path="/home" element={<Home />} />
             <Route path="/about" element={<About />} />
+            <Route path="/destination" element={<Destinations />} />
             <Route path="/category" element={<Category />} />
             <Route path="/boats" element={<Boats />} />
             <Route path="/boat/:slug" element={<Details />} />
@@ -69,8 +78,12 @@ export default function AppRoutes() {
             <Route path="/register" element={<Register />} />
             <Route path="/forgot-password-email" element={<ForgotPasswordEmail />} />
             <Route path="/reset-password/:token" element={<ResetPassword />} />
+            <Route path="/cgu" element={<CGU />} />
+            <Route path="/mentions-legales" element={<MentionsLegales />} />
+            <Route path="/politique-cookies" element={<PolitiqueCookies />} />
+            <Route path="/politique-confidentialite" element={<PolitiqueConfidentialite />} />
+            <Route path="/plan-site" element={<PlanDuSite />} />      
             <Route path="/404" element={<Page404 />} />
-
             {/* Espace client */}
             <Route path="/my-space" element={<Customer />}>
                 <Route index element={<Navigate to="dashboard" replace />} />
@@ -105,9 +118,14 @@ export default function AppRoutes() {
                 <Route path="users" element={<UsersAdmin />} />
                 <Route path="ports" element={<PortsAdmin />} />
                 <Route path="reviews" element={<ReviewsAdmin />} />
+    
                 <Route path="payments" element={<PaymentsAdmin />} />
+                <Route path="messages" element={<MessagesAdmin />} />
                 <Route path="users/:id" element={<DetailsUsers />} />
                 <Route path="boats" element={<BoatsAdmin />} />
+                <Route path="boats/add" element={<AddBoatAdmin />} />
+                <Route path="boats/:id/edit" element={<EditBoatAdmin />} />
+                <Route path="boats/types" element={<BoatTypesAdmin />} />
                 <Route path="reservations" element={<ReservationsAdmin />} />
                 <Route path="contracts" element={<ContractsAdmin />} />
             </Route>
