@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import Preloader from '../../components/common/Preloader';
 import {
@@ -8,8 +9,15 @@ import {
   ReservationPagination,
   ReservationModal
 } from '../../components/admin/reservations';
+import { 
+  fetchReservations, 
+  fetchReservationById, 
+  updateReservation, 
+  deleteReservation 
+} from '../../services/reservationServices';
 
 const Reservations = () => {
+  const navigate = useNavigate();
   const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -20,21 +28,91 @@ const Reservations = () => {
   const [showModal, setShowModal] = useState(false);
   const [updateTrigger, setUpdateTrigger] = useState(0);
 
-  // Données simulées
-  const mockReservations = [
-    { id: 1, boatName: "Bavaria 46 Cruiser", clientName: "Jean Dupont", clientEmail: "jean.dupont@email.com", startDate: "2024-07-15", endDate: "2024-07-22", status: "confirmed", totalPrice: 1200, deposit: 300, createdAt: "2024-07-10", port: "Port de Nice", boatOwner: "Marie Martin" },
-    { id: 2, boatName: "Catamaran Lagoon 42", clientName: "Sophie Bernard", clientEmail: "sophie.bernard@email.com", startDate: "2024-07-20", endDate: "2024-07-27", status: "pending", totalPrice: 1800, deposit: 450, createdAt: "2024-07-12", port: "Port de Cannes", boatOwner: "Pierre Durand" },
-    { id: 3, boatName: "Voilier Beneteau Oceanis 45", clientName: "Marc Leroy", clientEmail: "marc.leroy@email.com", startDate: "2024-07-18", endDate: "2024-07-25", status: "cancelled", totalPrice: 1400, deposit: 350, createdAt: "2024-07-11", port: "Port de Saint-Tropez", boatOwner: "Claire Moreau" },
-    { id: 4, boatName: "Bateau à moteur Azimut 55", clientName: "Anne Rousseau", clientEmail: "anne.rousseau@email.com", startDate: "2024-07-25", endDate: "2024-08-01", status: "completed", totalPrice: 2500, deposit: 625, createdAt: "2024-07-13", port: "Port de Monaco", boatOwner: "François Petit" },
-    { id: 5, boatName: "Voilier Jeanneau Sun Odyssey 519", clientName: "Thomas Dubois", clientEmail: "thomas.dubois@email.com", startDate: "2024-08-01", endDate: "2024-08-08", status: "pending", totalPrice: 1600, deposit: 400, createdAt: "2024-07-14", port: "Port de Antibes", boatOwner: "Isabelle Blanc" }
-  ];
+  // Fonction pour transformer les données de l'API vers le format attendu par le composant
+  const transformReservationData = (apiReservation) => {
+    return {
+      id: apiReservation.id.toString(),
+      boatName: apiReservation.boat?.name || 'Bateau inconnu',
+      clientName: `${apiReservation.user?.firstname || ''} ${apiReservation.user?.lastname || ''}`.trim(),
+      clientEmail: apiReservation.user?.email || '',
+      startDate: apiReservation.start_date,
+      endDate: apiReservation.end_date,
+      status: apiReservation.status || 'pending',
+      totalPrice: apiReservation.total_price || 0,
+      deposit: apiReservation.deposit || 0,
+      createdAt: apiReservation.created_at,
+      port: apiReservation.boat?.port?.name || 'Port inconnu',
+      boatOwner: `${apiReservation.boat?.user?.firstname || ''} ${apiReservation.boat?.user?.lastname || ''}`.trim(),
+      reference: apiReservation.reference || '',
+      boat_id: apiReservation.boat_id,
+      user_id: apiReservation.user_id
+    };
+  };
 
+  // Charger les réservations depuis l'API
   useEffect(() => {
-    setTimeout(() => {
-      setReservations(mockReservations);
-      setLoading(false);
-    }, 1000);
-  }, []);
+    const loadReservations = async () => {
+      try {
+        setLoading(true);
+        
+        // Vérification de l'authentification
+        const token = localStorage.getItem('token');
+        if (!token) {
+          console.warn('⚠️ Aucun token trouvé, redirection vers la connexion...');
+          Swal.fire({
+            title: 'Authentification requise !',
+            text: 'Vous devez être connecté pour accéder à cette page.',
+            icon: 'error',
+            confirmButtonColor: '#AD7C59'
+          });
+          navigate('/login');
+          return;
+        }
+        
+        console.log('�� Chargement des réservations depuis l\'API...');
+        const apiReservations = await fetchReservations();
+        console.log('✅ Réponse de l\'API:', apiReservations);
+        
+        if (!Array.isArray(apiReservations)) {
+          throw new Error('La réponse de l\'API n\'est pas un tableau');
+        }
+        
+        // Transformer les données
+        const transformedReservations = apiReservations.map(transformReservationData);
+        console.log('✅ Réservations transformées:', transformedReservations);
+        
+        setReservations(transformedReservations);
+        
+      } catch (error) {
+        console.error('❌ Erreur lors du chargement des réservations:', error);
+        
+        // Gestion spécifique des erreurs d'authentification
+        if (error.message.includes('Token invalide') || error.message.includes('401')) {
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          Swal.fire({
+            title: 'Session expirée !',
+            text: 'Votre session a expiré. Veuillez vous reconnecter.',
+            icon: 'error',
+            confirmButtonColor: '#AD7C59'
+          });
+          navigate('/login');
+          return;
+        }
+        
+        Swal.fire({
+          title: 'Erreur de chargement !',
+          text: `Impossible de charger les réservations.\n\nDétails: ${error.message}`,
+          icon: 'error',
+          confirmButtonColor: '#AD7C59'
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadReservations();
+  }, [navigate]);
 
   // Filtrage et pagination
   const { filteredReservations, paginatedReservations, totalPages, itemsPerPage } = useMemo(() => {
@@ -76,69 +154,133 @@ const Reservations = () => {
 
   // Gestionnaires
   const handleStatusChange = useCallback(async (reservationId, newStatus) => {
-    console.log(`🚀 handleStatusChange appelé avec: ID=${reservationId}, Status=${newStatus}`);
+    console.log(`�� handleStatusChange appelé avec: ID=${reservationId}, Status=${newStatus}`);
     
-    // Trouver la réservation pour afficher les détails
-    const reservation = reservations.find(r => r.id === reservationId);
-    const boatName = reservation?.boatName || 'Réservation';
-    const clientName = reservation?.clientName || 'Client';
-    
-    const statusText = newStatus === 'confirmed' ? 'confirmer' : 'annuler';
-    const statusIcon = newStatus === 'confirmed' ? 'success' : 'warning';
-    
-    console.log(`📋 Détails de la réservation: ${boatName} - ${clientName}`);
-    
-    // Afficher la confirmation SweetAlert
-    const result = await Swal.fire({
-      title: `Confirmer l'action ?`,
-      html: `
-        <div class="text-left">
-          <p><strong>Bateau :</strong> ${boatName}</p>
-          <p><strong>Client :</strong> ${clientName}</p>
-          <p><strong>Action :</strong> ${statusText} la réservation</p>
-        </div>
-      `,
-      icon: statusIcon,
-      showCancelButton: true,
-      confirmButtonColor: newStatus === 'confirmed' ? '#10B981' : '#F59E0B',
-      cancelButtonColor: '#6B7280',
-      confirmButtonText: newStatus === 'confirmed' ? 'Confirmer' : 'Annuler',
-      cancelButtonText: 'Annuler l\'action',
-      reverseButtons: true
-    });
-
-    console.log(`🎯 Résultat SweetAlert:`, result);
-
-    if (result.isConfirmed) {
-      console.log(`✅ Action confirmée, mise à jour du statut...`);
+    try {
+      // Trouver la réservation pour afficher les détails
+      const reservation = reservations.find(r => r.id === reservationId);
+      const boatName = reservation?.boatName || 'Réservation';
+      const clientName = reservation?.clientName || 'Client';
       
-      // Mettre à jour le statut
-      setReservations(prev => {
-        const updated = prev.map(res => 
-          res.id === reservationId ? { ...res, status: newStatus } : res
-        );
-        console.log('📊 Réservations mises à jour:', updated);
-        return updated;
+      const statusText = newStatus === 'confirmed' ? 'confirmer' : 'annuler';
+      const statusIcon = newStatus === 'confirmed' ? 'success' : 'warning';
+      
+      console.log(`📋 Détails de la réservation: ${boatName} - ${clientName}`);
+      
+      // Afficher la confirmation SweetAlert
+      const result = await Swal.fire({
+        title: `Confirmer l'action ?`,
+        html: `
+          <div class="text-left">
+            <p><strong>Bateau :</strong> ${boatName}</p>
+            <p><strong>Client :</strong> ${clientName}</p>
+            <p><strong>Action :</strong> ${statusText} la réservation</p>
+          </div>
+        `,
+        icon: statusIcon,
+        showCancelButton: true,
+        confirmButtonColor: newStatus === 'confirmed' ? '#10B981' : '#F59E0B',
+        cancelButtonColor: '#6B7280',
+        confirmButtonText: newStatus === 'confirmed' ? 'Confirmer' : 'Annuler',
+        cancelButtonText: 'Annuler l\'action',
+        reverseButtons: true
       });
-      
-      // Force la mise à jour des composants
-      setUpdateTrigger(prev => prev + 1);
-      
-      // Afficher le succès
+
+      console.log(`🎯 Résultat SweetAlert:`, result);
+
+      if (result.isConfirmed) {
+        console.log(`✅ Action confirmée, mise à jour du statut...`);
+        
+        // Appel API pour mettre à jour le statut
+        const updateData = { status: newStatus };
+        await updateReservation(reservationId, updateData);
+        
+        // Mettre à jour le statut local
+        setReservations(prev => {
+          const updated = prev.map(res => 
+            res.id === reservationId ? { ...res, status: newStatus } : res
+          );
+          console.log('�� Réservations mises à jour:', updated);
+          return updated;
+        });
+        
+        // Force la mise à jour des composants
+        setUpdateTrigger(prev => prev + 1);
+        
+        // Afficher le succès
+        Swal.fire({
+          title: 'Succès !',
+          text: `La réservation a été ${newStatus === 'confirmed' ? 'confirmée' : 'annulée'} avec succès.`,
+          icon: 'success',
+          confirmButtonColor: '#10B981',
+          timer: 2000,
+          timerProgressBar: true
+        });
+      } else {
+        console.log(`❌ Action annulée par l'utilisateur`);
+      }
+    } catch (error) {
+      console.error('❌ Erreur lors de la mise à jour du statut:', error);
       Swal.fire({
-        title: 'Succès !',
-        text: `La réservation a été ${newStatus === 'confirmed' ? 'confirmée' : 'annulée'} avec succès.`,
-        icon: 'success',
-        confirmButtonColor: '#10B981',
-        timer: 2000,
-        timerProgressBar: true
+        title: 'Erreur !',
+        text: `Impossible de mettre à jour la réservation: ${error.message}`,
+        icon: 'error',
+        confirmButtonColor: '#AD7C59'
       });
-    } else {
-      console.log(`❌ Action annulée par l'utilisateur`);
     }
   }, [reservations]);
 
-  console.log('🔍 handleStatusChange défini:', handleStatusChange);
+  const handleDeleteReservation = useCallback(async (reservationId) => {
+    try {
+      const reservation = reservations.find(r => r.id === reservationId);
+      const boatName = reservation?.boatName || 'Réservation';
+      const clientName = reservation?.clientName || 'Client';
+      
+      const result = await Swal.fire({
+        title: 'Supprimer la réservation ?',
+        html: `
+          <div class="text-left">
+            <p><strong>Bateau :</strong> ${boatName}</p>
+            <p><strong>Client :</strong> ${clientName}</p>
+            <p class="text-red-600"><strong>Cette action est irréversible !</strong></p>
+          </div>
+        `,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#DC2626',
+        cancelButtonColor: '#6B7280',
+        confirmButtonText: 'Supprimer',
+        cancelButtonText: 'Annuler',
+        reverseButtons: true
+      });
+
+      if (result.isConfirmed) {
+        await deleteReservation(reservationId);
+        
+        // Retirer de la liste locale
+        setReservations(prev => prev.filter(r => r.id !== reservationId));
+        
+        Swal.fire({
+          title: 'Supprimé !',
+          text: 'La réservation a été supprimée avec succès.',
+          icon: 'success',
+          confirmButtonColor: '#10B981',
+          timer: 2000,
+          timerProgressBar: true
+        });
+      }
+    } catch (error) {
+      console.error('❌ Erreur lors de la suppression:', error);
+      Swal.fire({
+        title: 'Erreur !',
+        text: `Impossible de supprimer la réservation: ${error.message}`,
+        icon: 'error',
+        confirmButtonColor: '#AD7C59'
+      });
+    }
+  }, [reservations]);
+
+  console.log('�� handleStatusChange défini:', handleStatusChange);
 
   if (loading) {
     return <Preloader />;
@@ -147,7 +289,14 @@ const Reservations = () => {
   return (
     <div className="space-y-6">
       <ReservationHeader />
-      <ReservationFilters searchTerm={searchTerm} setSearchTerm={setSearchTerm} statusFilter={statusFilter} setStatusFilter={setStatusFilter} dateFilter={dateFilter} setDateFilter={setDateFilter} />
+      <ReservationFilters 
+        searchTerm={searchTerm} 
+        setSearchTerm={setSearchTerm} 
+        statusFilter={statusFilter} 
+        setStatusFilter={setStatusFilter} 
+        dateFilter={dateFilter} 
+        setDateFilter={setDateFilter} 
+      />
       <ReservationTable 
         reservations={paginatedReservations} 
         onView={(reservation) => { 
@@ -158,10 +307,24 @@ const Reservations = () => {
         onStatusChange={(id, status) => {
           console.log('🔄 onStatusChange appelé depuis ReservationTable:', { id, status });
           handleStatusChange(id, status);
-        }} 
+        }}
+        onDelete={handleDeleteReservation}
       />
-      <ReservationPagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} totalItems={filteredReservations.length} itemsPerPage={itemsPerPage} currentItemsCount={paginatedReservations.length} />
-      <ReservationModal reservation={selectedReservation} isOpen={showModal} onClose={() => { setShowModal(false); setSelectedReservation(null); }} onStatusChange={handleStatusChange} />
+      <ReservationPagination 
+        currentPage={currentPage} 
+        totalPages={totalPages} 
+        onPageChange={setCurrentPage} 
+        totalItems={filteredReservations.length} 
+        itemsPerPage={itemsPerPage} 
+        currentItemsCount={paginatedReservations.length} 
+      />
+      <ReservationModal 
+        reservation={selectedReservation} 
+        isOpen={showModal} 
+        onClose={() => { setShowModal(false); setSelectedReservation(null); }} 
+        onStatusChange={handleStatusChange}
+        onDelete={handleDeleteReservation}
+      />
     </div>
   );
 };

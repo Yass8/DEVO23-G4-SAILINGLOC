@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import Preloader from '../../components/common/Preloader';
 import {
@@ -8,8 +9,15 @@ import {
   PaymentPagination,
   PaymentModal
 } from '../../components/admin/payments';
+import { 
+  fetchPayments, 
+  fetchPaymentById, 
+  updatePayment, 
+  deletePayment 
+} from '../../services/paymentServices';
 
 const PaymentsAdmin = () => {
+  const navigate = useNavigate();
   // États
   const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -23,104 +31,93 @@ const PaymentsAdmin = () => {
     amount: ''
   });
 
-  // Données mockées basées sur le modèle backend
-    const mockPayments = [
-      {
-        id: 1,
-      reference: 'PAY-2024-001',
-      reservation_id: 1,
-      reservationId: 'RES-2024-001',
-      amount: 1250.00,
-      method: 'credit_card',
-      transaction_id: 'TXN_123456789',
-        status: 'completed',
-      commission_amount: 125.00,
-      createdAt: '2024-01-15T10:30:00Z',
-      updatedAt: '2024-01-15T10:30:00Z',
-      clientName: 'Jean Dupont',
-      clientEmail: 'jean.dupont@email.com',
-      boatName: 'Bavaria 46 Cruiser',
-      boatOwner: 'Marie Martin',
-      startDate: '2024-02-01',
-      endDate: '2024-02-08'
-      },
-      {
-        id: 2,
-      reference: 'PAY-2024-002',
-      reservation_id: 2,
-      reservationId: 'RES-2024-002',
-      amount: 890.00,
-      method: 'credit_card',
-      transaction_id: 'TXN_987654321',
-        status: 'pending',
-      commission_amount: 89.00,
-      createdAt: '2024-01-16T14:20:00Z',
-      updatedAt: '2024-01-16T14:20:00Z',
-      clientName: 'Sophie Bernard',
-      clientEmail: 'sophie.bernard@email.com',
-      boatName: 'Catamaran Lagoon 42',
-      boatOwner: 'Pierre Durand',
-      startDate: '2024-02-15',
-      endDate: '2024-02-22'
-      },
-      {
-        id: 3,
-      reference: 'PAY-2024-003',
-      reservation_id: 3,
-      reservationId: 'RES-2024-003',
-      amount: 2100.00,
-      method: 'credit_card',
-      transaction_id: null,
-      status: 'failed',
-      commission_amount: 210.00,
-      createdAt: '2024-01-17T09:15:00Z',
-      updatedAt: '2024-01-17T09:15:00Z',
-      clientName: 'Lucas Moreau',
-      clientEmail: 'lucas.moreau@email.com',
-      boatName: 'Yacht Princess 55',
-      boatOwner: 'Claire Rousseau',
-      startDate: '2024-03-01',
-      endDate: '2024-03-08'
-    },
-    {
-      id: 4,
-      reference: 'PAY-2024-004',
-      reservation_id: 4,
-      reservationId: 'RES-2024-004',
-      amount: 750.00,
-      method: 'credit_card',
-      transaction_id: 'TXN_456789123',
-      status: 'completed',
-      commission_amount: 75.00,
-      createdAt: '2024-01-18T16:45:00Z',
-      updatedAt: '2024-01-18T16:45:00Z',
-      clientName: 'Emma Petit',
-      clientEmail: 'emma.petit@email.com',
-      boatName: 'Voilier Beneteau Oceanis 45',
-      boatOwner: 'Thomas Leroy',
-      startDate: '2024-02-20',
-      endDate: '2024-02-27'
-    },
-    {
-      id: 5,
-      reference: 'PAY-2024-005',
-      reservation_id: 5,
-      reservationId: 'RES-2024-005',
-      amount: 1800.00,
-      method: 'credit_card',
-      transaction_id: 'TXN_789123456',
-        status: 'refunded',
-      commission_amount: 180.00,
-      createdAt: '2024-01-19T11:30:00Z',
-      updatedAt: '2024-01-20T15:20:00Z',
-      clientName: 'Antoine Girard',
-      clientEmail: 'antoine.girard@email.com',
-      boatName: 'Bateau à moteur Azimut 50',
-      boatOwner: 'Nathalie Dubois',
-      startDate: '2024-03-10',
-      endDate: '2024-03-17'
-    }
-  ];
+  // Fonction pour transformer les données de l'API vers le format attendu par le composant
+  const transformPaymentData = (apiPayment) => {
+    return {
+      id: apiPayment.id.toString(),
+      reference: apiPayment.reference || `PAY-${apiPayment.id}`,
+      reservation_id: apiPayment.reservation_id,
+      reservationId: apiPayment.reservation?.reference || `RES-${apiPayment.reservation_id}`,
+      amount: parseFloat(apiPayment.amount) || 0,
+      method: apiPayment.method || 'credit_card',
+      transaction_id: apiPayment.transaction_id || null,
+      status: apiPayment.status || 'pending',
+      commission_amount: parseFloat(apiPayment.commission_amount) || 0,
+      createdAt: apiPayment.created_at,
+      updatedAt: apiPayment.updated_at,
+      clientName: `${apiPayment.reservation?.user?.firstname || ''} ${apiPayment.reservation?.user?.lastname || ''}`.trim(),
+      clientEmail: apiPayment.reservation?.user?.email || '',
+      boatName: apiPayment.reservation?.boat?.name || 'Bateau inconnu',
+      boatOwner: `${apiPayment.reservation?.boat?.user?.firstname || ''} ${apiPayment.reservation?.boat?.user?.lastname || ''}`.trim(),
+      startDate: apiPayment.reservation?.start_date || '',
+      endDate: apiPayment.reservation?.end_date || ''
+    };
+  };
+
+  // Charger les paiements depuis l'API
+  useEffect(() => {
+    const loadPayments = async () => {
+      try {
+        setLoading(true);
+        
+        // Vérification de l'authentification
+        const token = localStorage.getItem('token');
+        if (!token) {
+          console.warn('⚠️ Aucun token trouvé, redirection vers la connexion...');
+          Swal.fire({
+            title: 'Authentification requise !',
+            text: 'Vous devez être connecté pour accéder à cette page.',
+            icon: 'error',
+            confirmButtonColor: '#AD7C59'
+          });
+          navigate('/login');
+          return;
+        }
+        
+        console.log(' Chargement des paiements depuis l\'API...');
+        const apiPayments = await fetchPayments();
+        console.log('✅ Réponse de l\'API:', apiPayments);
+        
+        if (!Array.isArray(apiPayments)) {
+          throw new Error('La réponse de l\'API n\'est pas un tableau');
+        }
+        
+        // Transformer les données
+        const transformedPayments = apiPayments.map(transformPaymentData);
+        console.log('✅ Paiements transformés:', transformedPayments);
+        
+        setPayments(transformedPayments);
+        
+      } catch (error) {
+        console.error('❌ Erreur lors du chargement des paiements:', error);
+        
+        // Gestion spécifique des erreurs d'authentification
+        if (error.message.includes('Token invalide') || error.message.includes('401')) {
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          Swal.fire({
+            title: 'Session expirée !',
+            text: 'Votre session a expiré. Veuillez vous reconnecter.',
+            icon: 'error',
+            confirmButtonColor: '#AD7C59'
+          });
+          navigate('/login');
+          return;
+        }
+        
+        Swal.fire({
+          title: 'Erreur de chargement !',
+          text: `Impossible de charger les paiements.\n\nDétails: ${error.message}`,
+          icon: 'error',
+          confirmButtonColor: '#AD7C59'
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadPayments();
+  }, [navigate]);
 
   // Filtrage des paiements
   const filteredPayments = useMemo(() => {
@@ -162,9 +159,19 @@ const PaymentsAdmin = () => {
 
   const handleStatusChange = useCallback(async (paymentId, newStatus) => {
     try {
+      const payment = payments.find(p => p.id === paymentId);
+      const statusText = newStatus === 'completed' ? 'complété' : 'remboursé';
+      
       const result = await Swal.fire({
         title: 'Confirmer le changement de statut',
-        text: `Voulez-vous vraiment marquer ce paiement comme "${newStatus === 'completed' ? 'complété' : 'remboursé'}" ?`,
+        html: `
+          <div class="text-left">
+            <p><strong>Paiement :</strong> ${payment.reference}</p>
+            <p><strong>Montant :</strong> ${payment.amount}€</p>
+            <p><strong>Client :</strong> ${payment.clientName}</p>
+            <p><strong>Action :</strong> marquer comme "${statusText}"</p>
+          </div>
+        `,
         icon: 'question',
         showCancelButton: true,
         confirmButtonColor: newStatus === 'completed' ? '#10B981' : '#3B82F6',
@@ -174,36 +181,49 @@ const PaymentsAdmin = () => {
       });
 
       if (result.isConfirmed) {
-        // Mise à jour locale de l'état (simulation)
-        setPayments(prev => prev.map(payment => 
-      payment.id === paymentId 
-            ? { ...payment, status: newStatus, updatedAt: new Date().toISOString() }
-        : payment
+        // Appel API pour mettre à jour le statut
+        const updateData = { status: newStatus };
+        await updatePayment(paymentId, updateData);
+        
+        // Mise à jour locale de l'état
+        setPayments(prev => prev.map(p => 
+          p.id === paymentId 
+            ? { ...p, status: newStatus, updatedAt: new Date().toISOString() }
+            : p
         ));
 
         await Swal.fire({
           title: 'Statut mis à jour !',
-          text: `Le paiement a été marqué comme "${newStatus === 'completed' ? 'complété' : 'remboursé'}" avec succès.`,
+          text: `Le paiement a été marqué comme "${statusText}" avec succès.`,
           icon: 'success',
           confirmButtonColor: '#10B981'
         });
       }
     } catch (error) {
-      console.error('Erreur lors du changement de statut:', error);
+      console.error('❌ Erreur lors du changement de statut:', error);
       Swal.fire({
-        title: 'Erreur',
-        text: 'Une erreur est survenue lors de la mise à jour du statut.',
+        title: 'Erreur !',
+        text: `Impossible de mettre à jour le paiement: ${error.message}`,
         icon: 'error',
         confirmButtonColor: '#EF4444'
       });
     }
-  }, []);
+  }, [payments]);
 
   const handleDelete = useCallback(async (paymentId) => {
     try {
+      const payment = payments.find(p => p.id === paymentId);
+      
       const result = await Swal.fire({
         title: 'Confirmer la suppression',
-        text: 'Voulez-vous vraiment supprimer ce paiement ?',
+        html: `
+          <div class="text-left">
+            <p><strong>Paiement :</strong> ${payment.reference}</p>
+            <p><strong>Montant :</strong> ${payment.amount}€</p>
+            <p><strong>Client :</strong> ${payment.clientName}</p>
+            <p class="text-red-600">Cette action est irréversible !</p>
+          </div>
+        `,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#EF4444',
@@ -213,8 +233,11 @@ const PaymentsAdmin = () => {
       });
 
       if (result.isConfirmed) {
-        // Mise à jour locale de l'état (simulation)
-        setPayments(prev => prev.filter(payment => payment.id !== paymentId));
+        // Appel API pour supprimer le paiement
+        await deletePayment(paymentId);
+        
+        // Retirer de la liste locale
+        setPayments(prev => prev.filter(p => p.id !== paymentId));
 
         await Swal.fire({
           title: 'Supprimé !',
@@ -224,15 +247,15 @@ const PaymentsAdmin = () => {
         });
       }
     } catch (error) {
-      console.error('Erreur lors de la suppression du paiement:', error);
+      console.error('❌ Erreur lors de la suppression:', error);
       Swal.fire({
-        title: 'Erreur',
-        text: 'Une erreur est survenue lors de la suppression du paiement.',
+        title: 'Erreur !',
+        text: `Impossible de supprimer le paiement: ${error.message}`,
         icon: 'error',
         confirmButtonColor: '#EF4444'
       });
     }
-  }, []);
+  }, [payments]);
 
   // Effets pour le modal
   useEffect(() => {
@@ -244,24 +267,6 @@ const PaymentsAdmin = () => {
   const closeModal = useCallback(() => {
     setIsModalOpen(false);
     setSelectedPayment(null);
-  }, []);
-
-  // Chargement des données mockées
-  useEffect(() => {
-    const loadPayments = async () => {
-      setLoading(true);
-      try {
-        // Simulation d'un délai d'API
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        setPayments(mockPayments);
-      } catch (error) {
-        console.error('Erreur lors du chargement des paiements:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadPayments();
   }, []);
 
   if (loading) {

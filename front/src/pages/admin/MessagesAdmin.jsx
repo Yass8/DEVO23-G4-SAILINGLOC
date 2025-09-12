@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import {
   MessageHeader,
@@ -8,8 +9,15 @@ import {
   MessageModal
 } from '../../components/admin/messages';
 import Preloader from '../../components/common/Preloader';
+import { 
+  fetchMessages, 
+  fetchMessageById, 
+  updateMessage, 
+  deleteMessage 
+} from '../../services/messageServices';
 
 const MessagesAdmin = () => {
+  const navigate = useNavigate();
   // États
   const [messages, setMessages] = useState([]);
   const [filteredMessages, setFilteredMessages] = useState([]);
@@ -25,193 +33,65 @@ const MessagesAdmin = () => {
     minDate: ''
   });
 
-  // Fonctions d'action avec SweetAlert
-  const handleDeleteMessage = (messageId) => {
-    Swal.fire({
-      title: 'Êtes-vous sûr ?',
-      text: "Ce message sera définitivement supprimé",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#EF4444',
-      cancelButtonColor: '#6B7280',
-      confirmButtonText: 'Oui, supprimer',
-      cancelButtonText: 'Annuler'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        setMessages(prev => prev.filter(msg => msg.id !== messageId));
-        setFilteredMessages(prev => prev.filter(msg => msg.id !== messageId));
-        
-        Swal.fire(
-          'Supprimé !',
-          'Le message a été supprimé avec succès.',
-          'success'
-        );
-      }
-    });
-  };
-
-  const handleMarkAsRead = (messageId) => {
-    setMessages(prev => prev.map(msg =>
-      msg.id === messageId ? { ...msg, is_read: true } : msg
-    ));
-    
-    if (selectedMessage && selectedMessage.id === messageId) {
-      setSelectedMessage(prev => ({ ...prev, is_read: true }));
+  // Vérification de l'authentification
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.log('❌ Token invalide, nettoyage et redirection...');
+      localStorage.clear();
+      navigate('/login');
+      return;
     }
-    
-    Swal.fire(
-      'Marqué comme lu !',
-      'Le message a été marqué comme lu.',
-      'success'
-    );
+  }, [navigate]);
+
+  // Fonction de transformation des données API
+  const transformMessageData = (apiMessage) => {
+    return {
+      id: apiMessage.id,
+      sender_id: apiMessage.sender_id,
+      receiver_id: apiMessage.receiver_id,
+      reservation_id: apiMessage.reservation_id,
+      content: apiMessage.content,
+      is_read: apiMessage.is_read,
+      createdAt: apiMessage.createdAt,
+      senderName: apiMessage.sender?.firstname + ' ' + apiMessage.sender?.lastname || 'Utilisateur inconnu',
+      receiverName: apiMessage.receiver?.firstname + ' ' + apiMessage.receiver?.lastname || 'Utilisateur inconnu',
+      senderType: apiMessage.sender?.roles?.[0]?.toLowerCase() || 'client',
+      receiverType: apiMessage.receiver?.roles?.[0]?.toLowerCase() || 'client'
+    };
   };
 
-  const handleBulkDelete = () => {
-    if (selectedMessage && selectedMessage.length === 0) return;
-    
-    Swal.fire({
-      title: 'Êtes-vous sûr ?',
-      text: `Vous allez supprimer ${selectedMessage ? 1 : 0} message(s)`,
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#EF4444',
-      cancelButtonColor: '#6B7280',
-      confirmButtonText: 'Oui, supprimer',
-      cancelButtonText: 'Annuler'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        // Logique de suppression en lot
-        Swal.fire(
-          'Supprimé !',
-          'Les messages ont été supprimés avec succès.',
-          'success'
-        );
-      }
-    });
-  };
-
-  // Données mockées basées sur le modèle backend
-  const mockMessages = [
-    {
-      id: 1,
-      sender_id: 1,
-      receiver_id: 2,
-      reservation_id: 101,
-      content: "Bonjour, j'aimerais réserver votre bateau pour le weekend du 15-16 juin. Pouvez-vous me donner plus d'informations sur les disponibilités et les tarifs ?",
-      is_read: false,
-      createdAt: '2024-01-15T10:30:00Z',
-      senderName: 'Marie Dubois',
-      receiverName: 'Jean Martin',
-      senderType: 'client',
-      receiverType: 'proprietaire'
-    },
-    {
-      id: 2,
-      sender_id: 2,
-      receiver_id: 1,
-      reservation_id: 101,
-      content: "Bonjour Marie, bien sûr ! Votre bateau est disponible ce weekend. Le tarif est de 150€ par jour. Souhaitez-vous confirmer la réservation ?",
-      is_read: true,
-      createdAt: '2024-01-15T11:15:00Z',
-      senderName: 'Jean Martin',
-      receiverName: 'Marie Dubois',
-      senderType: 'proprietaire',
-      receiverType: 'client'
-    },
-    {
-      id: 3,
-      sender_id: 3,
-      receiver_id: 4,
-      reservation_id: null,
-      content: "Salut ! Comment ça va ? J'ai une question sur le nouveau système de réservation.",
-      is_read: false,
-      createdAt: '2024-01-14T16:45:00Z',
-      senderName: 'Sophie Bernard',
-      receiverName: 'Pierre Durand',
-      senderType: 'client',
-      receiverType: 'admin'
-    },
-    {
-      id: 4,
-      sender_id: 4,
-      receiver_id: 3,
-      reservation_id: null,
-      content: "Ça va bien, merci ! Le nouveau système est maintenant opérationnel. Quelles sont vos questions ?",
-      is_read: true,
-      createdAt: '2024-01-14T17:20:00Z',
-      senderName: 'Pierre Durand',
-      receiverName: 'Sophie Bernard',
-      senderType: 'admin',
-      receiverType: 'client'
-    },
-    {
-      id: 5,
-      sender_id: 5,
-      receiver_id: 6,
-      reservation_id: 102,
-      content: "Bonjour, j'ai un problème avec ma réservation. Le bateau n'est pas disponible à la date indiquée.",
-      is_read: false,
-      createdAt: '2024-01-13T09:30:00Z',
-      senderName: 'Lucas Moreau',
-      receiverName: 'Emma Petit',
-      senderType: 'client',
-      receiverType: 'proprietaire'
-    },
-    {
-      id: 6,
-      sender_id: 6,
-      receiver_id: 5,
-      reservation_id: 102,
-      content: "Je m'excuse pour ce désagrément. Il y a eu une erreur dans notre système. Je vais vous proposer une alternative.",
-      is_read: true,
-      createdAt: '2024-01-13T10:15:00Z',
-      senderName: 'Emma Petit',
-      receiverName: 'Lucas Moreau',
-      senderType: 'proprietaire',
-      receiverType: 'client'
-    },
-    {
-      id: 7,
-      sender_id: 7,
-      receiver_id: 8,
-      reservation_id: 103,
-      content: "Merci pour votre accueil hier ! Le bateau était parfait et la croisière était magnifique.",
-      is_read: true,
-      createdAt: '2024-01-12T14:20:00Z',
-      senderName: 'Thomas Leroy',
-      receiverName: 'Camille Rousseau',
-      senderType: 'client',
-      receiverType: 'proprietaire'
-    },
-    {
-      id: 8,
-      sender_id: 8,
-      receiver_id: 7,
-      reservation_id: 103,
-      content: "Ravie que vous ayez passé un bon moment ! N'hésitez pas à revenir, vous serez toujours le bienvenu.",
-      is_read: false,
-      createdAt: '2024-01-12T15:00:00Z',
-      senderName: 'Camille Rousseau',
-      receiverName: 'Thomas Leroy',
-      senderType: 'proprietaire',
-      receiverType: 'client'
+  // Charger les messages depuis l'API
+  const loadMessages = useCallback(async () => {
+    try {
+      console.log('🔄 Chargement des messages depuis l\'API...');
+      setIsLoading(true);
+      
+      const response = await fetchMessages();
+      console.log('✅ Réponse de l\'API:', response);
+      
+      const transformedMessages = response.map(transformMessageData);
+      console.log('✅ Messages transformés:', transformedMessages);
+      
+      setMessages(transformedMessages);
+      setFilteredMessages(transformedMessages);
+    } catch (error) {
+      console.error('❌ Erreur lors du chargement des messages:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Erreur',
+        text: 'Impossible de charger les messages. Veuillez réessayer.',
+        confirmButtonText: 'OK'
+      });
+    } finally {
+      setIsLoading(false);
     }
-  ];
+  }, []);
 
   // Charger les données au montage
   useEffect(() => {
-    const loadMessages = async () => {
-      setIsLoading(true);
-      // Simuler un délai d'API
-      setTimeout(() => {
-        setMessages(mockMessages);
-        setFilteredMessages(mockMessages);
-        setIsLoading(false);
-      }, 1000);
-    };
-
     loadMessages();
-  }, []);
+  }, [loadMessages]);
 
   // Filtrer les messages
   useEffect(() => {
@@ -254,7 +134,85 @@ const MessagesAdmin = () => {
     setCurrentPage(1);
   }, [messages, filters]);
 
+  // Fonctions d'action avec API
+  const handleDeleteMessage = async (messageId) => {
+    try {
+      await deleteMessage(messageId);
+      setMessages(prev => prev.filter(msg => msg.id !== messageId));
+      setFilteredMessages(prev => prev.filter(msg => msg.id !== messageId));
+      
+      if (selectedMessage && selectedMessage.id === messageId) {
+        setIsModalOpen(false);
+        setSelectedMessage(null);
+      }
+      
+      Swal.fire(
+        'Supprimé !',
+        'Le message a été supprimé avec succès.',
+        'success'
+      );
+    } catch (error) {
+      console.error('❌ Erreur lors de la suppression:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Erreur',
+        text: 'Impossible de supprimer le message. Veuillez réessayer.',
+        confirmButtonText: 'OK'
+      });
+    }
+  };
 
+  const handleMarkAsRead = async (messageId) => {
+    try {
+      await updateMessage(messageId, { is_read: true });
+      
+      setMessages(prev => prev.map(msg =>
+        msg.id === messageId ? { ...msg, is_read: true } : msg
+      ));
+      
+      if (selectedMessage && selectedMessage.id === messageId) {
+        setSelectedMessage(prev => ({ ...prev, is_read: true }));
+      }
+      
+      Swal.fire(
+        'Marqué comme lu !',
+        'Le message a été marqué comme lu.',
+        'success'
+      );
+    } catch (error) {
+      console.error('❌ Erreur lors de la mise à jour:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Erreur',
+        text: 'Impossible de marquer le message comme lu. Veuillez réessayer.',
+        confirmButtonText: 'OK'
+      });
+    }
+  };
+
+  const handleBulkDelete = () => {
+    if (selectedMessage && selectedMessage.length === 0) return;
+    
+    Swal.fire({
+      title: 'Êtes-vous sûr ?',
+      text: `Vous allez supprimer ${selectedMessage ? 1 : 0} message(s)`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#EF4444',
+      cancelButtonColor: '#6B7280',
+      confirmButtonText: 'Oui, supprimer',
+      cancelButtonText: 'Annuler'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Logique de suppression en lot
+        Swal.fire(
+          'Supprimé !',
+          'Les messages ont été supprimés avec succès.',
+          'success'
+        );
+      }
+    });
+  };
 
   // Gestionnaires d'événements
   const handleFilterChange = (filterName, value) => {
@@ -292,19 +250,7 @@ const MessagesAdmin = () => {
       cancelButtonText: 'Annuler'
     }).then((result) => {
       if (result.isConfirmed) {
-        setMessages(prev => prev.filter(msg => msg.id !== messageId));
-        setFilteredMessages(prev => prev.filter(msg => msg.id !== messageId));
-        
-        if (selectedMessage && selectedMessage.id === messageId) {
-          setIsModalOpen(false);
-          setSelectedMessage(null);
-        }
-        
-        Swal.fire(
-          'Supprimé !',
-          'Le message a été supprimé avec succès.',
-          'success'
-        );
+        handleDeleteMessage(messageId);
       }
     });
   };
@@ -368,4 +314,4 @@ const MessagesAdmin = () => {
   );
 };
 
-export default MessagesAdmin; 
+export default MessagesAdmin;

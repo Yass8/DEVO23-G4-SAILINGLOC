@@ -13,7 +13,11 @@ import ForgotPasswordEmail from "../pages/public/ForgotPassword.jsx";
 import ResetPassword from "../pages/public/ResetPassword.jsx";
 import Page404 from '../pages/public/Page404.jsx';
 import Destinations from "../pages/public/Destinations.jsx";
-
+import CGU from '../pages/public/cgu.jsx';
+import MentionsLegales from '../pages/public/Mentions-legales.jsx';
+import PolitiqueCookies from '../pages/public/politique-cookies.jsx';
+import PolitiqueConfidentialite from '../pages/public/politique-confidentialite.jsx';
+import PlanDuSite from '../pages/public/plan-site.jsx';
 // Espace client
 import Customer from "../pages/client/Customer.jsx";
 import DashboardClient from "../components/client/DashboardClient.jsx";
@@ -74,8 +78,12 @@ export default function AppRoutes() {
             <Route path="/register" element={<Register />} />
             <Route path="/forgot-password-email" element={<ForgotPasswordEmail />} />
             <Route path="/reset-password/:token" element={<ResetPassword />} />
+            <Route path="/cgu" element={<CGU />} />
+            <Route path="/mentions-legales" element={<MentionsLegales />} />
+            <Route path="/politique-cookies" element={<PolitiqueCookies />} />
+            <Route path="/politique-confidentialite" element={<PolitiqueConfidentialite />} />
+            <Route path="/plan-site" element={<PlanDuSite />} />      
             <Route path="/404" element={<Page404 />} />
-
             {/* Espace client */}
             <Route path="/my-space" element={<Customer />}>
                 <Route index element={<Navigate to="dashboard" replace />} />
@@ -110,6 +118,7 @@ export default function AppRoutes() {
                 <Route path="users" element={<UsersAdmin />} />
                 <Route path="ports" element={<PortsAdmin />} />
                 <Route path="reviews" element={<ReviewsAdmin />} />
+    
                 <Route path="payments" element={<PaymentsAdmin />} />
                 <Route path="messages" element={<MessagesAdmin />} />
                 <Route path="users/:id" element={<DetailsUsers />} />

@@ -31,12 +31,10 @@ const AdminSidebar = ({ sidebarOpen, setSidebarOpen }) => {
     { name: 'Ports', href: '/admin/sl/ports', icon: faAnchor },
     { name: 'Messages', href: '/admin/sl/messages', icon: faEnvelope },
     { name: 'Avis', href: '/admin/sl/reviews', icon: faStar },
-    { name: 'Paramètres', href: '/admin/sl/settings', icon: faCog },
   ];
 
   const boatsSubmenu = [
     { name: 'Tous les bateaux', href: '/admin/sl/boats', icon: faShip },
-    { name: 'Ajouter bateau', href: '/admin/sl/boats/add', icon: faPlus },
     { name: 'Type de bateau', href: '/admin/sl/boats/types', icon: faTags },
   ];
 

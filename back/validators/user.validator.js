@@ -1,7 +1,6 @@
 // user.validator.js
 import { body, param } from 'express-validator';
 
-
 const passwordStrength = (minLength = 8) =>
   body('password')
     .isLength({ min: minLength })
@@ -34,7 +33,7 @@ export const validateCreateUser = [
 
   passwordStrength(6),
 
-  body('role')
+  body('roles')  // ← CHANGÉ : roles au lieu de role
     .isArray().withMessage('Le rôle doit être un tableau.'),
 
   body('phone')
@@ -71,17 +70,13 @@ export const validateUpdateUser = [
 
   passwordStrength(6).optional(),
 
-  body('role')
+  body('roles')  // ← CHANGÉ : roles au lieu de role
     .optional()
     .isArray().withMessage('Le rôle doit être un tableau.'),
 
   body('phone')
     .optional()
     .isString().withMessage('Le téléphone doit être une chaîne de caractères.'),
-
-  // body('payment_method')
-  //   .optional()
-  //   .isString().withMessage('La méthode de paiement doit être une chaîne de caractères.'),
 
   body('photo')
     .optional()

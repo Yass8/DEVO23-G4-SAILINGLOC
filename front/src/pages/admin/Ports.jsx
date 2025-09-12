@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import Preloader from '../../components/common/Preloader';
 import {
@@ -8,8 +9,15 @@ import {
   PortPagination,
   PortModal
 } from '../../components/admin/ports';
+import { 
+  fetchPorts, 
+  createPort, 
+  updatePort, 
+  deletePort 
+} from '../../services/portServices';
 
 const Ports = () => {
+  const navigate = useNavigate();
   const [ports, setPorts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -24,75 +32,23 @@ const Ports = () => {
     showAddModal: false
   });
 
-  // Données mockées basées sur le modèle backend
-  const mockPorts = [
-    {
-      id: 1,
-      name: "Port de Nice",
-      city: "Nice",
-      country: "France",
-      latitude: 43.7102,
-      longitude: 7.2620,
-      createdAt: "2024-01-15T10:30:00Z",
-      updatedAt: "2024-01-15T10:30:00Z",
-      Boats: [
-        { id: 1, name: "Bavaria 46 Cruiser" },
-        { id: 2, name: "Catamaran Lagoon 42" }
-      ]
-    },
-    {
-      id: 2,
-      name: "Port de Cannes",
-      city: "Cannes",
-      country: "France",
-      latitude: 43.5528,
-      longitude: 7.0174,
-      createdAt: "2024-01-16T14:20:00Z",
-      updatedAt: "2024-01-16T14:20:00Z",
-      Boats: [
-        { id: 3, name: "Voilier Beneteau Oceanis 45" }
-      ]
-    },
-    {
-      id: 3,
-      name: "Port de Saint-Tropez",
-      city: "Saint-Tropez",
-      country: "France",
-      latitude: 43.2694,
-      longitude: 6.6389,
-      createdAt: "2024-01-17T09:15:00Z",
-      updatedAt: "2024-01-17T09:15:00Z",
-      Boats: [
-        { id: 4, name: "Bateau à moteur Azimut 55" }
-      ]
-    },
-    {
-      id: 4,
-      name: "Port de Monaco",
-      city: "Monaco",
-      country: "Monaco",
-      latitude: 43.7384,
-      longitude: 7.4246,
-      createdAt: "2024-01-18T16:45:00Z",
-      updatedAt: "2024-01-18T16:45:00Z",
-      Boats: [
-        { id: 5, name: "Yacht Princess 55" }
-      ]
-    },
-    {
-      id: 5,
-      name: "Port de Antibes",
-      city: "Antibes",
-      country: "France",
-      latitude: 43.5804,
-      longitude: 7.1251,
-      createdAt: "2024-01-19T11:30:00Z",
-      updatedAt: "2024-01-19T11:30:00Z",
-      Boats: [
-        { id: 6, name: "Voilier Jeanneau Sun Odyssey 519" }
-      ]
-    }
-  ];
+  // Fonction pour transformer les données de l'API vers le format attendu par le composant
+  const transformPortData = (apiPort) => {
+    return {
+      id: apiPort.id.toString(),
+      name: apiPort.name || '',
+      city: apiPort.city || '',
+      country: apiPort.country || '',
+      latitude: parseFloat(apiPort.latitude) || 0,
+      longitude: parseFloat(apiPort.longitude) || 0,
+      description: apiPort.description || '',
+      facilities: apiPort.facilities || [],
+      capacity: parseInt(apiPort.capacity) || 0,
+      is_active: apiPort.is_active !== false,
+      created_at: apiPort.created_at,
+      updated_at: apiPort.updated_at
+    };
+  };
 
   // Filtrage des ports
   const filteredPorts = useMemo(() => {
@@ -153,9 +109,18 @@ const Ports = () => {
 
   const handleDelete = useCallback(async (portId) => {
     try {
+      const port = ports.find(p => p.id === portId);
+      
       const result = await Swal.fire({
         title: 'Confirmer la suppression',
-        text: 'Êtes-vous sûr de vouloir supprimer ce port ? Cette action est irréversible.',
+        html: `
+          <div class="text-left">
+            <p><strong>Port :</strong> ${port.name}</p>
+            <p><strong>Ville :</strong> ${port.city}</p>
+            <p><strong>Pays :</strong> ${port.country}</p>
+            <p class="text-red-600">Cette action est irréversible !</p>
+          </div>
+        `,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#EF4444',
@@ -165,7 +130,10 @@ const Ports = () => {
       });
 
       if (result.isConfirmed) {
-        // Mise à jour locale de l'état (simulation)
+        // Appel API pour supprimer le port
+        await deletePort(portId);
+        
+        // Mise à jour locale de l'état
         setPorts(prev => prev.filter(port => port.id !== portId));
         
         if (selectedPort?.id === portId) {
@@ -183,29 +151,23 @@ const Ports = () => {
         });
       }
     } catch (error) {
-      console.error('Erreur lors de la suppression:', error);
+      console.error('❌ Erreur lors de la suppression:', error);
       Swal.fire({
-        title: 'Erreur',
-        text: 'Une erreur est survenue lors de la suppression.',
+        title: 'Erreur !',
+        text: `Impossible de supprimer le port: ${error.message}`,
         icon: 'error',
         confirmButtonColor: '#EF4444'
       });
     }
-  }, [selectedPort]);
+  }, [selectedPort, ports]);
 
   const handleSavePort = useCallback(async (portData) => {
     try {
       if (modalMode === 'add') {
-        // Créer un nouveau port
-        const newPort = {
-          id: ports.length + 1,
-          ...portData,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          Boats: []
-        };
-        
-        setPorts(prev => [...prev, newPort]);
+        // Créer un nouveau port via API
+        const newPort = await createPort(portData);
+        const transformedPort = transformPortData(newPort);
+        setPorts(prev => [...prev, transformedPort]);
         
         await Swal.fire({
           title: 'Port créé !',
@@ -216,11 +178,11 @@ const Ports = () => {
           timerProgressBar: true
         });
       } else {
-        // Mettre à jour le port existant
+        // Mettre à jour le port existant via API
+        const updatedPort = await updatePort(selectedPort.id, portData);
+        const transformedPort = transformPortData(updatedPort);
         setPorts(prev => prev.map(port => 
-          port.id === selectedPort.id 
-            ? { ...port, ...portData, updatedAt: new Date().toISOString() }
-            : port
+          port.id === selectedPort.id ? transformedPort : port
         ));
         
         await Swal.fire({
@@ -237,15 +199,15 @@ const Ports = () => {
       setSelectedPort(null);
       setModalMode('add');
     } catch (error) {
-      console.error('Erreur lors de la sauvegarde:', error);
+      console.error('❌ Erreur lors de la sauvegarde:', error);
       Swal.fire({
-        title: 'Erreur',
-        text: 'Une erreur est survenue lors de la sauvegarde.',
+        title: 'Erreur !',
+        text: `Impossible de sauvegarder le port: ${error.message}`,
         icon: 'error',
         confirmButtonColor: '#EF4444'
       });
     }
-  }, [modalMode, selectedPort, ports]);
+  }, [modalMode, selectedPort]);
 
   const closeModal = useCallback(() => {
     setIsModalOpen(false);
@@ -253,23 +215,70 @@ const Ports = () => {
     setModalMode('add');
   }, []);
 
-  // Chargement des données mockées
+  // Chargement des données depuis l'API
   useEffect(() => {
     const loadPorts = async () => {
-      setLoading(true);
       try {
-        // Simulation d'un délai d'API
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        setPorts(mockPorts);
+        setLoading(true);
+        
+        // Vérification de l'authentification
+        const token = localStorage.getItem('token');
+        if (!token) {
+          console.warn('⚠️ Aucun token trouvé, redirection vers la connexion...');
+          Swal.fire({
+            title: 'Authentification requise !',
+            text: 'Vous devez être connecté pour accéder à cette page.',
+            icon: 'error',
+            confirmButtonColor: '#AD7C59'
+          });
+          navigate('/login');
+          return;
+        }
+        
+        console.log(' Chargement des ports depuis l\'API...');
+        const apiPorts = await fetchPorts();
+        console.log('✅ Réponse de l\'API:', apiPorts);
+        
+        if (!Array.isArray(apiPorts)) {
+          throw new Error('La réponse de l\'API n\'est pas un tableau');
+        }
+        
+        // Transformer les données
+        const transformedPorts = apiPorts.map(transformPortData);
+        console.log('✅ Ports transformés:', transformedPorts);
+        
+        setPorts(transformedPorts);
+        
       } catch (error) {
-        console.error('Erreur lors du chargement des ports:', error);
+        console.error('❌ Erreur lors du chargement des ports:', error);
+        
+        // Gestion spécifique des erreurs d'authentification
+        if (error.message.includes('Token invalide') || error.message.includes('401')) {
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          Swal.fire({
+            title: 'Session expirée !',
+            text: 'Votre session a expiré. Veuillez vous reconnecter.',
+            icon: 'error',
+            confirmButtonColor: '#AD7C59'
+          });
+          navigate('/login');
+          return;
+        }
+        
+        Swal.fire({
+          title: 'Erreur de chargement !',
+          text: `Impossible de charger les ports.\n\nDétails: ${error.message}`,
+          icon: 'error',
+          confirmButtonColor: '#AD7C59'
+        });
       } finally {
         setLoading(false);
       }
     };
 
     loadPorts();
-  }, []);
+  }, [navigate]);
 
   if (loading) {
     return <Preloader />;

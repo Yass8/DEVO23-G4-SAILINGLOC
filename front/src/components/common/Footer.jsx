@@ -6,13 +6,13 @@ import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 const Footer = () => {
   return (
     
-    <footer className="bg-[#445A6E] text-[#DCDCDC] px-6 py-1 relative">
+    <footer className="bg-[#445A6E] text-[#DCDCDC] px-6 py-8 relative">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12">
 
         {/* Section SAILINGLOC */}
         <div>
           <h3 className="text-xl font-bold mb-4 uppercase">SAILINGLOC</h3>
-          <p className="text-sm leading-relaxed mb-6">
+          <p className="text-sm leading-relaxed mb-8">
             Suivez-nous sur les réseaux sociaux et plongez dans l'univers SailingLoc. Partagez vos expériences, découvrez nos meilleurs destinations et restez informé des nouveautés
           </p>
           <div className="flex space-x-4">
@@ -34,31 +34,31 @@ const Footer = () => {
           <ul className="space-y-2 text-sm">
             <li className="flex items-center">
               <span className="w-1.5 h-1.5 bg-[#DCDCDC] rounded-full mr-3"></span>
-              <a href="#" className="hover:text-[#C88C50] transition-colors">À Propos</a>
+              <a href="/about" className="hover:text-[#C88C50] transition-colors">À Propos</a>
             </li>
             <li className="flex items-center">
               <span className="w-1.5 h-1.5 bg-[#DCDCDC] rounded-full mr-3"></span>
-              <a href="#" className="hover:text-[#C88C50] transition-colors">CGU</a>
+              <a href="/CGU" className="hover:text-[#C88C50] transition-colors">CGU</a>
             </li>
             <li className="flex items-center">
               <span className="w-1.5 h-1.5 bg-[#DCDCDC] rounded-full mr-3"></span>
-              <a href="#" className="hover:text-[#C88C50] transition-colors">Mentions Légales</a>
+              <a href="/Mentions-legales" className="hover:text-[#C88C50] transition-colors">Mentions Légales</a>
             </li>
             <li className="flex items-center">
               <span className="w-1.5 h-1.5 bg-[#DCDCDC] rounded-full mr-3"></span>
-              <a href="#" className="hover:text-[#C88C50] transition-colors">Politique des Cookies</a>
+              <a href="/politique-cookies" className="hover:text-[#C88C50] transition-colors">Politique des Cookies</a>
             </li>
             <li className="flex items-center">
               <span className="w-1.5 h-1.5 bg-[#DCDCDC] rounded-full mr-3"></span>
-              <a href="#" className="hover:text-[#C88C50] transition-colors">Politiques de Confidentialité</a>
+              <a href="/politique-confidentialite" className="hover:text-[#C88C50] transition-colors">Politiques de Confidentialité</a>
             </li>
             <li className="flex items-center">
               <span className="w-1.5 h-1.5 bg-[#DCDCDC] rounded-full mr-3"></span>
-              <a href="#" className="hover:text-[#C88C50] transition-colors">Plan du site</a>
+              <a href="/plan-site" className="hover:text-[#C88C50] transition-colors">Plan du site</a>
             </li>
             <li className="flex items-center">
               <span className="w-1.5 h-1.5 bg-[#DCDCDC] rounded-full mr-3"></span>
-              <a href="#" className="hover:text-[#C88C50] transition-colors">Contact</a>
+              <a href="/Contact" className="hover:text-[#C88C50] transition-colors">Contact</a>
             </li>
           </ul>
         </div>
@@ -90,7 +90,8 @@ const Footer = () => {
       {/* Copyright Section */}
       <div className="mt-12 pt-6 border-t border-[#506A80]">
         <p className="text-center text-xs text-[#DCDCDC]">
-          ©2025 Pandawan. All rights reserved.
+        © 2025 SailingLoc – Projet étudiant fictif réalisé avec Pandawan.  
+Tous droits réservés. Aucune transaction réelle ne peut être effectuée sur ce site.
         </p>
       </div>
     </footer>

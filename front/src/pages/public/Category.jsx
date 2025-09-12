@@ -1,4 +1,5 @@
 import Header from "../../components/common/Header";
+import Footer from "../../components/common/Footer";
 import Banner from "../../components/common/Banner";
 import { Link } from "react-router-dom";
 
@@ -48,6 +49,8 @@ const Category = () => {
           ))}
         </div>
       </main>
+      
+      <Footer />
     </div>
   );
 };
