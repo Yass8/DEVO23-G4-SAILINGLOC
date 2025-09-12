@@ -4,9 +4,17 @@ export const validateBoatId = [
   param('id').isInt().withMessage('L\'ID du bateau doit être un entier')
 ];
 
+export const validateBoatSlug = [
+  param("slug")
+    .isString()
+    .withMessage("Le slug doit être une chaîne valide")
+    .notEmpty()
+    .withMessage("Le slug est requis"),
+];
+
 export const validateCreateBoat = [
-  body('reference').isString().isLength({ min: 1, max: 32 })
-    .withMessage('La référence doit être une chaîne de 1 à 32 caractères'),
+  body('registration_number').isString().isLength({ min: 1, max: 32 })
+    .withMessage('L\'immatriculation doit être une chaîne de 1 à 32 caractères'),
   body('name').isString().isLength({ min: 1, max: 255 })
     .withMessage('Le nom doit être une chaîne de 1 à 255 caractères'),
   body('brand').isString().isLength({ max: 255 })

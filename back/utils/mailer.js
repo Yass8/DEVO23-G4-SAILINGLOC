@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 import { confirmationEmailHtml, resetPasswordEmailHtml } from './templatesMailers.js';
 
 dotenv.config();
-const { MAILER_HOST, MAILER_PORT, MAILER_USER, MAILER_PASS, URL } = process.env;
+const { MAILER_HOST, MAILER_PORT, MAILER_USER, MAILER_PASS, APPLICATION_URL } = process.env;
 
 
 const sendEmail = async (to, subject, html) => {
@@ -31,7 +31,7 @@ export const sendConfirmationEmail = async (username, email, token) => {
   sendEmail(
     email,
     "Confirmation de votre compte SailingLoc",
-    confirmationEmailHtml(username, `${URL}/auth/confirmation/${token}`)
+    confirmationEmailHtml(username, `${APPLICATION_URL}/confirmation/${token}`)
   );
 }
 
@@ -39,7 +39,7 @@ export const sendResetPasswordEmail = async (username, email, token) => {
   sendEmail(
     email,
     "Réinitialisation de votre mot de passe SailingLoc",
-    resetPasswordEmailHtml(username, `${URL}/auth/reset-password/${token}`)
+    resetPasswordEmailHtml(username, `${APPLICATION_URL}/reset-password/${token}`)
   );
 }
 

@@ -75,7 +75,7 @@ export default (sequelize, DataTypes) => {
       allowNull: false
     },
     status: {
-      type: DataTypes.ENUM('pending', 'confirmed', 'cancelled', 'completed'),
+      type: DataTypes.ENUM('pending', 'confirmed', 'cancelled', 'completed', 'refused', 'booked'),
       defaultValue: 'pending',
       allowNull: false
     }
@@ -83,7 +83,9 @@ export default (sequelize, DataTypes) => {
     sequelize,
     modelName: 'Reservation',
     tableName: 'Reservations',
-    timestamps: true
+    timestamps: true,
+    createdAt: 'created_at',
+    updatedAt: 'updated_at'
   });
 
   return Reservation;

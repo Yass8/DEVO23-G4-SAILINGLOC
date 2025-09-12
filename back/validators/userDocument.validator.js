@@ -9,8 +9,7 @@ export const validateUserId = [
 ];
 
 export const validateCreateUserDocument = [
-    body('type').isIn(['licence', 'insurance', 'id_card']).withMessage('Le type doit être "licence", "insurance" ou "id_card".'),
-    body('file_url').isURL().withMessage('L\'URL du fichier est invalide.'),
+    body('type').isIn(['licence', 'insurance', 'id_card', 'cv','proof_of_address']).withMessage('Le type doit être "licence", "insurance" ou "id_card".'),
     body('user_id').isInt().withMessage('L\'ID utilisateur doit être un entier.')
 ];
 

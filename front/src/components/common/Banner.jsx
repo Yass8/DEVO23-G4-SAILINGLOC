@@ -1,13 +1,12 @@
+import { useNavigate } from "react-router-dom";
 import banner from "/images/hero.jpeg";
 
-function Banner() {
+function Banner({activeBtn = false}) {
+  const navigate = useNavigate();
+
   return (
     <div className="relative w-full h-[180px] sm:h-[220px] md:h-[300px] lg:h-[350px]">
-      <img
-        src={banner}
-        alt="Bannière"
-        className="w-full h-full object-cover"
-      />
+      <img src={banner} alt="Bannière" className="w-full h-full object-cover" />
       <div
         className="
           absolute
@@ -19,6 +18,8 @@ function Banner() {
           space-y-3
           "
       >
+      {!activeBtn && (
+        <>
         <h1
           className="
             text-base sm:text-lg md:text-2xl lg:text-4xl
@@ -26,10 +27,13 @@ function Banner() {
             leading-snug
           "
         >
-          Trouvez le bateau<br /> parfait pour votre <br /> prochaine <br/> aventure
+          Trouvez le bateau
+          <br /> parfait pour votre <br /> prochaine <br /> aventure
         </h1>
-        <button
-          className="
+        
+          <button
+            onClick={() => navigate("/boats")}
+            className="
             bg-[#c58e6a]
             hover:bg-[#b37954]
             transition-colors
@@ -39,9 +43,11 @@ function Banner() {
             text-sm sm:text-base
             font-medium
           "
-        >
-          Commencez votre aventure
-        </button>
+          >
+            Commencez votre aventure
+          </button>
+          </>
+        )}
       </div>
     </div>
   );

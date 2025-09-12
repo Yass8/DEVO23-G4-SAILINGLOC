@@ -28,12 +28,15 @@ export default {
       },
       roles: {
         type: Sequelize.ARRAY(Sequelize.STRING),
-        allowNull: false,
-        defaultValue: ['locataire']
+        allowNull: false
       },
       phone: {
         type: Sequelize.STRING,
         allowNull: true
+      },
+      birth_date: {
+        type: Sequelize.DATE,
+          allowNull: true
       },
       payment_method: {
         type: Sequelize.STRING,

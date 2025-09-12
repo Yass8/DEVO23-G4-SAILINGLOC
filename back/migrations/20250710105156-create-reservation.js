@@ -49,7 +49,7 @@ export default {
         allowNull: false
       },
       status: {
-        type: Sequelize.ENUM('pending', 'confirmed', 'cancelled', 'completed'),
+        type: Sequelize.ENUM('pending', 'confirmed', 'cancelled', 'completed', 'refused', 'booked'),
         defaultValue: 'pending',
         allowNull: false
       },

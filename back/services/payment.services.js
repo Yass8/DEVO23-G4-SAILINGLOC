@@ -1,5 +1,10 @@
 import db from "../models/index.js";
 const { Payment, Reservation } = db;
+import Stripe from "stripe";
+import dotenv from 'dotenv';
+dotenv.config();
+
+const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 
 const getAllPayments = async () => {
     return await Payment.findAll({
@@ -37,11 +42,20 @@ const getReservationPayments = async (reservationId) => {
     });
 };
 
+const createIntent = async (amount) => {
+  const paymentIntent = await stripe.paymentIntents.create({
+    amount,
+    currency: "eur",
+  });
+  return paymentIntent.client_secret;
+};
+
 export default {
     getAllPayments,
     createPayment,
     getPaymentById,
     updatePayment,
     deletePayment,
-    getReservationPayments
+    getReservationPayments,
+    createIntent
 };

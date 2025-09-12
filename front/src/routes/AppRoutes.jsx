@@ -10,6 +10,8 @@ import Details from '../pages/public/Details.jsx';
 import Contact from '../pages/public/Contact.jsx';
 import Login from '../pages/public/Login.jsx';
 import Register from '../pages/public/Register.jsx';
+import ForgotPasswordEmail from "../pages/public/ForgotPassword.jsx";
+import ResetPassword from "../pages/public/ResetPassword.jsx";
 import Page404 from '../pages/public/Page404.jsx';
 
 // Espace client
@@ -20,6 +22,7 @@ import Messages from "../components/client/Message.jsx";
 // Common
 import Profile from "../pages/common/Profil.jsx";
 import Documents from "../pages/common/Documents.jsx";
+import Booking from "../pages/public/Booking.jsx";
 import Parameters from "../pages/common/Parameters.jsx";
 
 // Propriétaire
@@ -28,11 +31,13 @@ import ViewBoat from "../components/client/proprietaire/ViewBoat.jsx";
 import CreateBoat from "../components/client/proprietaire/CreatBoat.jsx";
 import EditBoat from "../pages/client/proprietaire/EditBoat.jsx";
 import AvailabilitiesManagement from "../pages/client/proprietaire/AvailabilitiesManagement.jsx";
+import TenantReservationDetail from "../components/client/locataire/TenantReservationDetail.jsx";
 import RevenusStats from "../pages/client/proprietaire/RevenusStats.jsx";
 
 // Locataire
 import MyReservations from "../pages/client/locataire/MyReservations.jsx";
 import ReservationDetails from "../pages/client/locataire/ReservationDetails.jsx";
+import ReservationOwnerDetail from "../pages/client/proprietaire/ReservationOwnerDetail.jsx";
 import ReservationChat from "../pages/client/locataire/ReservationChat.jsx";
 
 // Espace administrateur
@@ -46,6 +51,7 @@ import BoatsAdmin from "../pages/admin/BoatsAdmin.jsx";
 import ReservationsAdmin from "../pages/admin/Reservations.jsx";
 import ContractsAdmin from "../pages/admin/Contracts.jsx";
 import AdminLayout from "../pages/admin/AdminLayout.jsx";
+import LoginAdmin from "../pages/admin/LoginAdmin.jsx";
 
 export default function AppRoutes() {
     return (
@@ -56,10 +62,13 @@ export default function AppRoutes() {
             <Route path="/about" element={<About />} />
             <Route path="/category" element={<Category />} />
             <Route path="/boats" element={<Boats />} />
-            <Route path="/details" element={<Details />} />
+            <Route path="/boat/:slug" element={<Details />} />
+            <Route path="/booking/:slug" element={<Booking />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/forgot-password-email" element={<ForgotPasswordEmail />} />
+            <Route path="/reset-password/:token" element={<ResetPassword />} />
             <Route path="/404" element={<Page404 />} />
 
             {/* Espace client */}
@@ -74,20 +83,24 @@ export default function AppRoutes() {
                 {/* Propriétaire routes */}
                 <Route path="boats" element={<MesBateaux />} />
                 <Route path="boats/new" element={<CreateBoat />} />
-                <Route path="boats/:id" element={<ViewBoat />} />
-                <Route path="boats/:id/edit" element={<EditBoat />} />
-                <Route path="boats/:id/availabilities" element={<AvailabilitiesManagement />} />
-                <Route path="boats/:id/revenus-stats" element={<RevenusStats />} />
-
+                <Route path="boats/:slug" element={<ViewBoat />} />
+                <Route path="boats/:slug/edit" element={<EditBoat />} />
+                <Route path="boats/:slug/availabilities" element={<AvailabilitiesManagement />} />
+                <Route path="boats/:slug/revenus-stats" element={<RevenusStats />} />
+                <Route path="reservations/:reference" element={<ReservationOwnerDetail />} />
+                
                 {/* Locataire routes */}
                 <Route path="reservations" element={<MyReservations />} />
-                <Route path="reservations/:id/details" element={<ReservationDetails />} />
+                <Route path="reservations/:id/detail" element={<ReservationDetails />} />
                 <Route path="reservations/:id/chat" element={<ReservationChat />} />
+                <Route path="reservations/:reference/details" element={<TenantReservationDetail />} />
+
             </Route>
+            <Route path="/admin/sl/login" element={<LoginAdmin/>} />
 
             {/* Routes administrateur */}
             <Route path="/admin/sl" element={<AdminLayout />}>
-                <Route index element={<Navigate to="dashboard" replace />} />
+                <Route index element={<Navigate to="/admin/sl/login" replace />} />
                 <Route path="dashboard" element={<AdminDashboard />} />
                 <Route path="users" element={<UsersAdmin />} />
                 <Route path="ports" element={<PortsAdmin />} />

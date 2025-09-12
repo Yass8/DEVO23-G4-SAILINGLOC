@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://dsp-dev-o24a-g4.fr/</loc><priority>1.00</priority></url>
+  <url><loc>https://dsp-dev-o24a-g4.fr/home</loc><priority>0.90</priority></url>
+  <url><loc>https://dsp-dev-o24a-g4.fr/about</loc><priority>0.80</priority></url>
+  <url><loc>https://dsp-dev-o24a-g4.fr/category</loc><priority>0.70</priority></url>
+  <url><loc>https://dsp-dev-o24a-g4.fr/boats</loc><priority>0.90</priority></url>
+  <url><loc>https://dsp-dev-o24a-g4.fr/contact</loc><priority>0.80</priority></url>
+  <url><loc>https://dsp-dev-o24a-g4.fr/login</loc><priority>0.60</priority></url>
+  <url><loc>https://dsp-dev-o24a-g4.fr/register</loc><priority>0.60</priority></url>
+  <url><loc>https://dsp-dev-o24a-g4.fr/forgot-password-email</loc><priority>0.50</priority></url>
+</urlset>

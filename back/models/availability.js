@@ -35,7 +35,9 @@ export default (sequelize, DataTypes) => {
     sequelize,
     modelName: 'Availability',
     tableName: 'Availabilities',
-    timestamps: true
+    timestamps: true,
+    createdAt: 'created_at',
+    updatedAt: 'updated_at'
   });
 
   return Availability;
