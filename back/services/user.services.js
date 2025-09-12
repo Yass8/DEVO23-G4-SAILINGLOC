@@ -48,14 +48,14 @@ const getUserBoats = async (userId) => {
     include: [{
       model: Boat,
       as: 'boats',
-      include : [
+      include: [
         { model: Port, attributes: ["name"] },
         { model: BoatPhoto, attributes: ["photo_url", "is_main"] },
         { model: BoatType, attributes: ["name"] }
-      ] 
+      ]
     }]
   });
-  return user ? user.boats : null; 
+  return user ? user.boats : null;
 };
 
 const getUserReservations = async (userId) => {
@@ -112,23 +112,26 @@ const uploadUserPhoto = async (userId, file) => {
   if (user.photo && !user.photo.startsWith("avatar")) {
     const oldFilePath = path.join(process.cwd(), user.photo);
 
-    if (fs.existsSync(oldFilePath)) fs.unlinkSync(oldFilePath);
-  }
+    if (user.photo && !user.photo.startsWith("avatar")) {
+      const oldFilePath = path.join(process.cwd(), user.photo);
 
-  const filePath = await uploadFile.saveFile(
-    "user",
-    file.data,
-    file.name,
-    `users/${userId}/profile`,
-    [".jpg", ".jpeg", ".png"],
-    2
-  );
+      if (fs.existsSync(oldFilePath)) fs.unlinkSync(oldFilePath);
+    }
 
-  await user.update({ photo: filePath });
+    const filePath = await uploadFile.saveFile(
+      "user",
+      file.data,
+      file.name,
+      `users/${userId}/profile`,
+      [".jpg", ".jpeg", ".png"],
+      2
+    );
 
-  return user;
-};
+    await user.update({ photo: filePath });
 
+    return user;
+  };
+}
 export default {
   getAllUsers,
   createUser,
