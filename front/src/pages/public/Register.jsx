@@ -4,14 +4,21 @@ import ReCAPTCHA from "react-google-recaptcha";
 import logo from "/images/logo.png";
 import { isTokenValid, register } from "../../services/authService";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faEyeSlash, faCircleExclamation } from "@fortawesome/free-solid-svg-icons";
+import {
+  faEye,
+  faEyeSlash,
+  faCircleExclamation,
+} from "@fortawesome/free-solid-svg-icons";
 import { useEffect } from "react";
 
 const FormError = ({ message }) => {
   if (!message) return null;
   return (
     <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex">
-      <FontAwesomeIcon icon={faCircleExclamation} className="h-5 w-5 text-red-400 flex-shrink-0" />
+      <FontAwesomeIcon
+        icon={faCircleExclamation}
+        className="h-5 w-5 text-red-400 flex-shrink-0"
+      />
       <p className="ml-3 text-sm text-red-700">{message}</p>
     </div>
   );
@@ -44,20 +51,42 @@ const Register = () => {
 
   useEffect(() => {
     if (isTokenValid()) {
-      navigate('/');
+      navigate("/");
     }
   }, [navigate]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
     if (error) setError("");
   };
 
   const isFormValid = () => {
-    const { firstname, lastname, email, password, confirm_password, accept_terms, user_type, birth_date, address } = formData;
-    const base = firstname && lastname && email && password && password.length >= 6 &&
-                 confirm_password && password === confirm_password && accept_terms && user_type && captchaToken;
+    const {
+      firstname,
+      lastname,
+      email,
+      password,
+      confirm_password,
+      accept_terms,
+      user_type,
+      birth_date,
+      address,
+    } = formData;
+    const base =
+      firstname &&
+      lastname &&
+      email &&
+      password &&
+      password.length >= 6 &&
+      confirm_password &&
+      password === confirm_password &&
+      accept_terms &&
+      user_type &&
+      captchaToken;
     if (user_type === "proprietaire") return base && birth_date && address;
     return base;
   };
@@ -77,8 +106,10 @@ const Register = () => {
       phone: formData.phone || undefined,
       isOwner: formData.user_type === "proprietaire",
       roles: formData.user_type === "proprietaire" ? ["owner"] : ["tenant"],
-      birth_date: formData.birth_date,
-      address: formData.address,
+      ...(formData.user_type === "proprietaire" && {
+        birth_date: formData.birth_date,
+        address: formData.address,
+      }),
       "g-recaptcha-response": captchaToken,
     };
 
@@ -87,7 +118,9 @@ const Register = () => {
       navigate("/login", {
         state: {
           from: location.pathname,
-          message: "Inscription réussie, un e-mail de validation vous a été envoyé à : " + apiData.email,
+          message:
+            "Inscription réussie, un e-mail de validation vous a été envoyé à : " +
+            apiData.email,
         },
       });
     } catch (err) {
@@ -97,7 +130,15 @@ const Register = () => {
         const { status, data } = err.response;
         if (status === 422) {
           if (Array.isArray(data.errors)) {
-            errorMessage = data.errors.map((e) => e.title || e.detail || e.message || `${e.propertyPath} : ${e.title}`).join(", ");
+            errorMessage = data.errors
+              .map(
+                (e) =>
+                  e.title ||
+                  e.detail ||
+                  e.message ||
+                  `${e.propertyPath} : ${e.title}`
+              )
+              .join(", ");
           } else if (typeof data.errors === "object") {
             errorMessage = Object.values(data.errors).flat().join(", ");
           } else if (data.message) {
@@ -113,7 +154,8 @@ const Register = () => {
       } else if (err.request) {
         errorMessage = "Pas de réponse du serveur - vérifiez votre connexion";
       } else {
-        errorMessage = err.message || "Erreur lors de la configuration de la requête";
+        errorMessage =
+          err.message || "Erreur lors de la configuration de la requête";
       }
       setError(errorMessage);
       recaptchaRef.current?.reset();
@@ -126,7 +168,9 @@ const Register = () => {
     <div className="min-h-screen bg-[#F5F1EB] flex items-center justify-center py-12 px-4">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
-          <a href="/"><img src={logo} alt="SailingLoc" className="mx-auto h-16 mb-6" /></a>
+          <a href="/">
+            <img src={logo} alt="SailingLoc" className="mx-auto h-16 mb-6" />
+          </a>
           <h2 className="text-3xl font-bold">Créer un compte</h2>
           <p className="text-gray-600">Rejoignez la communauté SailingLoc</p>
         </div>
@@ -149,7 +193,9 @@ const Register = () => {
                     disabled={isLoading}
                     required
                   />
-                  <span>{type === "proprietaire" ? "Propriétaire" : "Locataire"}</span>
+                  <span>
+                    {type === "proprietaire" ? "Propriétaire" : "Locataire"}
+                  </span>
                 </label>
               ))}
             </div>
@@ -158,7 +204,12 @@ const Register = () => {
           {/* Infos perso */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-2">Prénom</label>
+              <label
+                htmlFor="firstName"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Prénom
+              </label>
               <input
                 id="firstName"
                 name="firstname"
@@ -172,7 +223,12 @@ const Register = () => {
               />
             </div>
             <div>
-              <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-2">Nom</label>
+              <label
+                htmlFor="lastName"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Nom
+              </label>
               <input
                 id="lastName"
                 name="lastname"
@@ -188,7 +244,12 @@ const Register = () => {
           </div>
 
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
+              Email
+            </label>
             <input
               id="email"
               name="email"
@@ -203,7 +264,12 @@ const Register = () => {
           </div>
 
           <div>
-            <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">Téléphone</label>
+            <label
+              htmlFor="phone"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
+              Téléphone
+            </label>
             <input
               id="phone"
               name="phone"
@@ -218,7 +284,12 @@ const Register = () => {
 
           {/* Password */}
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">Mot de passe</label>
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
+              Mot de passe
+            </label>
             <div className="relative">
               <input
                 id="password"
@@ -230,7 +301,9 @@ const Register = () => {
                 placeholder="Au moins 6 caractères"
                 required
                 className={`w-full px-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#AD7C59] transition-colors pr-12 disabled:bg-gray-100 ${
-                  error ? "border-red-300 focus:border-red-500" : "border-gray-300"
+                  error
+                    ? "border-red-300 focus:border-red-500"
+                    : "border-gray-300"
                 }`}
               />
               <button
@@ -246,7 +319,12 @@ const Register = () => {
 
           {/* Confirm Password */}
           <div>
-            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">Confirmer le mot de passe</label>
+            <label
+              htmlFor="confirmPassword"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
+              Confirmer le mot de passe
+            </label>
             <div className="relative">
               <input
                 id="confirmPassword"
@@ -258,7 +336,8 @@ const Register = () => {
                 placeholder="Confirmez votre mot de passe"
                 required
                 className={`w-full px-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#AD7C59] transition-colors pr-12 disabled:bg-gray-100 ${
-                  formData.confirm_password && formData.password !== formData.confirm_password
+                  formData.confirm_password &&
+                  formData.password !== formData.confirm_password
                     ? "border-red-300 focus:border-red-500"
                     : "border-gray-300"
                 }`}
@@ -269,19 +348,29 @@ const Register = () => {
                 disabled={isLoading}
                 className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-[#AD7C59] transition-colors disabled:opacity-50"
               >
-                <FontAwesomeIcon icon={showConfirmPassword ? faEyeSlash : faEye} />
+                <FontAwesomeIcon
+                  icon={showConfirmPassword ? faEyeSlash : faEye}
+                />
               </button>
             </div>
-            {formData.confirm_password && formData.password !== formData.confirm_password && (
-              <p className="text-red-500 text-sm mt-1">Les mots de passe ne correspondent pas</p>
-            )}
+            {formData.confirm_password &&
+              formData.password !== formData.confirm_password && (
+                <p className="text-red-500 text-sm mt-1">
+                  Les mots de passe ne correspondent pas
+                </p>
+              )}
           </div>
 
           {/* Champs propriétaire */}
           {formData.user_type === "proprietaire" && (
             <>
               <div>
-                <label htmlFor="birth_date" className="block text-sm font-medium text-gray-700 mb-2">Date de naissance</label>
+                <label
+                  htmlFor="birth_date"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  Date de naissance
+                </label>
                 <input
                   id="birth_date"
                   name="birth_date"
@@ -295,7 +384,12 @@ const Register = () => {
               </div>
 
               <div>
-                <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-2">Adresse postale</label>
+                <label
+                  htmlFor="address"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  Adresse postale
+                </label>
                 <input
                   id="address"
                   name="address"
@@ -325,9 +419,17 @@ const Register = () => {
             />
             <label htmlFor="acceptTerms" className="ml-2 text-sm">
               J'accepte les{" "}
-              <Link to="/CGU" className="text-[#AD7C59] hover:underline">conditions d'utilisation</Link>{" "}
+              <Link to="/CGU" className="text-[#AD7C59] hover:underline">
+                conditions d'utilisation
+              </Link>{" "}
               et la{" "}
-              <Link to="/politique-cookies" className="text-[#AD7C59] hover:underline">politique de confidentialité</Link>.
+              <Link
+                to="/politique-cookies"
+                className="text-[#AD7C59] hover:underline"
+              >
+                politique de confidentialité
+              </Link>
+              .
             </label>
           </div>
 

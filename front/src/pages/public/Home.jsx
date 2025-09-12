@@ -11,8 +11,12 @@ import Footer from "../../components/common/Footer";
 import Header from "../../components/common/Header";
 import AnimatedSection from "../../components/common/AnimateCard";
 import CbNotification from "../../components/common/CbNotification";
+import { useNavigate } from "react-router-dom";
 
 function Home() {
+
+  const navigate = useNavigate();
+
   return (
     <>
       <Preloader />
@@ -36,7 +40,7 @@ function Home() {
               simple, sécurisée et conviviale. Découvrez une nouvelle façon de
               naviguer, avec une communauté qui partage la même passion.
             </p>
-            <button className="mt-4 px-6 py-2 bg-mocha text-sand rounded-lg shadow transition duration-300 mb-3 lg:mb-0">
+            <button onClick={()=>navigate('/about')} className="mt-4 px-6 py-2 bg-mocha text-sand rounded-lg shadow transition duration-300 mb-3 lg:mb-0">
               En savoir plus
             </button>
           </div>
