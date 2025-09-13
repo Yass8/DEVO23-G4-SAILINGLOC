@@ -6,7 +6,7 @@ COPY package*.json ./
 
 # 2. Clean install with forced optional dependencies
 RUN rm -rf node_modules package-lock.json && \
-    npm install --include=optional
+    npm install --legacy-peer-deps --include=optional
 
 # 3. Copy the rest of the files
 COPY . .

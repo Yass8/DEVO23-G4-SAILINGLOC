@@ -9,6 +9,8 @@ import {
   faPercentage
 } from '@fortawesome/free-solid-svg-icons';
 
+import Preloader from '../../../components/common/Preloader';
+
 // Données mockées pour la démonstration
 const mockData = {
   boat: {
@@ -104,9 +106,7 @@ export default function RevenusStats() {
 
   if (loading) {
     return (
-      <div className="p-6 text-center text-slate-blue">
-        <p>Chargement des données...</p>
-      </div>
+      <Preloader />
     );
   }
 

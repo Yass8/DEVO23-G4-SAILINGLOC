@@ -27,6 +27,15 @@ const show = async (req, res) => {
   }
 };
 
+const showByReference = async (req, res) => {
+  try {
+    const result = await reservationService.getReservationByReference(req.params.reference);
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 const update = async (req, res) => {
   try {
     const result = await reservationService.updateReservation(req.params.id, req.body);
@@ -56,7 +65,7 @@ const getUserBookings = async (req, res) => {
 
 const getBoatReservations = async (req, res) => {
   try {
-    const result = await reservationService.getBoatReservations(req.params.id);
+    const result = await reservationService.getBoatReservations(req.params.boat_id);
     res.json(result);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -65,5 +74,5 @@ const getBoatReservations = async (req, res) => {
 
 export default {
   index, create, show, update, remove,
-  getUserBookings, getBoatReservations
+  getUserBookings, getBoatReservations, showByReference
 };

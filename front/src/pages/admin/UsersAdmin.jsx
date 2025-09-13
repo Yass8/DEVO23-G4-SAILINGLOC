@@ -23,18 +23,30 @@ import {
   faUserCheck,
   faUserTimes,
   faUserCog,
-  faIdCard
+  faIdCard,
+  faTrash
 } from '@fortawesome/free-solid-svg-icons';
 import {
   ActivationConfirmation,
   SuccessAlert,
   ErrorAlert
 } from '../../components/common/SweetAlertComponents';
-import userDataService from '../../services/userDataService';
+import { 
+  fetchUsers, 
+  fetchUserById, 
+  createUser, 
+  updateUser, 
+  deleteUser,
+  fetchUserBoats,
+  fetchUserReservations,
+  fetchUserDocuments
+} from '../../services/userServices';
+import Preloader from '../../components/common/Preloader';
 
 const UsersAdmin = () => {
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterRole, setFilterRole] = useState('all');
   const [filterActive, setFilterActive] = useState('true');
@@ -42,31 +54,166 @@ const UsersAdmin = () => {
   const [showModal, setShowModal] = useState(false);
   const [modalUser, setModalUser] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [usersPerPage] = useState(10);
 
-  // Charger les utilisateurs depuis le service
+  // Fonction pour transformer les données de l'API vers le format attendu par le composant
+  const transformUserData = (apiUser) => {
+    return {
+      id: apiUser.id.toString(),
+      firstName: apiUser.firstname,
+      lastName: apiUser.lastname,
+      email: apiUser.email,
+      phone: apiUser.phone || '',
+      avatar: apiUser.photo || `https://ui-avatars.com/api/?name=${apiUser.firstname}+${apiUser.lastname}&background=4B6A88&color=fff`,
+      roles: apiUser.roles || [],
+      active: apiUser.is_active,
+      createdAt: apiUser.created_at,
+      lastLogin: apiUser.updated_at,
+      address: apiUser.address || '',
+      boats: 0,
+      reservations: 0,
+      totalSpent: 0,
+      totalEarned: 0,
+      documents: []
+    };
+  };
+
+  const transformToApiData = (userData) => {
+    const apiData = {
+      firstname: userData.firstName,
+      lastname: userData.lastName,
+      email: userData.email,
+      phone: userData.phone || null,
+      address: userData.address || null,
+      roles: Array.isArray(userData.roles) ? userData.roles : [], 
+      is_active: userData.active !== false
+    };
+  
+    // Pour la création, utiliser un mot de passe valide
+    if (!userData.password || userData.password.trim() === '') {
+      apiData.password = 'MotDePasse123!@'; // Mot de passe valide avec caractère spécial
+    } else {
+      apiData.password = userData.password;
+    }
+  
+    return apiData;
+  };
+  // Charger les utilisateurs depuis l'API
   useEffect(() => {
-    const loadUsers = () => {
-      console.log('🔄 Chargement des utilisateurs depuis le service...');
-      const allUsers = userDataService.getAllUsers();
-      console.log('📊 Utilisateurs récupérés:', allUsers.length, allUsers);
-      setUsers(allUsers);
+    const loadUsers = async () => {
+      try {
+        setLoading(true);
+        
+        // Vérification de l'authentification
+        console.log('�� === VÉRIFICATION AUTHENTIFICATION ===');
+        console.log('🔑 Token présent:', !!localStorage.getItem('token'));
+        console.log('👤 Utilisateur connecté:', localStorage.getItem('user'));
+        console.log('🔗 URL de base:', import.meta.env.VITE_API_URL);
+        
+        // Vérifier si l'utilisateur est connecté
+        const token = localStorage.getItem('token');
+        if (!token) {
+          console.warn('⚠️ Aucun token trouvé, redirection vers la connexion...');
+          ErrorAlert(
+            'Authentification requise !', 
+            'Vous devez être connecté pour accéder à cette page.'
+          );
+          navigate('/login');
+          return;
+        }
+        
+        // Test de l'API étape par étape
+        console.log('📡 Appel de fetchUsers()...');
+        const apiUsers = await fetchUsers();
+        console.log('✅ Réponse de l\'API:', apiUsers);
+        console.log('📊 Nombre d\'utilisateurs:', apiUsers?.length || 0);
+        
+        if (!Array.isArray(apiUsers)) {
+          throw new Error('La réponse de l\'API n\'est pas un tableau');
+        }
+        
+        // Transformer les données
+        console.log('�� Transformation des données...');
+        const transformedUsers = apiUsers.map(transformUserData);
+        console.log('✅ Utilisateurs transformés:', transformedUsers);
+        
+        // Charger les données supplémentaires pour chaque utilisateur
+        console.log('📊 Chargement des statistiques...');
+        const usersWithStats = await Promise.all(
+          transformedUsers.map(async (user) => {
+            try {
+              console.log(`🔄 Chargement des stats pour l'utilisateur ${user.id}...`);
+              const [boats, reservations, documents] = await Promise.all([
+                fetchUserBoats(user.id).catch(err => {
+                  console.warn(`⚠️ Erreur boats pour ${user.id}:`, err);
+                  return [];
+                }),
+                fetchUserReservations(user.id).catch(err => {
+                  console.warn(`⚠️ Erreur reservations pour ${user.id}:`, err);
+                  return [];
+                }),
+                fetchUserDocuments(user.id).catch(err => {
+                  console.warn(`⚠️ Erreur documents pour ${user.id}:`, err);
+                  return [];
+                })
+              ]);
+
+              const userWithStats = {
+                ...user,
+                boats: boats?.length || 0,
+                reservations: reservations?.length || 0,
+                documents: documents?.map(doc => doc.document_type) || []
+              };
+              
+              console.log(`✅ Stats chargées pour ${user.id}:`, userWithStats);
+              return userWithStats;
+            } catch (error) {
+              console.warn(`❌ Erreur lors du chargement des stats pour l'utilisateur ${user.id}:`, error);
+              return user;
+            }
+          })
+        );
+
+        console.log('✅ === CHARGEMENT TERMINÉ ===');
+        console.log('📊 Utilisateurs finaux:', usersWithStats.length);
+        setUsers(usersWithStats);
+        
+      } catch (error) {
+        console.error(' === ERREUR DÉTAILLÉE ===');
+        console.error(' Type d\'erreur:', error.constructor.name);
+        console.error(' Message:', error.message);
+        console.error(' Stack:', error.stack);
+        console.error(' Erreur complète:', error);
+        
+        // Gestion spécifique des erreurs d'authentification
+        if (error.message.includes('Token invalide') || error.message.includes('401')) {
+          console.warn('Token invalide, nettoyage et redirection...');
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          ErrorAlert(
+            'Session expirée !', 
+            'Votre session a expiré. Veuillez vous reconnecter.'
+          );
+          navigate('/login');
+          return;
+        }
+        
+        // Afficher une erreur plus détaillée
+        ErrorAlert(
+          'Erreur de chargement !', 
+          `Impossible de charger les utilisateurs.\n\nDétails: ${error.message}\n\nVérifiez la console pour plus d'informations.`
+        );
+      } finally {
+        setLoading(false);
+      }
     };
 
     // Charger les utilisateurs au montage
     loadUsers();
-
-    // Écouter les changements
-    const unsubscribe = userDataService.addListener((updatedUsers) => {
-      console.log('🔔 Notification reçue du service, mise à jour de la liste...');
-      console.log('📊 Nouveaux utilisateurs:', updatedUsers.length, updatedUsers);
-      setUsers(updatedUsers);
-    });
-
-    return unsubscribe;
-  }, []);
+  }, [navigate]);
 
   // Filtrage des utilisateurs
   const filteredUsers = users.filter(user => {
@@ -101,11 +248,116 @@ const UsersAdmin = () => {
     );
   };
 
+  // Fonction de validation côté client
+  const validateCreateForm = (formData) => {
+    const errors = {};
+    
+    if (!formData.firstName || formData.firstName.length < 2) {
+      errors.firstName = 'Le prénom doit contenir au moins 2 caractères';
+    }
+    
+    if (!formData.lastName || formData.lastName.length < 2) {
+      errors.lastName = 'Le nom doit contenir au moins 2 caractères';
+    }
+  
+    if (!formData.email || !/\S+@\S+\.\S+/.test(formData.email)) {
+      errors.email = 'Veuillez fournir une adresse email valide';
+    }
+    if (!formData.roles || formData.roles.length === 0) {
+      errors.roles = 'Veuillez sélectionner au moins un rôle';
+    }
+    
+    return errors;
+  };
 
+  // CRUD Operations
+  const handleCreateUser = async (userData) => {
+    try {
+      setLoading(true);
+      console.log('�� Création d\'un nouvel utilisateur...');
+      console.log('�� Données du formulaire:', userData);
+      console.log('�� Rôles sélectionnés:', userData.roles);
+      console.log('🔍 Type des rôles:', typeof userData.roles, Array.isArray(userData.roles));
+      
+      // Validation côté client
+      const errors = validateCreateForm(userData);
+      if (Object.keys(errors).length > 0) {
+        console.error('❌ Erreurs de validation:', errors);
+        ErrorAlert('Erreur de validation !', Object.values(errors).join('\n'));
+        return;
+      }
+      
+      const apiData = transformToApiData(userData);
+      console.log('�� Données envoyées à l\'API:', apiData);
+      
+      const newUser = await createUser(apiData);
+      console.log('✅ Utilisateur créé:', newUser);
+      
+      // Transformer et ajouter à la liste
+      const transformedUser = transformUserData(newUser);
+      setUsers(prev => [transformedUser, ...prev]);
+      // Fermer le modal et réinitialiser
+      setShowCreateModal(false); 
+      SuccessAlert('Utilisateur créé !', 'Le nouvel utilisateur a été créé avec succès.');
+    } catch (error) {
+      console.error('❌ Erreur lors de la création:', error);
+  
+      // Gestion des erreurs de validation
+      if (error.message && error.message.includes('422')) {
+        ErrorAlert('Erreur de validation !', 'Vérifiez que tous les champs obligatoires sont remplis correctement.');
+      } else {
+        ErrorAlert('Erreur !', `Impossible de créer l'utilisateur: ${error.message}`);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleEditUser = (user) => {
     setEditingUser({ ...user, roles: [...user.roles] });
     setShowEditModal(true);
+  };
+
+  const handleUpdateUser = async (userData) => {
+    try {
+      console.log('�� Mise à jour de l\'utilisateur:', userData.id);
+      const apiData = transformToApiData(userData);
+      console.log('�� Données envoyées à l\'API:', apiData);
+      const updatedUser = await updateUser(userData.id, apiData);
+      console.log('✅ Utilisateur mis à jour:', updatedUser);
+      
+      // Transformer et mettre à jour dans la liste
+      const transformedUser = transformUserData(updatedUser);
+      setUsers(prev => prev.map(u => 
+        u.id === userData.id ? transformedUser : u
+      ));
+      
+      SuccessAlert('Utilisateur modifié !', 'Les informations ont été mises à jour avec succès.');
+      setShowEditModal(false);
+      setEditingUser(null);
+    } catch (error) {
+      console.error('❌ Erreur lors de la mise à jour:', error);
+      ErrorAlert('Erreur !', `Impossible de sauvegarder les modifications: ${error.message}`);
+    }
+  };
+
+  const handleDeleteUser = async (user) => {
+    try {
+      console.log('🗑️ Suppression de l\'utilisateur:', user.id);
+      const confirmed = await ActivationConfirmation('delete', 1, 'utilisateur');
+      if (confirmed) {
+        await deleteUser(user.id);
+        console.log('✅ Utilisateur supprimé');
+        
+        // Retirer de la liste
+        setUsers(prev => prev.filter(u => u.id !== user.id));
+        
+        SuccessAlert('Utilisateur supprimé !', 'L\'utilisateur a été supprimé avec succès.');
+      }
+    } catch (error) {
+      console.error('❌ Erreur lors de la suppression:', error);
+      ErrorAlert('Erreur !', `Impossible de supprimer l'utilisateur: ${error.message}`);
+    }
   };
 
   const handleRoleChange = (role, checked) => {
@@ -125,8 +377,15 @@ const UsersAdmin = () => {
       const confirmed = await ActivationConfirmation('activate', 1, 'utilisateur');
       if (confirmed) {
         console.log('✅ Confirmation reçue, mise à jour du statut...');
-        const success = userDataService.updateUserStatus(user.id, true);
-        console.log('📊 Mise à jour du statut:', success ? 'réussie' : 'échouée');
+        const userData = { is_active: true };
+        await updateUser(user.id, userData);
+        console.log('📊 Mise à jour du statut: réussie');
+        
+        // Mettre à jour l'état local
+        setUsers(prev => prev.map(u => 
+          u.id === user.id ? { ...u, active: true } : u
+        ));
+        
         SuccessAlert(
           'Utilisateur activé !',
           'Le compte a été activé avec succès.'
@@ -134,7 +393,7 @@ const UsersAdmin = () => {
       }
     } catch (error) {
       console.error('❌ Erreur lors de l\'activation:', error);
-      ErrorAlert('Erreur !', 'Impossible d\'activer l\'utilisateur.');
+      ErrorAlert('Erreur !', `Impossible d'activer l'utilisateur: ${error.message}`);
     }
   };
 
@@ -144,8 +403,15 @@ const UsersAdmin = () => {
       const confirmed = await ActivationConfirmation('deactivate', 1, 'utilisateur');
       if (confirmed) {
         console.log('✅ Confirmation reçue, mise à jour du statut...');
-        const success = userDataService.updateUserStatus(user.id, false);
-        console.log('📊 Mise à jour du statut:', success ? 'réussie' : 'échouée');
+        const userData = { is_active: false };
+        await updateUser(user.id, userData);
+        console.log('📊 Mise à jour du statut: réussie');
+        
+        // Mettre à jour l'état local
+        setUsers(prev => prev.map(u => 
+          u.id === user.id ? { ...u, active: false } : u
+        ));
+        
         SuccessAlert(
           'Utilisateur désactivé !',
           'Le compte a été désactivé avec succès.'
@@ -153,11 +419,9 @@ const UsersAdmin = () => {
       }
     } catch (error) {
       console.error('❌ Erreur lors de la désactivation:', error);
-      ErrorAlert('Erreur !', 'Impossible de désactiver l\'utilisateur.');
+      ErrorAlert('Erreur !', `Impossible de désactiver l'utilisateur: ${error.message}`);
     }
   };
-
-
 
   // Actions en lot
   const handleBulkAction = async (action) => {
@@ -179,14 +443,35 @@ const UsersAdmin = () => {
           confirmed = await ActivationConfirmation('deactivate', selectedUsers.length, 'utilisateurs');
           actionText = 'désactivés';
           break;
+        case 'delete':
+          confirmed = await ActivationConfirmation('delete', selectedUsers.length, 'utilisateurs');
+          actionText = 'supprimés';
+          break;
         default:
           return;
       }
 
       if (confirmed) {
-        selectedUsers.forEach(userId => {
-          userDataService.updateUserStatus(userId, action === 'activate');
-        });
+        // Traiter chaque utilisateur sélectionné
+        if (action === 'delete') {
+          await Promise.all(
+            selectedUsers.map(userId => deleteUser(userId))
+          );
+          // Retirer de la liste
+          setUsers(prev => prev.filter(u => !selectedUsers.includes(u.id)));
+        } else {
+          await Promise.all(
+            selectedUsers.map(userId => {
+              const userData = { is_active: action === 'activate' };
+              return updateUser(userId, userData);
+            })
+          );
+          // Mettre à jour l'état local
+          setUsers(prev => prev.map(u => 
+            selectedUsers.includes(u.id) ? { ...u, active: action === 'activate' } : u
+          ));
+        }
+        
         setSelectedUsers([]);
         SuccessAlert(
           `Utilisateurs ${actionText} !`,
@@ -194,14 +479,15 @@ const UsersAdmin = () => {
         );
       }
     } catch (error) {
-      ErrorAlert('Erreur !', 'Impossible de traiter l\'action en lot.');
+      console.error('❌ Erreur lors de l\'action en lot:', error);
+      ErrorAlert('Erreur !', `Impossible de traiter l'action en lot: ${error.message}`);
     }
   };
 
-
-
+  // Navigation vers les détails
   // Navigation vers les détails
   const handleViewUserDetails = (userId) => {
+    console.log(' Redirection vers les détails de l\'utilisateur:', userId);
     navigate(`/admin/sl/users/${userId}`);
   };
 
@@ -256,6 +542,11 @@ const UsersAdmin = () => {
     administrateurs: users.filter(u => u.roles.includes('Administrateur')).length
   };
 
+  // Afficher le preloader pendant le chargement
+  if (loading) {
+    return <Preloader />;
+  }
+
   return (
     <div className="space-y-6">
       {/* En-tête avec statistiques */}
@@ -266,7 +557,7 @@ const UsersAdmin = () => {
             <p className="text-gray-600 mt-2">Gérez tous les utilisateurs de la plateforme</p>
           </div>
           <button
-            onClick={() => {/* TODO: Ajouter un nouvel utilisateur */}}
+            onClick={() => setShowCreateModal(true)}
             className="bg-[#AD7C59] hover:bg-[#8B6B4A] text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors mt-4 sm:mt-0"
           >
             <FontAwesomeIcon icon={faPlus} className="w-4 h-4" />
@@ -359,6 +650,13 @@ const UsersAdmin = () => {
                 <FontAwesomeIcon icon={faUserTimes} className="w-4 h-4" />
                 <span>Désactiver ({selectedUsers.length})</span>
               </button>
+              <button
+                onClick={() => handleBulkAction('delete')}
+                className="bg-red-800 hover:bg-red-900 text-white px-3 py-2 rounded-lg text-sm flex items-center space-x-2 transition-colors"
+              >
+                <FontAwesomeIcon icon={faTrash} className="w-4 h-4" />
+                <span>Supprimer ({selectedUsers.length})</span>
+              </button>
             </div>
           )}
         </div>
@@ -422,7 +720,6 @@ const UsersAdmin = () => {
                         <div className="text-sm font-medium text-gray-900">
                           {user.firstName} {user.lastName}
                         </div>
-                        <div className="text-sm text-gray-500">ID: {user.id}</div>
                       </div>
                     </div>
                   </td>
@@ -456,6 +753,15 @@ const UsersAdmin = () => {
                       >
                         <FontAwesomeIcon icon={faEdit} className="w-4 h-4" />
                       </button>
+                      
+                      <button
+                        onClick={() => handleDeleteUser(user)}
+                        className="text-red-600 hover:text-red-800 transition-colors"
+                        title="Supprimer"
+                      >
+                        <FontAwesomeIcon icon={faTrash} className="w-4 h-4" />
+                      </button>
+
                       {user.active ? (
                         <button
                           onClick={() => handleDeactivateUser(user)}
@@ -473,7 +779,6 @@ const UsersAdmin = () => {
                           <FontAwesomeIcon icon={faCheck} className="w-4 h-4" />
                         </button>
                       )}
-
                     </div>
                   </td>
                 </tr>
@@ -547,136 +852,192 @@ const UsersAdmin = () => {
         )}
       </div>
 
-
-
-      {/* Modal de visualisation */}
-      {showModal && modalUser && (
+      {/* Modal de création d'utilisateur */}
+      {showCreateModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-start mb-4">
               <h2 className="text-2xl font-bold text-[#4B6A88]">
-                Profil de {modalUser.firstName} {modalUser.lastName}
+                Créer un nouvel utilisateur
               </h2>
               <button
-                onClick={() => setShowModal(false)}
+                onClick={() => setShowCreateModal(false)}
                 className="text-gray-400 hover:text-gray-600 transition-colors"
               >
                 <FontAwesomeIcon icon={faTimes} className="w-6 h-6" />
               </button>
             </div>
 
-            <div className="space-y-4">
-              {/* Informations de base */}
-              <div className="flex items-start space-x-4">
-                <img
-                  src={modalUser.avatar}
-                  alt={`${modalUser.firstName} ${modalUser.lastName}`}
-                  className="w-20 h-20 rounded-full object-cover"
-                />
-                <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-gray-900">
-                    {modalUser.firstName} {modalUser.lastName}
-                  </h3>
-                  <p className="text-gray-600">ID: {modalUser.id}</p>
-                                     <div className="flex items-center space-x-4 mt-2">
-                     <RoleBadge roles={modalUser.roles} />
-                     <ActiveBadge active={modalUser.active} />
-                   </div>
-                </div>
-              </div>
-
-              {/* Détails de contact */}
+            <form className="space-y-4" onSubmit={(e) => {
+              e.preventDefault();
+              const formData = new FormData(e.target);
+              
+              // Récupération simplifiée des rôles
+              const roles = [];
+              if (formData.get('role_locataire')) roles.push('Locataire');
+              if (formData.get('role_proprietaire')) roles.push('Propriétaire');
+              if (formData.get('role_administrateur')) roles.push('Administrateur');
+              
+              // Si aucun rôle, utiliser Locataire par défaut
+              if (roles.length === 0) roles.push('Locataire');
+              
+              const userData = {
+                firstName: formData.get('firstName'),
+                lastName: formData.get('lastName'),
+                email: formData.get('email'),
+                phone: formData.get('phone'),
+                address: formData.get('address'),
+                roles: roles,
+                active: formData.get('status') === 'active'
+              };
+              
+              console.log('�� Données du formulaire:', userData);
+              handleCreateUser(userData);
+            }}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <FontAwesomeIcon icon={faEnvelope} className="text-[#AD7C59] w-4 h-4" />
-                    <span className="text-sm text-gray-600">{modalUser.email}</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <FontAwesomeIcon icon={faPhone} className="text-[#AD7C59] w-4 h-4" />
-                    <span className="text-sm text-gray-600">{modalUser.phone}</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <FontAwesomeIcon icon={faMapMarkerAlt} className="text-[#AD7C59] w-4 h-4" />
-                    <span className="text-sm text-gray-600">{modalUser.address}</span>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <FontAwesomeIcon icon={faCalendar} className="text-[#AD7C59] w-4 h-4" />
-                    <span className="text-sm text-gray-600">
-                      Créé le {new Date(modalUser.createdAt).toLocaleDateString('fr-FR')}
-                    </span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <FontAwesomeIcon icon={faClock} className="text-[#AD7C59] w-4 h-4" />
-                    <span className="text-sm text-gray-600">
-                      Dernière connexion: {new Date(modalUser.lastLogin).toLocaleDateString('fr-FR')}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Statistiques */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="text-center p-3 bg-[#F5F1EB] rounded-lg">
-                  <div className="text-lg font-bold text-[#AD7C59]">{modalUser.boats}</div>
-                  <div className="text-xs text-gray-600">Bateaux</div>
-                </div>
-                <div className="text-center p-3 bg-[#F5F1EB] rounded-lg">
-                  <div className="text-lg font-bold text-[#AD7C59]">{modalUser.reservations}</div>
-                  <div className="text-xs text-gray-600">Réservations</div>
-                </div>
-                {modalUser.totalSpent && (
-                  <div className="text-center p-3 bg-[#F5F1EB] rounded-lg">
-                    <div className="text-lg font-bold text-[#AD7C59]">{modalUser.totalSpent}€</div>
-                    <div className="text-xs text-gray-600">Total dépensé</div>
-                  </div>
-                )}
-                {modalUser.totalEarned && (
-                  <div className="text-center p-3 bg-[#F5F1EB] rounded-lg">
-                    <div className="text-lg font-bold text-[#AD7C59]">{modalUser.totalEarned}€</div>
-                    <div className="text-xs text-gray-600">Total gagné</div>
-                  </div>
-                )}
-              </div>
-
-              {/* Documents */}
-              {modalUser.documents && modalUser.documents.length > 0 && (
                 <div>
-                  <h4 className="font-semibold text-gray-900 mb-2">Documents</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {modalUser.documents.map((doc, index) => (
-                      <span
-                        key={index}
-                        className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-[#87CEEB] text-[#4B6A88]"
-                      >
-                        <FontAwesomeIcon icon={faFileAlt} className="w-3 h-3 mr-1" />
-                        {doc}
-                      </span>
-                    ))}
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Prénom *
+                  </label>
+                  <input
+                    type="text"
+                    name="firstName"
+                    required
+                    minLength={2}
+                    maxLength={50}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#AD7C59] focus:border-transparent"
+                  />
+                   </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Nom *
+                  </label>
+                  <input
+                    type="text"
+                    name="lastName"
+                    required
+                    minLength={2}
+                    maxLength={50}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#AD7C59] focus:border-transparent"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Email *
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#AD7C59] focus:border-transparent"
+                  />
+                  </div>
+               
+                  </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Téléphone
+                  </label>
+                  <input
+                    type="tel"
+                    name="phone"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#AD7C59] focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Rôles *
+                  </label>
+                <div className="space-y-2">
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        name="role_locataire"
+                        defaultChecked
+                        className="mr-2 text-[#AD7C59] focus:ring-[#AD7C59] rounded"
+                      />
+                      Locataire
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        name="role_proprietaire"
+                        className="mr-2 text-[#AD7C59] focus:ring-[#AD7C59] rounded"
+                      />
+                      Propriétaire
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        name="role_administrateur"
+                        className="mr-2 text-[#AD7C59] focus:ring-[#AD7C59] rounded"
+                      />
+                      Administrateur
+                    </label>
                   </div>
                 </div>
-              )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Statut
+                </label>
+                <div className="flex items-center space-x-4">
+                  <label className="flex items-center">
+                    <input
+                      type="radio"
+                      name="status"
+                      value="active"
+                      defaultChecked
+                      className="mr-2 text-[#AD7C59] focus:ring-[#AD7C59]"
+                    />
+                    Actif
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="radio"
+                      name="status"
+                      value="inactive"
+                      className="mr-2 text-[#AD7C59] focus:ring-[#AD7C59]"
+                    />
+                    Inactif
+                  </label>
+                </div>
+              </div>
+
+                <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Adresse
+                </label>
+                <textarea
+                  name="address"
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#AD7C59] focus:border-transparent"
+                />
             </div>
 
             <div className="flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-200">
+              
               <button
-                onClick={() => setShowModal(false)}
+                  type="button"
+                  onClick={() => setShowCreateModal(false)}
                 className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
               >
-                Fermer
+                  Annuler
               </button>
               <button
-                onClick={() => {
-                  setShowModal(false);
-                  handleEditUser(modalUser);
-                }}
+                  type="submit"
                 className="bg-[#AD7C59] hover:bg-[#8B6B4A] text-white px-4 py-2 rounded-lg transition-colors"
               >
-                Modifier
+                  Créer
               </button>
             </div>
+            </form>
           </div>
         </div>
       )}
@@ -697,7 +1058,21 @@ const UsersAdmin = () => {
               </button>
             </div>
 
-            <form className="space-y-4">
+            <form className="space-y-4" onSubmit={(e) => {
+              e.preventDefault();
+              const formData = new FormData(e.target);
+              const userData = {
+                ...editingUser,
+                firstName: formData.get('firstName'),
+                lastName: formData.get('lastName'),
+                email: formData.get('email'),
+                phone: formData.get('phone'),
+                address: formData.get('address'),
+                roles: Array.from(document.querySelectorAll('input[name="roles"]:checked')).map(cb => cb.value),
+                active: formData.get('status') === 'active'
+              };
+              handleUpdateUser(userData);
+            }}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -705,6 +1080,7 @@ const UsersAdmin = () => {
                   </label>
                   <input
                     type="text"
+                    name="firstName"
                     defaultValue={editingUser.firstName}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#AD7C59] focus:border-transparent"
                   />
@@ -715,6 +1091,7 @@ const UsersAdmin = () => {
                   </label>
                   <input
                     type="text"
+                    name="lastName"
                     defaultValue={editingUser.lastName}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#AD7C59] focus:border-transparent"
                   />
@@ -728,6 +1105,7 @@ const UsersAdmin = () => {
                   </label>
                   <input
                     type="email"
+                    name="email"
                     defaultValue={editingUser.email}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#AD7C59] focus:border-transparent"
                   />
@@ -738,6 +1116,7 @@ const UsersAdmin = () => {
                   </label>
                   <input
                     type="tel"
+                    name="phone"
                     defaultValue={editingUser.phone}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#AD7C59] focus:border-transparent"
                   />
@@ -753,8 +1132,9 @@ const UsersAdmin = () => {
                     <label className="flex items-center">
                       <input
                         type="checkbox"
-                        checked={editingUser.roles.includes('Locataire')}
-                        onChange={(e) => handleRoleChange('Locataire', e.target.checked)}
+                        name="roles"
+                        value="Locataire"
+                        defaultChecked={editingUser.roles.includes('Locataire')}
                         className="mr-2 text-[#AD7C59] focus:ring-[#AD7C59] rounded"
                       />
                       Locataire
@@ -762,8 +1142,9 @@ const UsersAdmin = () => {
                     <label className="flex items-center">
                       <input
                         type="checkbox"
-                        checked={editingUser.roles.includes('Propriétaire')}
-                        onChange={(e) => handleRoleChange('Propriétaire', e.target.checked)}
+                        name="roles"
+                        value="Propriétaire"
+                        defaultChecked={editingUser.roles.includes('Propriétaire')}
                         className="mr-2 text-[#AD7C59] focus:ring-[#AD7C59] rounded"
                       />
                       Propriétaire
@@ -771,8 +1152,9 @@ const UsersAdmin = () => {
                     <label className="flex items-center">
                       <input
                         type="checkbox"
-                        checked={editingUser.roles.includes('Administrateur')}
-                        onChange={(e) => handleRoleChange('Administrateur', e.target.checked)}
+                        name="roles"
+                        value="Administrateur"
+                        defaultChecked={editingUser.roles.includes('Administrateur')}
                         className="mr-2 text-[#AD7C59] focus:ring-[#AD7C59] rounded"
                       />
                       Administrateur
@@ -813,40 +1195,29 @@ const UsersAdmin = () => {
                   Adresse
                 </label>
                 <textarea
-                  defaultValue={editingUser.address}
+                  name="address"
                   rows={3}
+                  defaultValue={editingUser.address}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#AD7C59] focus:border-transparent"
                 />
               </div>
-            </form>
 
             <div className="flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-200">
               <button
+                  type="button"
                 onClick={() => setShowEditModal(false)}
                 className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
               >
                 Annuler
               </button>
-                              <button
-                  onClick={() => {
-                    try {
-                      // Mettre à jour l'utilisateur avec les nouveaux rôles
-                      userDataService.updateUser(editingUser);
-                      setShowEditModal(false);
-                      setEditingUser(null);
-                      SuccessAlert(
-                        'Utilisateur modifié !',
-                        'Les informations ont été mises à jour avec succès.'
-                      );
-                    } catch (error) {
-                      ErrorAlert('Erreur !', 'Impossible de sauvegarder les modifications.');
-                    }
-                  }}
+                 <button
+                  type="submit"
                   className="bg-[#AD7C59] hover:bg-[#8B6B4A] text-white px-4 py-2 rounded-lg transition-colors"
                 >
                   Sauvegarder
                 </button>
             </div>
+            </form>
           </div>
         </div>
       )}

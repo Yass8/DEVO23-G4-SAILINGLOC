@@ -10,8 +10,26 @@ const index = async (req, res) => {
 };
 
 const create = async (req, res) => {
+  
   try {
-    const result = await contractService.createContract(req.body);
+    
+    let data = {};
+    if (req.body.data) {
+      try {
+        data = JSON.parse(req.body.data);
+      } catch (e) {
+        return res.status(400).json({ error: "JSON invalide dans 'data'" });
+      }
+    } else {
+      return res.status(400).json({ error: "Le champ 'data' est manquant" });
+    }
+    
+    req.body = data;
+    
+    const contract = req.files?.contract_pdf;
+    const result = await contractService.createContract(req.body, {
+      contract_pdf: contract
+    });
     res.status(201).json(result);
   } catch (error) {
     res.status(500).json({ error: error.message });

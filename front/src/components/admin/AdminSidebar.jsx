@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
@@ -12,24 +12,37 @@ import {
   faStar, 
   faCog,
   faTachometerAlt,
-  faSignOutAlt
+  faSignOutAlt,
+  faPlus,
+  faTags,
+  faChevronDown,
+  faChevronRight
 } from '@fortawesome/free-solid-svg-icons';
 
 const AdminSidebar = ({ sidebarOpen, setSidebarOpen }) => {
+  const [boatsExpanded, setBoatsExpanded] = useState(false);
+
   const navigation = [
     { name: 'Tableau de bord', href: '/admin/sl', icon: faTachometerAlt },
     { name: 'Utilisateurs', href: '/admin/sl/users', icon: faUsers },
-    { name: 'Bateaux', href: '/admin/sl/boats', icon: faShip },
     { name: 'Réservations', href: '/admin/sl/reservations', icon: faCalendarCheck },
     { name: 'Contrats', href: '/admin/sl/contracts', icon: faFileContract },
     { name: 'Paiements', href: '/admin/sl/payments', icon: faCreditCard },
     { name: 'Ports', href: '/admin/sl/ports', icon: faAnchor },
     { name: 'Messages', href: '/admin/sl/messages', icon: faEnvelope },
     { name: 'Avis', href: '/admin/sl/reviews', icon: faStar },
-    { name: 'Paramètres', href: '/admin/sl/settings', icon: faCog },
   ];
 
-    return (
+  const boatsSubmenu = [
+    { name: 'Tous les bateaux', href: '/admin/sl/boats', icon: faShip },
+    { name: 'Type de bateau', href: '/admin/sl/boats/types', icon: faTags },
+  ];
+
+  const toggleBoatsMenu = () => {
+    setBoatsExpanded(!boatsExpanded);
+  };
+
+  return (
     <>
       {/* Overlay pour mobile */}
       {sidebarOpen && (
@@ -68,8 +81,8 @@ const AdminSidebar = ({ sidebarOpen, setSidebarOpen }) => {
                   className={({ isActive }) =>
                     `flex items-center p-3 text-sm font-medium transition-all duration-200 ${
                       isActive
-                        ? 'bg-[#AD7C59] text-white shadow-md'
-                        : 'text-gray-700 hover:bg-gray-100 hover:text-[#AD7C59]'
+                        ? 'bg-[var(--color-mocha)] text-white shadow-md'
+                        : 'text-gray-700 hover:bg-gray-100 hover:text-[var(--color-mocha)]'
                     }`
                   }
                 >
@@ -81,6 +94,42 @@ const AdminSidebar = ({ sidebarOpen, setSidebarOpen }) => {
                 </NavLink>
               </li>
             ))}
+
+            {/* Menu Bateaux avec sous-sections */}
+            <li>
+              <button
+                onClick={toggleBoatsMenu}
+                className="w-full flex items-center justify-between p-3 text-sm font-medium text-gray-700 hover:bg-gray-100 hover:text-[var(--color-mocha)] transition-all duration-200"
+              >
+                <div className="flex items-center">
+                  <FontAwesomeIcon icon={faShip} className="w-5 h-5 mr-3" />
+                  Bateaux
+                </div>
+                <FontAwesomeIcon 
+                  icon={boatsExpanded ? faChevronDown : faChevronRight} 
+                  className="w-4 h-4 transition-transform duration-200" 
+                />
+              </button>
+              
+              {boatsExpanded && (
+                <ul className="ml-6 space-y-1">
+                  {boatsSubmenu.map((subItem) => (
+                    <li key={subItem.name}>
+                      <NavLink
+                        to={subItem.href}
+                        className="flex items-center p-2 text-sm font-medium transition-all duration-200 rounded-md text-gray-600"
+                      >
+                        <FontAwesomeIcon
+                          icon={subItem.icon}
+                          className="w-4 h-4 mr-3"
+                        />
+                        {subItem.name}
+                      </NavLink>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </li>
           </ul>
         </nav>
 
@@ -88,7 +137,7 @@ const AdminSidebar = ({ sidebarOpen, setSidebarOpen }) => {
         <div className="absolute bottom-4 left-4 right-4">
           <NavLink
             to="/"
-            className="flex items-center p-3 text-sm font-medium text-[#AD7C59] hover:bg-[#AD7C59] hover:text-white transition-colors"
+            className="flex items-center p-3 text-sm font-medium text-[var(--color-mocha)] hover:bg-[var(--color-mocha)] hover:text-white transition-colors"
           >
             <FontAwesomeIcon icon={faSignOutAlt} className="w-5 h-5 mr-3" />
             Déconnexion

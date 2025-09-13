@@ -45,6 +45,16 @@ export const SuccessAlert = (title = 'Succès !', text = 'Opération réussie.')
   });
 };
 
+export const SuccessAlert2 = (title = 'Succès !', text = 'Opération réussie.') => {
+  return Swal.fire({          
+    title,
+    text,
+    icon: 'success',
+    confirmButtonColor: '#10b981',
+    confirmButtonText: 'OK'
+  });
+};
+
 // Composant pour l'erreur
 export const ErrorAlert = (title = 'Erreur !', text = 'Une erreur est survenue.') => {
   Swal.fire({

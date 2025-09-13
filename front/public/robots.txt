@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /client/
+Disallow: /proprietaire/
+Disallow: /locataire/
+
+Sitemap: https://dsp-dev-o24a-g4.fr/sitemap.xml

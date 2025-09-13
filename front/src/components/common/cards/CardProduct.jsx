@@ -1,6 +1,8 @@
-import React from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faRulerHorizontal, faUsers } from '@fortawesome/free-solid-svg-icons';
+import React from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faRulerHorizontal, faUsers } from "@fortawesome/free-solid-svg-icons";
+
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "";
 
 const CardProduct = ({
   name,
@@ -8,28 +10,38 @@ const CardProduct = ({
   length,
   capacity,
   price,
-  onClick,
+  slug,
   showButton = true,
-  buttonLabel = "Voir ce bateau"
+  buttonLabel = "Voir ce bateau",
 }) => (
   <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
-    <a href="#">
-      <img src={image} alt={name} className="rounded-t-lg w-full h-48 object-cover" />
+    <a href={`/boat/${slug}`}>
+      <img
+        src={`${API_BASE}${image}`}
+        alt={name}
+        className="rounded-t-lg w-full h-48 object-cover"
+      />
     </a>
     <div className="p-5">
       <div className="flex justify-between items-center">
-        <a href="#"><h4 className="font-bold">{name}</h4></a>
+        <a href={`/boat/${slug}`}>
+          <h4 className="font-bold">{name}</h4>
+        </a>
         <p className="font-bold">
           <span className="text-mocha text-2xl font-bold">{price}</span> /jour
         </p>
       </div>
       <p className="mt-2">
-        <FontAwesomeIcon icon={faRulerHorizontal} className='text-mocha' /> <span className="ml-1">{length}</span>
-        <FontAwesomeIcon icon={faUsers} className='text-mocha ml-4' /> <span className="ml-1">{capacity} passagers</span>
+        <FontAwesomeIcon icon={faRulerHorizontal} className="text-mocha" />{" "}
+        <span className="ml-1">{length}</span>
+        <FontAwesomeIcon icon={faUsers} className="text-mocha ml-4" />{" "}
+        <span className="ml-1">{capacity} passagers</span>
       </p>
       {showButton && (
         <div className="text-center">
-          <button className="custom-button mt-4" onClick={onClick}>{buttonLabel}</button>
+          <a href={`/boat/${slug}`}>
+            <button className="custom-button mt-4">{buttonLabel}</button>
+          </a>
         </div>
       )}
     </div>

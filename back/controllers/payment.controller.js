@@ -54,7 +54,18 @@ const getReservationPayments = async (req, res) => {
   }
 };
 
+const createPaymentIntent = async (req, res, next) => {
+  try {
+    const { amount } = req.body; // en centimes
+    const client_secret = await paymentService.createIntent(amount);
+    res.json({ client_secret });
+  } catch (err) {
+    next(err);
+  }
+};
+
 export default {
   index, create, show, update, remove,
-  getReservationPayments
+  getReservationPayments,
+  createPaymentIntent
 };

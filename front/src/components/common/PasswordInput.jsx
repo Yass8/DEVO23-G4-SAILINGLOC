@@ -1,3 +1,5 @@
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 
 const PasswordInput = ({ id, name, label, value, onChange, disabled, placeholder, error }) => {
@@ -28,7 +30,8 @@ const PasswordInput = ({ id, name, label, value, onChange, disabled, placeholder
           disabled={disabled}
           className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-[#AD7C59] transition-colors disabled:opacity-50"
         >
-          {showPassword ? "🙈" : "👁️"}
+          
+          <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
         </button>
       </div>
       {error && <p className="text-red-500 text-sm mt-1">{error}</p>}

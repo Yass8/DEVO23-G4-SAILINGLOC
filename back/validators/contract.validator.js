@@ -9,8 +9,7 @@ export const validateReservationId = [
 ];
 
 export const validateCreateContract = [
-  body('reservation_id').isInt().withMessage('L\'ID de réservation doit être un entier'),
-  body('contract_url').isURL().withMessage('L\'URL du contrat doit être valide')
+  body('reservation_id').isInt().withMessage('L\'ID de réservation doit être un entier')
 ];
 
 export const validateUpdateContract = [
