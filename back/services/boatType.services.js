@@ -22,7 +22,7 @@ const createBoatType = async (data, file) => {
                 file.name,
                 "boatTypes/photos",
                 [".jpg", ".jpeg", ".png", ".gif"],
-                2
+                5
             );
             data.photo_url = filePath;
             console.log('Fichier uploadé vers:', filePath);

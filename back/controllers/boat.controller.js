@@ -67,6 +67,7 @@ const show = async (req, res) => {
 const showBySlug = async (req, res) => {
   try {
     console.log('[showBySlug] req.params.slug :', req.params.slug);
+    
     const boat = await boatService.getBoatBySlug(req.params.slug);
     if (!boat) return res.status(404).json({ error: "Bateau introuvable" });
     res.json(boat);

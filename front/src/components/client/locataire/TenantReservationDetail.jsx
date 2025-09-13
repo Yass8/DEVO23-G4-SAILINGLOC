@@ -12,6 +12,7 @@ import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 import { fetchReservationByReference } from "../../../services/reservationServices";
 import Payment from "../Payment";
+import { getMainPhotoUrl } from "../../../utils/mainPhoto";
 
 const stripePromise = loadStripe(import.meta.env.VITE_PUBLIC_STRIPE_TEST_DEV);
 
@@ -48,10 +49,10 @@ export default function TenantReservationDetail() {
           Bateau
         </h2>
         <div className="flex flex-col md:flex-row gap-6">
+
           <img
-            src={
-              reservation.Boat?.BoatPhotos?.[0]?.url || "/placeholder-boat.jpg"
-            }
+            src={`${import.meta.env.VITE_API_BASE_URL}${getMainPhotoUrl(reservation.Boat)}`}
+
             alt={reservation.Boat?.name}
             className="w-full md:w-64 h-40 object-cover rounded"
           />

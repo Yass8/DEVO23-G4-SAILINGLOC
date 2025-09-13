@@ -289,6 +289,6 @@ router.delete("/:id/delete",
  *       404:
  *         description: Bateau ou disponibilités non trouvés
  */
-router.get("/boat/:boatId", validateBoatId, validate, availabilityController.getBoatAvailabilities);
+router.get("/boat/:boat_id", validateBoatId, validate, availabilityController.getBoatAvailabilities);
 
 export default router;
