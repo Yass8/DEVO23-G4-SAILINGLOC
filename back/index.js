@@ -38,9 +38,14 @@ app.use(
 
 app.use(cookieParser());
 app.use(cors({
-  origin: process.env.APPLICATION_URL || "http://localhost:5173",
-  credentials: true
+  origin: process.env.APPLICATION_URL || "https://dsp-dev-o24a-g4.fr",
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-CSRF-Token']
 }));
+
+// Gérer les pré-vols OPTIONS explicitement
+app.options('*', cors());
 
 app.use('/api/v1', routes);
 
