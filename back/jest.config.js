@@ -3,7 +3,7 @@ export default {
   collectCoverageFrom: [
     'controllers/**/*.js',
     'services/**/*.js',
-    'routes/**/*.js', // ← Ajoutez cette ligne
+    'routes/**/*.js',
     '!**/node_modules/**',
   ],
   coverageDirectory: './coverage',
