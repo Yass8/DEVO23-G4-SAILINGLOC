@@ -154,46 +154,6 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, openDropdown, tog
                     Ajouter un bateau
                   </Link>
                 </li>
-                <li>
-                  <Link 
-                    to="/my-space/calendar" 
-                    className={`block py-1 text-sm ${
-                      isActiveLink('/my-space/calendar') ? 'text-mocha font-semibold' : 'text-gray-700 hover:underline'
-                    }`}
-                  >
-                    Calendrier
-                  </Link>
-                </li>
-                <li>
-                  <Link 
-                    to="/my-space/tarifs" 
-                    className={`block py-1 text-sm ${
-                      isActiveLink('/my-space/tarifs') ? 'text-mocha font-semibold' : 'text-gray-700 hover:underline'
-                    }`}
-                  >
-                    Tarifs & Options
-                  </Link>
-                </li>
-                <li>
-                  <Link 
-                    to="/my-space/documents-legaux" 
-                    className={`block py-1 text-sm ${
-                      isActiveLink('/my-space/documents-legaux') ? 'text-mocha font-semibold' : 'text-gray-700 hover:underline'
-                    }`}
-                  >
-                    Documents légaux
-                  </Link>
-                </li>
-                <li>
-                  <Link 
-                    to="/my-space/revenus" 
-                    className={`block py-1 text-sm ${
-                      isActiveLink('/my-space/revenus') ? 'text-mocha font-semibold' : 'text-gray-700 hover:underline'
-                    }`}
-                  >
-                    Revenus & Stats
-                  </Link>
-                </li>
               </ul>
             </li>
           )}
@@ -229,7 +189,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, openDropdown, tog
                 </li>
                 <li>
                   <Link 
-                    to="/my-space/rechercher" 
+                    to="/boats" 
                     className={`block py-1 text-sm ${
                       isActiveLink('/my-space/rechercher') ? 'text-mocha font-semibold' : 'text-gray-700 hover:underline'
                     }`}
@@ -239,7 +199,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, openDropdown, tog
                 </li>
                 {userIsTenant && (
                   <>
-                    <li>
+                    {/* <li>
                       <Link 
                         to="/my-space/documents-location" 
                         className={`block py-1 text-sm ${
@@ -251,14 +211,14 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen, openDropdown, tog
                     </li>
                     <li>
                       <Link 
-                        to="/my-space/avis-laisse" 
+                        to="/my-space/dashboard" 
                         className={`block py-1 text-sm ${
                           isActiveLink('/my-space/avis-laisse') ? 'text-mocha font-semibold' : 'text-gray-700 hover:underline'
                         }`}
                       >
                         Avis laissés
                       </Link>
-                    </li>
+                    </li> */}
                   </>
                 )}
               </ul>

@@ -104,17 +104,26 @@ export default function Payment({ reservation }) {
       end_date: maintenanceEnd.toISOString(),
       status: "maintenance",
     });
-    
-    setReferenceContract(uniqid("CONTRACT"));
+    // création du contrat
+    const contractRef = uniqid("CONTRACT");
+
+    setReferenceContract(contractRef);
+
+    await new Promise(res => setTimeout(res, 100));
+  
+  setShowTemplate(true);
+  await new Promise(res => setTimeout(res, 100));
     
     //  génération du PDF
-    const pdfBlob = await generateContractPdf(reservation, referenceContract);
+    const pdfBlob = await generateContractPdf(reservation, contractRef);
 
-    //  préparation du FormData
     const fd = new FormData();
     fd.append('contract_pdf', pdfBlob, 'contrat.pdf');
-    // on envoie aussi la reservation complète (id suffit, mais on met tout)
-    const data = { reservation_id: reservation.id, reference:  referenceContract};
+    
+    const data = { 
+      reservation_id: reservation.id, 
+      reference: contractRef 
+    };
     fd.append("data", JSON.stringify(data));
 
     //  envoi au back
@@ -123,9 +132,9 @@ export default function Payment({ reservation }) {
     SuccessAlert(
       "Paiement réussi !",
       "Merci pour votre confiance. Votre réservation est désormais confirmée."
-    ).then(() => {
-      navigate("/my-space/reservations");
-    });
+    )
+    navigate("/my-space/reservations");
+    
   };
 
   const CARD_ELEMENT_OPTIONS = {
@@ -138,36 +147,6 @@ export default function Payment({ reservation }) {
       invalid: { color: "#fa755a", iconColor: "#fa755a" },
     },
   };
-
-  
-
-  /* ---------- BOUTON TEST RAPIDE ---------- */
-  const getContractReference = () => {
-  return referenceContract || uniqid("CONTRACT");
-};
-
-const testPdf = async () => {
-  const contractRef = getContractReference();
-  if (!referenceContract) {
-    setReferenceContract(contractRef);
-    await new Promise(res => setTimeout(res, 100));
-  }
-
-  setShowTemplate(true);
-  await new Promise(res => setTimeout(res, 100));
-
-  try {
-    const blob = await generateContractPdf(reservation, contractRef);
-    const url = URL.createObjectURL(blob);
-    window.open(url, '_blank');
-  } catch (err) {
-    console.error(err);
-    alert('Erreur génération PDF : ' + err.message);
-  } finally {
-    setShowTemplate(false);
-  }
-};
-
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -213,12 +192,6 @@ const testPdf = async () => {
           {error}
         </div>
       )}
-
-      
-      {/* BOUTON TEST */}
-      <button type="button" onClick={testPdf} className="bg-blue-600 text-white px-4 py-2 rounded">
-        Voir le PDF avant envoi
-      </button>
 
       {showTemplate && (
         <div ref={templateRef} style={{ position: 'absolute', left: '-9999px' }}>

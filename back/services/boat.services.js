@@ -29,7 +29,7 @@ const createBoat = async (data, files) => {
       files.registration_url.name,
       `boats/${bateau.id}/registration`,
       [".jpg", ".jpeg", ".png", ".pdf"],
-      5
+      10
     );
 
     await bateau.update({

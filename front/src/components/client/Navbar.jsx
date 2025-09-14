@@ -53,8 +53,8 @@ export default function Navbar({ sidebarOpen, setSidebarOpen }) {
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
                   <ul className="py-2 text-sm text-gray-700">
                     <li><a href="/my-space/profil" className="block px-4 py-2 hover:bg-gray-100">Mon Profil</a></li>
-                    <li><a href="/my-space/documents" className="block px-4 py-2 hover:bg-gray-100">Mes Documents</a></li>
-                    <li><a href="/my-space/parametres" className="block px-4 py-2 hover:bg-gray-100">Paramètres</a></li>
+                    {/* <li><a href="/my-space/documents" className="block px-4 py-2 hover:bg-gray-100">Mes Documents</a></li> */}
+                    {/* <li><a href="/my-space/parametres" className="block px-4 py-2 hover:bg-gray-100">Paramètres</a></li> */}
                     <li><a onClick={logout} className="block px-4 py-2 text-red-600 hover:bg-gray-100 cursor-pointer">Déconnexion</a></li>
                   </ul>
                 </div>

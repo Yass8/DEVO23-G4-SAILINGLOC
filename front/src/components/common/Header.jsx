@@ -43,7 +43,7 @@ const Header = () => {
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
         {/* Logo */}
         <div className="flex items-center">
-          <img src={logo} alt="SailingLoc" className="h-10 mr-3" />
+          <a href="/"><img src={logo} alt="SailingLoc logo" className="h-10 mr-3" /></a>
         </div>
 
         <nav className="hidden md:flex text-sm font-medium text-gray-700">
