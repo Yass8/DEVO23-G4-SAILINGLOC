@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>18/18</span>
+                <span class='fraction'>0/18</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>1/1</span>
+                <span class='fraction'>0/1</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>18/18</span>
+                <span class='fraction'>0/18</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line high'></div>
+    <div class='status-line low'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -121,26 +121,26 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import express from "express"
@@ -161,26 +161,26 @@ import authRoutes from './auth.routes.js';
 import contactRoutes from './contact.routes.js';
 import userRoutes from './user.routes.js';
 import { isAuthenticated } from '../middlewares/auth/authorize.js';
-const router = express.Router();
+const router = <span class="cstat-no" title="statement not covered" >express.Router();</span>
 &nbsp;
-router.use('/users', isAuthenticated, userRoutes);
-router.use('/users-documents', isAuthenticated, userDocumentRoutes);
-router.use('/ports', portRoutes);
-router.use('/boat-types', boatTypeRoutes); 
-router.use('/boats', boatRoutes);
-router.use('/boat-photos', boatPhotoRoutes);
-router.use('/boat-equipments', boatEquipmentRoutes);
-router.use('/availabilities', availabilityRoutes);
-router.use('/reservations', reservationRoutes);
-router.use('/payments', isAuthenticated, paymentRoutes);
-router.use('/contracts', isAuthenticated, contractRoutes);
-router.use('/reviews', reviewRoutes);
-router.use('/messages', isAuthenticated, messageRoutes);
-router.use('/auth', authRoutes);
-router.use('/contact', contactRoutes);
+<span class="cstat-no" title="statement not covered" >router.use('/users', isAuthenticated, userRoutes);</span>
+<span class="cstat-no" title="statement not covered" >router.use('/users-documents', isAuthenticated, userDocumentRoutes);</span>
+<span class="cstat-no" title="statement not covered" >router.use('/ports', portRoutes);</span>
+<span class="cstat-no" title="statement not covered" >router.use('/boat-types', boatTypeRoutes); </span>
+<span class="cstat-no" title="statement not covered" >router.use('/boats', boatRoutes);</span>
+<span class="cstat-no" title="statement not covered" >router.use('/boat-photos', boatPhotoRoutes);</span>
+<span class="cstat-no" title="statement not covered" >router.use('/boat-equipments', boatEquipmentRoutes);</span>
+<span class="cstat-no" title="statement not covered" >router.use('/availabilities', availabilityRoutes);</span>
+<span class="cstat-no" title="statement not covered" >router.use('/reservations', reservationRoutes);</span>
+<span class="cstat-no" title="statement not covered" >router.use('/payments', isAuthenticated, paymentRoutes);</span>
+<span class="cstat-no" title="statement not covered" >router.use('/contracts', isAuthenticated, contractRoutes);</span>
+<span class="cstat-no" title="statement not covered" >router.use('/reviews', reviewRoutes);</span>
+<span class="cstat-no" title="statement not covered" >router.use('/messages', isAuthenticated, messageRoutes);</span>
+<span class="cstat-no" title="statement not covered" >router.use('/auth', authRoutes);</span>
+<span class="cstat-no" title="statement not covered" >router.use('/contact', contactRoutes);</span>
 &nbsp;
-router.get('/', (req, res) =&gt; {
-  res.status(200).json({ message: 'Welcome to the SailingLoc API' });
+<span class="cstat-no" title="statement not covered" >router.get('/', <span class="fstat-no" title="function not covered" >(r</span>eq, res) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >  res.status(200).json({ message: 'Welcome to the SailingLoc API' });</span>
 });
 &nbsp;
 export default router;</pre></td></tr></table></pre>
@@ -190,7 +190,7 @@ export default router;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-09-10T17:07:37.045Z
+                at 2025-09-12T16:28:11.873Z
             </div>
         <script src="../prettify.js"></script>
         <script>

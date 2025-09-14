@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>7/7</span>
+                <span class='fraction'>0/7</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>7/7</span>
+                <span class='fraction'>0/7</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line high'></div>
+    <div class='status-line low'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -266,7 +266,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -290,7 +290,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -328,7 +328,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -354,7 +354,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -393,7 +393,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -419,7 +419,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -445,7 +445,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import express from "express";
 import userDocumentController from "../controllers/userDocument.controller.js";
@@ -458,7 +458,7 @@ import {
 import { validate } from "../middlewares/validate.js";
 import { isAuthenticated, authorizeUser } from "../middlewares/auth/authorize.js";
 &nbsp;
-const router = express.Router();
+const router = <span class="cstat-no" title="statement not covered" >express.Router();</span>
 &nbsp;
 /**
  * @swagger
@@ -482,7 +482,7 @@ const router = express.Router();
  *       401:
  *         description: Non authentifié
  */
-router.get("/", isAuthenticated, userDocumentController.index);
+<span class="cstat-no" title="statement not covered" >router.get("/", isAuthenticated, userDocumentController.index);</span>
 &nbsp;
 /**
  * @swagger
@@ -520,7 +520,7 @@ router.get("/", isAuthenticated, userDocumentController.index);
  *       401:
  *         description: Non authentifié
  */
-router.post("/new", isAuthenticated, validateCreateUserDocument, validate, userDocumentController.create);
+<span class="cstat-no" title="statement not covered" >router.post("/new", isAuthenticated, validateCreateUserDocument, validate, userDocumentController.create);</span>
 &nbsp;
 /**
  * @swagger
@@ -546,7 +546,7 @@ router.post("/new", isAuthenticated, validateCreateUserDocument, validate, userD
  *       404:
  *         description: Document non trouvé
  */
-router.get("/:id/show", isAuthenticated, validateUserDocumentId, validate, userDocumentController.show);
+<span class="cstat-no" title="statement not covered" >router.get("/:id/show", isAuthenticated, validateUserDocumentId, validate, userDocumentController.show);</span>
 &nbsp;
 /**
  * @swagger
@@ -585,7 +585,7 @@ router.get("/:id/show", isAuthenticated, validateUserDocumentId, validate, userD
  *       404:
  *         description: Document non trouvé
  */
-router.put("/:id/edit", isAuthenticated, validateUserDocumentId, validateUpdateUserDocument, validate, userDocumentController.update);
+<span class="cstat-no" title="statement not covered" >router.put("/:id/edit", isAuthenticated, validateUserDocumentId, validateUpdateUserDocument, validate, userDocumentController.update);</span>
 &nbsp;
 /**
  * @swagger
@@ -611,7 +611,7 @@ router.put("/:id/edit", isAuthenticated, validateUserDocumentId, validateUpdateU
  *       404:
  *         description: Document non trouvé
  */
-router.delete("/:id/delete", isAuthenticated, validateUserDocumentId, validate, userDocumentController.remove);
+<span class="cstat-no" title="statement not covered" >router.delete("/:id/delete", isAuthenticated, validateUserDocumentId, validate, userDocumentController.remove);</span>
 &nbsp;
 /**
  * @swagger
@@ -637,7 +637,7 @@ router.delete("/:id/delete", isAuthenticated, validateUserDocumentId, validate, 
  *       404:
  *         description: Utilisateur ou documents non trouvés
  */
-router.get("/user/:userId", isAuthenticated, validateUserId, validate, userDocumentController.getUserDocuments);
+<span class="cstat-no" title="statement not covered" >router.get("/user/:user_id", isAuthenticated, validateUserId, validate, userDocumentController.getUserDocuments);</span>
 &nbsp;
 export default router;</pre></td></tr></table></pre>
 
@@ -646,7 +646,7 @@ export default router;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-09-10T17:07:37.045Z
+                at 2025-09-12T16:28:11.873Z
             </div>
         <script src="../prettify.js"></script>
         <script>

@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>7/7</span>
+                <span class='fraction'>0/8</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>7/7</span>
+                <span class='fraction'>0/8</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line high'></div>
+    <div class='status-line low'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -353,7 +353,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -468,7 +468,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -493,7 +493,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -517,7 +517,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -553,7 +553,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -586,7 +586,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -619,8 +619,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import express from "express";
 import boatEquipmentController from "../controllers/boatEquipment.controller.js";
 import {
@@ -632,7 +632,7 @@ import {
 import { validate } from "../middlewares/validate.js";
 import { isAuthenticated, authorizeUser } from "../middlewares/auth/authorize.js";
 &nbsp;
-const router = express.Router();
+const router = <span class="cstat-no" title="statement not covered" >express.Router();</span>
 &nbsp;
 /**
  * @swagger
@@ -747,7 +747,7 @@ const router = express.Router();
  *               type: array
  *               items: { $ref: '#/components/schemas/BoatEquipment' }
  */
-router.get("/", boatEquipmentController.index);
+<span class="cstat-no" title="statement not covered" >router.get("/", boatEquipmentController.index);</span>
 &nbsp;
 /**
  * @swagger
@@ -772,7 +772,7 @@ router.get("/", boatEquipmentController.index);
  *           application/json:
  *             schema: { $ref: '#/components/schemas/ValidationError' }
  */
-router.post("/new", validateCreateBoatEquipment, validate, boatEquipmentController.create);
+<span class="cstat-no" title="statement not covered" >router.post("/new", validateCreateBoatEquipment, validate, boatEquipmentController.create);</span>
 &nbsp;
 /**
  * @swagger
@@ -796,7 +796,7 @@ router.post("/new", validateCreateBoatEquipment, validate, boatEquipmentControll
  *       404:
  *         description: Équipement non trouvé
  */
-router.get("/:id/show", validateBoatEquipmentId, validate, boatEquipmentController.show);
+<span class="cstat-no" title="statement not covered" >router.get("/:id/show", validateBoatEquipmentId, validate, boatEquipmentController.show);</span>
 &nbsp;
 /**
  * @swagger
@@ -832,7 +832,7 @@ router.get("/:id/show", validateBoatEquipmentId, validate, boatEquipmentControll
  *       404:
  *         description: Équipement non trouvé
  */
-router.put(
+<span class="cstat-no" title="statement not covered" >router.put(</span>
   "/:id/edit",
   isAuthenticated,
   authorizeUser(['admin', 'owner']),
@@ -865,7 +865,7 @@ router.put(
  *       404:
  *         description: Équipement non trouvé
  */
-router.delete(
+<span class="cstat-no" title="statement not covered" >router.delete(</span>
   "/:id/delete",
   isAuthenticated,
   authorizeUser(['admin', 'owner']),
@@ -898,8 +898,8 @@ router.delete(
  *       404:
  *         description: Bateau ou équipements non trouvés
  */
-router.get("/boat/:boatId", validateBoatId, validate, boatEquipmentController.getBoatEquipments);
-&nbsp;
+<span class="cstat-no" title="statement not covered" >router.get("/boat/:boatId", validateBoatId, validate, boatEquipmentController.getBoatEquipments);</span>
+<span class="cstat-no" title="statement not covered" >router.post("/boat/:boatId/sync", isAuthenticated, authorizeUser(['admin', 'owner']), boatEquipmentController.syncEquipments);</span>
 export default router;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -907,7 +907,7 @@ export default router;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-09-10T17:07:37.045Z
+                at 2025-09-12T16:28:11.873Z
             </div>
         <script src="../prettify.js"></script>
         <script>
