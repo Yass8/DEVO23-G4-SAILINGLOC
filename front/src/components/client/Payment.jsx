@@ -142,22 +142,33 @@ export default function Payment({ reservation }) {
   
 
   /* ---------- BOUTON TEST RAPIDE ---------- */
-  const testPdf = async () => {
-    setShowTemplate(true);                 // 2. on affiche le template
+  const getContractReference = () => {
+  return referenceContract || uniqid("CONTRACT");
+};
 
-    await new Promise(res => setTimeout(res, 100)); // 3. laisse React renderer
+const testPdf = async () => {
+  const contractRef = getContractReference();
+  if (!referenceContract) {
+    setReferenceContract(contractRef);
+    await new Promise(res => setTimeout(res, 100));
+  }
 
-    try {
-      const blob = await generateContractPdf(reservation, uniqid("CONTRACT")); // 4. génère le PDF
-      const url = URL.createObjectURL(blob);
-      window.open(url, '_blank');
-    } catch (err) {
-      console.error(err);
-      alert('Erreur génération PDF : ' + err.message);
-    } finally {
-      setShowTemplate(false);              // 5. on le cache à nouveau
-    }
-  };
+  setShowTemplate(true);
+  await new Promise(res => setTimeout(res, 100));
+
+  try {
+    const blob = await generateContractPdf(reservation, contractRef);
+    const url = URL.createObjectURL(blob);
+    window.open(url, '_blank');
+  } catch (err) {
+    console.error(err);
+    alert('Erreur génération PDF : ' + err.message);
+  } finally {
+    setShowTemplate(false);
+  }
+};
+
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="bg-blue-50 p-4 rounded-lg flex items-start gap-3">

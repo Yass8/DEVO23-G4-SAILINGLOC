@@ -20,6 +20,7 @@ export default function TenantReservationDetail() {
   const { reference } = useParams();
   const [reservation, setReservation] = useState(null);
   const [loading, setLoading] = useState(true);
+  // const [boatBySlug, setBoatBySlug] = useState('');
 
   useEffect(() => {
     fetchReservationByReference(reference)
@@ -34,6 +35,7 @@ export default function TenantReservationDetail() {
     return <p className="text-center mt-10">Réservation gta.</p>;
 
   const owner = reservation.Boat?.User;
+  // const slug = reservation.Boat?.slug;
 
   return (
     <div className="max-w-5xl mx-auto p-6 space-y-8">
