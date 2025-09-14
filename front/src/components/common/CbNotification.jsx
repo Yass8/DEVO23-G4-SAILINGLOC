@@ -25,7 +25,7 @@ const CbNotification = () => {
   if (!visible) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-pale-blue z-50 p-4 shadow-lg">
+    <div className="fixed bottom-0 left-0 right-0 bg-white z-50 p-4 shadow-lg">
       <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="text-sm">
           <strong>🍪 Nous utilisons des cookies</strong>
@@ -45,7 +45,7 @@ const CbNotification = () => {
           </button>
           <button
             onClick={handleRejectNonEssential}
-            className="px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded text-white text-sm"
+            className="px-4 py-2 border border-mocha hover:bg-sand rounded text-sm"
           >
             Refuser les non-essentiels
           </button>

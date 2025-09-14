@@ -64,7 +64,8 @@ const getBoatBySlug = async (slug) => {
         attributes: ["id", "start_date", "end_date", "status"],
         where: {
           end_date: { [Op.gte]: new Date() }
-        }
+        },
+        required: false
       }
     ]
   });

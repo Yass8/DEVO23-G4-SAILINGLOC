@@ -57,9 +57,11 @@ export default function AvailabilitiesManagement() {
 
   const loadData = async () => {
     try {
-      const b = await fetchBoatBySlug(slug);
-      const avails = await fetchBoatAvailabilities(Number(b.id));
-      setBoat(b);
+      
+      const bateau = await fetchBoatBySlug(slug);
+      
+      const avails = await fetchBoatAvailabilities(Number(bateau.id));
+      setBoat(bateau);
       setAvailabilities(avails);
     } catch (err) {
       console.error(err);
@@ -159,7 +161,7 @@ export default function AvailabilitiesManagement() {
       "Annuler"
     );
     if (!confirmed) return;
-    navigate(`/my-space/boats/${boat.slug}`);
+    navigate(`/my-space/boats/${slug}`);
   };
 
   if (loading) return <Preloader />;
@@ -168,7 +170,7 @@ export default function AvailabilitiesManagement() {
     <div className="lg:mx-4 p-4 space-y-6">
       <div className="flex justify-between items-center">
         <Link
-          to={`/my-space/boats/${boat.slug}`}
+          to={`/my-space/boats/${slug}`}
           className="text-slate-blue hover:underline flex items-center gap-2"
         >
           <FontAwesomeIcon icon={faArrowLeft} /> Retour au bateau
@@ -324,7 +326,7 @@ export default function AvailabilitiesManagement() {
       <div className="flex justify-end">
         <button
           onClick={handleSaveAll}
-          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+          className="bg-slate-blue text-white px-4 py-2 rounded hover:bg-green-600"
         >
           <FontAwesomeIcon icon={faSave} className="mr-2" />
           Terminer

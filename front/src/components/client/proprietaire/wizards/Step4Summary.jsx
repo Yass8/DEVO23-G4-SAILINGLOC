@@ -9,7 +9,6 @@ export default function Step4Summary({ data, mainIndex }) {
         <div className="grid md:grid-cols-2 gap-4 text-sm">
           <div>
             <p><span className="font-medium">Nom :</span> {data.name || "Non renseigné"}</p>
-            <p><span className="font-medium">Type :</span> {data.type || "Non renseigné"}</p>
             <p><span className="font-medium">Marque :</span> {data.brand || "Non renseigné"}</p>
             <p><span className="font-medium">Modèle :</span> {data.model || "Non renseigné"}</p>
           </div>

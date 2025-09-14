@@ -206,6 +206,6 @@ router.get("/user/:userId", isAuthenticated, validateUserId, validate, reservati
  *       404:
  *         description: Bateau ou réservations non trouvés
  */
-router.get("/boat/:boat_Id", isAuthenticated, validateBoatId, validate, reservationController.getBoatReservations);
+router.get("/boat/:boat_id", isAuthenticated, validateBoatId, validate, reservationController.getBoatReservations);
 
 export default router;

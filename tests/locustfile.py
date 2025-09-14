@@ -17,7 +17,7 @@ class SailingLocUser(HttpUser):
     def on_start(self):
         # Authentification initiale pour récupérer le token
         response = self.client.post("/api/v1/auth/login", json={
-            "email": "aliyassir859@gmail.com",
+            "email": "aliyassir131@outlook.fr",
             "password": "Aa_123"
         })
 

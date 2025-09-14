@@ -106,10 +106,10 @@ export default function TenantDashboard() {
         )}
         <h2 className="text-xl font-bold mb-4">Actions rapides</h2>
         <div className="flex gap-4 flex-wrap">
-          <Link to="/my-reservations" className="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300 transition">
+          <Link to="/my-space/my-reservations" className="bg-mocha text-white px-4 py-2 rounded hover:bg-mocha/90 transition">
             Mes réservations
           </Link>
-          <Link to="/my-reviews" className="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300 transition">
+          <Link to="/my-sapce/my-reviews" className="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300 transition">
             Mes avis
           </Link>
         </div>
@@ -173,7 +173,7 @@ function ReservationsSection({ reservations }) {
       </div>
       {filteredReservations.length > 5 && (
         <div className="mt-4 text-center">
-          <Link to="/my-reservations" className="text-mocha hover:text-mocha-dark underline">
+          <Link to="/my-space/my-reservations" className="text-mocha hover:text-mocha-dark underline">
             Voir toutes mes réservations ({filteredReservations.length})
           </Link>
         </div>

@@ -34,7 +34,7 @@ const createBoatPhotos = async (boatId, files, mainIndex = 0) => {
           file.name,
           `boats/${boatId}/photos`,
           [".jpg", ".jpeg", ".png", ".gif"],
-          2
+          5
         );
 
         return BoatPhoto.create(
@@ -93,7 +93,7 @@ const updateBoatPhoto = async (id, data, file) => {
         file.name,
         `boats/${photo.boat_id}/photos`,
         [".jpg", ".jpeg", ".png", ".gif"],
-        2
+        5
       );
 
       data.photo_url = filePath;
@@ -191,7 +191,7 @@ const syncBoatPhotos = async (boatId, keptIds, newFiles, mainId) => {
             file.name,
             `boats/${boatId}/photos`,
             [".jpg", ".jpeg", ".png", ".gif"],
-            2
+            5
           );
 
           await db.BoatPhoto.create(

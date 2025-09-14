@@ -28,6 +28,10 @@ import {
   getCurrentUser,
 } from "../../services/authService";
 import { SuccessAlert2 } from "../../components/common/SweetAlertComponents";
+import { getMainPhotoUrl } from "../../utils/mainPhoto";
+import { isTenant } from "../../utils/auth";
+import { EnsureUserHasTenantRole } from "../../components/client/locataire/EnsureUserHasTenantRole";
+import { updateUser } from "../../services/userServices";
 
 const Booking = () => {
   const navigate = useNavigate();
@@ -272,15 +276,19 @@ const Booking = () => {
       const formatDate = (date) =>
         date ? date.toISOString().split("T")[0] : "";
 
+      if (!isTenant()) {
+        await EnsureUserHasTenantRole();
+      }
+
       // Mettre à jour l'utilisateur
-      // await updateUser(user.id, {
-      //   firstname: firstName,
-      //   lastname: lastName,
-      //   email,
-      //   phone,
-      //   birth_date: birthDate,
-      //   address,
-      // });
+      await updateUser(user.id, {
+        firstname: firstName,
+        lastname: lastName,
+        email,
+        phone,
+        birth_date: birthDate,
+        address,
+      });
 
       // Uploader les documents avec FormData
       const uploadDocument = async (file, type) => {
@@ -522,10 +530,7 @@ const Booking = () => {
 
                 <div className="flex mb-4">
                   <img
-                    src={
-                      boat.photos?.[0]?.photo_url ||
-                      "https://images.unsplash.com/photo-1500514966906-fe367bfb0d0b"
-                    }
+                    src={`${import.meta.env.VITE_API_BASE_URL}${getMainPhotoUrl(boat)}`}
                     alt={boat.name}
                     className="w-24 h-20 object-cover rounded-md"
                   />

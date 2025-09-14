@@ -34,7 +34,7 @@ const router = express.Router();
  *       403:
  *         description: Accès refusé
  */
-router.get("/", isAuthenticated, authorizeUser(['admin']), contractController.index);
+router.get("/", isAuthenticated, contractController.index);
 
 /**
  * @swagger

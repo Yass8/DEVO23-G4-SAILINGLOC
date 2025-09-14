@@ -108,14 +108,14 @@ export default function OwnerDashboard() {
       <div className="bg-white p-6 rounded-xl shadow">
         <h2 className="text-xl font-bold mb-4">Actions rapides</h2>
         <div className="flex gap-4 flex-wrap">
-          <Link to="my-space/boats/new" className="bg-mocha text-white px-4 py-2 rounded hover:bg-mocha-dark transition">
+          <Link to="/my-space/boats/new" className="bg-mocha text-white px-4 py-2 rounded hover:bg-mocha-dark transition">
             Ajouter un bateau
           </Link>
-          <Link to="my-space/my-boat" className="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300 transition">
+          <Link to="/my-space/boats" className="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300 transition">
             Gérer mes bateaux
           </Link>
           {stats.pendingRequests > 0 && (
-            <Link to="/reservations" className="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-100 transition">
+            <Link to="/my-space/reservations" className="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-100 transition">
               Voir les demandes ({stats.pendingRequests})
             </Link>
           )}
