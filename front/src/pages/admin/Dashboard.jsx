@@ -1,8 +1,12 @@
-import { faCalendarCheck, faCheckCircle, faEnvelope, faFileContract, faHourglassHalf, faMoneyBillWave, faShip, faSpinner, faStar, faUsers, faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
+import { faCalendarCheck, faCheckCircle, faFileContract, faHourglassHalf, faMoneyBillWave, faShip, faSpinner, faUsers, faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getAdminStats, getDetailedStats } from "../../services/adminServices";
+import { fetchBoats } from "../../services/boatServices";
+import { fetchReservations } from "../../services/reservationServices";
+import { fetchContracts } from "../../services/contractServices";
+import { fetchPayments } from "../../services/paymentServices";
+import { fetchUsers } from "../../services/userServices";
 
 function Card({ icon, value, label, color = "text-slate-blue", loading = false, error = false }) {
   return (
@@ -37,16 +41,9 @@ const AdminDashboard = () => {
     totalContracts: 0,
     totalRevenue: 0,
     pendingReservations: 0,
-    unreadMessages: 0,
-    totalReviews: 0
-  });
-  const [detailedStats, setDetailedStats] = useState({
     activeUsers: 0,
     boatsInRental: 0,
-    pendingPayments: 0,
-    unreadMessages: 0,
-    pendingReviews: 0,
-    scheduledMaintenance: 0
+    pendingPayments: 0
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -57,13 +54,65 @@ const AdminDashboard = () => {
         setLoading(true);
         setError(false);
         
-        // Charger les statistiques principales
-        const mainStats = await getAdminStats();
-        setStats(mainStats);
+        // Charger toutes les données en parallèle
+        const [
+          boatsData, 
+          reservationsData, 
+          contractsData, 
+          paymentsData, 
+          usersData
+        ] = await Promise.all([
+          fetchBoats(),
+          fetchReservations(),
+          fetchContracts(),
+          fetchPayments(),
+          fetchUsers()
+        ]);
+
+        // Calculer les statistiques
+        const totalBoats = boatsData.length;
+        const totalReservations = reservationsData.length;
+        const totalContracts = contractsData.length;
         
-        // Charger les statistiques détaillées
-        const detailed = await getDetailedStats();
-        setDetailedStats(detailed);
+        // Calculer le revenu total (somme des paiements complétés)
+        const totalRevenue = paymentsData
+          .filter(payment => payment.status === 'completed')
+          .reduce((sum, payment) => sum + parseFloat(payment.amount), 0);
+        
+        // Réservations en attente
+        const pendingReservations = reservationsData
+          .filter(reservation => reservation.status === 'pending').length;
+        
+        // Utilisateurs actifs
+        const activeUsers = usersData
+          .filter(user => user.is_active).length;
+        
+        // Bateaux actuellement en location (réservations confirmées avec dates actuelles)
+        const currentDate = new Date();
+        const boatsInRental = reservationsData
+          .filter(reservation => 
+            reservation.status === 'confirmed' || reservation.status === 'booked'
+          )
+          .filter(reservation => {
+            const startDate = new Date(reservation.start_date);
+            const endDate = new Date(reservation.end_date);
+            return startDate <= currentDate && endDate >= currentDate;
+          }).length;
+        
+        // Paiements en attente
+        const pendingPayments = paymentsData
+          .filter(payment => payment.status === 'pending').length;
+
+        setStats({
+          totalBoats,
+          totalReservations,
+          totalContracts,
+          totalRevenue,
+          pendingReservations,
+          activeUsers,
+          boatsInRental,
+          pendingPayments
+        });
         
       } catch (err) {
         console.error('Erreur lors du chargement du dashboard:', err);
@@ -130,7 +179,7 @@ const AdminDashboard = () => {
               <div>
                 <p className="font-semibold">Utilisateurs</p>
                 <p className="text-sm text-gray-600">Gérer les utilisateurs</p>
-                <p className="text-xs text-green-600 mt-1">✅ Disponible</p>
+                
               </div>
             </div>
           </Link>
@@ -141,7 +190,7 @@ const AdminDashboard = () => {
               <div>
                 <p className="font-semibold">Bateaux</p>
                 <p className="text-sm text-gray-600">Gérer les bateaux</p>
-                <p className="text-xs text-green-600 mt-1">✅ Disponible</p>
+                
               </div>
             </div>
           </Link>
@@ -152,7 +201,7 @@ const AdminDashboard = () => {
               <div>
                 <p className="font-semibold">Réservations</p>
                 <p className="text-sm text-gray-600">Gérer les réservations</p>
-                <p className="text-xs text-green-600 mt-1">✅ Disponible</p>
+                
               </div>
             </div>
           </Link>
@@ -163,7 +212,7 @@ const AdminDashboard = () => {
               <div>
                 <p className="font-semibold">Contrats</p>
                 <p className="text-sm text-gray-600">Gérer les contrats</p>
-                <p className="text-xs text-green-600 mt-1">✅ Disponible</p>
+                
               </div>
             </div>
           </Link>
@@ -205,11 +254,11 @@ const AdminDashboard = () => {
         </div>
 
         <div className="bg-white p-6 rounded-xl shadow">
-          <h2 className="text-xl font-bold mb-4">Messages et avis</h2>
+          <h2 className="text-xl font-bold mb-4">Statistiques financières</h2>
           <div className="space-y-3">
             <div className="flex items-center justify-between p-3 border rounded-lg">
               <div>
-                <p className="font-semibold">Support client</p>
+                <p className="font-semibold">Revenus totaux</p>
                 <p className="text-sm text-gray-600">
                   {loading ? (
                     <span className="flex items-center space-x-2">
@@ -217,15 +266,15 @@ const AdminDashboard = () => {
                       <span>Chargement...</span>
                     </span>
                   ) : (
-                    `${detailedStats.unreadMessages} messages non lus`
+                    `${stats.totalRevenue.toLocaleString()} €`
                   )}
                 </p>
               </div>
-              <FontAwesomeIcon icon={faEnvelope} className="text-[#AD7C59]" />
+              <FontAwesomeIcon icon={faMoneyBillWave} className="text-[#AD7C59]" />
             </div>
             <div className="flex items-center justify-between p-3 border rounded-lg">
               <div>
-                <p className="font-semibold">Avis en attente</p>
+                <p className="font-semibold">Paiements en attente</p>
                 <p className="text-sm text-gray-600">
                   {loading ? (
                     <span className="flex items-center space-x-2">
@@ -233,11 +282,11 @@ const AdminDashboard = () => {
                       <span>Chargement...</span>
                     </span>
                   ) : (
-                    `${detailedStats.pendingReviews} avis en attente`
+                    `${stats.pendingPayments} paiements`
                   )}
                 </p>
               </div>
-              <FontAwesomeIcon icon={faStar} className="text-yellow-500" />
+              <FontAwesomeIcon icon={faMoneyBillWave} className="text-yellow-500" />
             </div>
           </div>
         </div>
@@ -253,10 +302,10 @@ const AdminDashboard = () => {
                 {loading ? (
                   <FontAwesomeIcon icon={faSpinner} className="animate-spin" />
                 ) : (
-                  detailedStats.activeUsers
+                  stats.activeUsers
                 )}
               </p>
-              <p className="text-sm text-gray-600">Utilisateurs connectés</p>
+              <p className="text-sm text-gray-600">Utilisateurs actifs</p>
             </div>
             <FontAwesomeIcon icon={faUsers} className="text-4xl text-[#AD7C59] opacity-20" />
           </div>
@@ -270,7 +319,7 @@ const AdminDashboard = () => {
                 {loading ? (
                   <FontAwesomeIcon icon={faSpinner} className="animate-spin" />
                 ) : (
-                  detailedStats.boatsInRental
+                  stats.boatsInRental
                 )}
               </p>
               <p className="text-sm text-gray-600">Actuellement loués</p>
@@ -287,7 +336,7 @@ const AdminDashboard = () => {
                 {loading ? (
                   <FontAwesomeIcon icon={faSpinner} className="animate-spin" />
                 ) : (
-                  detailedStats.pendingPayments
+                  stats.pendingPayments
                 )}
               </p>
               <p className="text-sm text-gray-600">En attente de validation</p>
