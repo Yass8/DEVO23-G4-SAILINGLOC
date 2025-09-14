@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/6</span>
+                <span class='fraction'>6/6</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/6</span>
+                <span class='fraction'>6/6</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -246,7 +246,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -265,7 +265,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -295,7 +295,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -323,7 +323,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -373,7 +373,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -402,7 +402,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -419,7 +419,7 @@ import {
 import { validate } from "../middlewares/validate.js";
 import { isAuthenticated, authorizeUser } from "../middlewares/auth/authorize.js";
 &nbsp;
-const router = <span class="cstat-no" title="statement not covered" >express.Router();</span>
+const router = express.Router();
 &nbsp;
 /**
  * @swagger
@@ -438,7 +438,7 @@ const router = <span class="cstat-no" title="statement not covered" >express.Rou
  *       200:
  *         description: Liste des types de bateaux
  */
-<span class="cstat-no" title="statement not covered" >router.get("/", boatTypeController.index);</span>
+router.get("/", boatTypeController.index);
 &nbsp;
 /**
  * @swagger
@@ -468,7 +468,7 @@ const router = <span class="cstat-no" title="statement not covered" >express.Rou
  *       400:
  *         description: Erreur de validation
  */
-<span class="cstat-no" title="statement not covered" >router.post("/new", validateCreateBoatType, validate, boatTypeController.create);</span>
+router.post("/new", validateCreateBoatType, validate, boatTypeController.create);
 &nbsp;
 /**
  * @swagger
@@ -496,7 +496,7 @@ const router = <span class="cstat-no" title="statement not covered" >express.Rou
  *       404:
  *         description: Type non trouvé
  */
-<span class="cstat-no" title="statement not covered" >router.get(</span>
+router.get(
   "/:id/show",
   isAuthenticated,
   authorizeUser(['admin', 'owner']),
@@ -546,7 +546,7 @@ const router = <span class="cstat-no" title="statement not covered" >express.Rou
  *       404:
  *         description: Type non trouvé
  */
-<span class="cstat-no" title="statement not covered" >router.put(</span>
+router.put(
   "/:id/edit",
   isAuthenticated,
   authorizeUser(['admin', 'owner']),
@@ -575,7 +575,7 @@ const router = <span class="cstat-no" title="statement not covered" >express.Rou
  *       404:
  *         description: Type non trouvé
  */
-<span class="cstat-no" title="statement not covered" >router.delete(</span>
+router.delete(
   "/:id/delete",
   validateBoatTypeId,
   validate,
@@ -589,7 +589,7 @@ export default router;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-09-12T16:28:11.873Z
+                at 2025-09-14T12:13:02.893Z
             </div>
         <script src="../prettify.js"></script>
         <script>

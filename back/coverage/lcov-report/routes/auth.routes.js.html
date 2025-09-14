@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/9</span>
+                <span class='fraction'>9/9</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/9</span>
+                <span class='fraction'>9/9</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -294,9 +294,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -503,13 +503,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import express from "express";
 import authController from "../controllers/auth.controller.js";
@@ -518,9 +518,9 @@ import { validate } from "../middlewares/validate.js";
 import { isAuthenticated } from "../middlewares/auth/authorize.js";
 import csurf from "csurf";
 &nbsp;
-const router = <span class="cstat-no" title="statement not covered" >express.Router();</span>
+const router = express.Router();
 &nbsp;
-const csrfProtection = <span class="cstat-no" title="statement not covered" >csurf({ cookie: true });</span>
+const csrfProtection = csurf({ cookie: true });
 &nbsp;
 /**
  * @swagger
@@ -727,13 +727,13 @@ const csrfProtection = <span class="cstat-no" title="statement not covered" >csu
  *         description: Erreur de validation
  */
 &nbsp;
-<span class="cstat-no" title="statement not covered" >router.post("/login",  validateLogin, validate, authController.login);</span>
-<span class="cstat-no" title="statement not covered" >router.post("/register", validateRegister, validate, authController.register);</span>
-<span class="cstat-no" title="statement not covered" >router.get("/me", authController.getCurrentUser);</span>
-<span class="cstat-no" title="statement not covered" >router.get("/confirmation/:token", authController.confirmEmail);</span>
-<span class="cstat-no" title="statement not covered" >router.post("/change-password", csrfProtection,isAuthenticated, validateChangePassword, validate, authController.changePassword);</span>
-<span class="cstat-no" title="statement not covered" >router.post("/forgot-password-email", csrfProtection, validateForgotPassword, validate, authController.forgotPasswordEmail);</span>
-<span class="cstat-no" title="statement not covered" >router.post("/reset-password", csrfProtection, validateResetPassword, validate, authController.resetPassword);</span>
+router.post("/login",  validateLogin, validate, authController.login);
+router.post("/register", validateRegister, validate, authController.register);
+router.get("/me", authController.getCurrentUser);
+router.get("/confirmation/:token", authController.confirmEmail);
+router.post("/change-password", csrfProtection,isAuthenticated, validateChangePassword, validate, authController.changePassword);
+router.post("/forgot-password-email", csrfProtection, validateForgotPassword, validate, authController.forgotPasswordEmail);
+router.post("/reset-password", csrfProtection, validateResetPassword, validate, authController.resetPassword);
 &nbsp;
 export default router;</pre></td></tr></table></pre>
 
@@ -742,7 +742,7 @@ export default router;</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-09-12T16:28:11.873Z
+                at 2025-09-14T12:13:02.893Z
             </div>
         <script src="../prettify.js"></script>
         <script>

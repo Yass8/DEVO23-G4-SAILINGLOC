@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">40% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/25</span>
+                <span class='fraction'>10/25</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">43.47% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/23</span>
+                <span class='fraction'>10/23</span>
             </div>
         
             
@@ -124,50 +124,50 @@
 <a name='L59'></a><a href='#L59'>59</a>
 <a name='L60'></a><a href='#L60'>60</a>
 <a name='L61'></a><a href='#L61'>61</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -184,50 +184,50 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import db from "../models/index.js";
-const { Payment, Reservation } = <span class="cstat-no" title="statement not covered" >db;</span>
+const { Payment, Reservation } = db;
 import Stripe from "stripe";
 import dotenv from 'dotenv';
-<span class="cstat-no" title="statement not covered" >dotenv.config();</span>
+dotenv.config();
 &nbsp;
-const stripe = <span class="cstat-no" title="statement not covered" >Stripe(process.env.STRIPE_SECRET_KEY);</span>
+const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 &nbsp;
-const getAllPayments = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >as</span>ync () =&gt; {</span>
+const getAllPayments = <span class="fstat-no" title="function not covered" >as</span>ync () =&gt; {
 <span class="cstat-no" title="statement not covered" >    return await Payment.findAll({</span>
         include: Reservation
     });
 };
 &nbsp;
-const createPayment = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >as</span>ync (data) =&gt; {</span>
+const createPayment = <span class="fstat-no" title="function not covered" >as</span>ync (data) =&gt; {
 <span class="cstat-no" title="statement not covered" >    return await Payment.create(data);</span>
 };
 &nbsp;
-const getPaymentById = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >as</span>ync (id) =&gt; {</span>
+const getPaymentById = <span class="fstat-no" title="function not covered" >as</span>ync (id) =&gt; {
 <span class="cstat-no" title="statement not covered" >    return await Payment.findByPk(id, {</span>
         include: Reservation
     });
 };
 &nbsp;
-const updatePayment = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >as</span>ync (id, data) =&gt; {</span>
+const updatePayment = <span class="fstat-no" title="function not covered" >as</span>ync (id, data) =&gt; {
     const payment = <span class="cstat-no" title="statement not covered" >await Payment.findByPk(id);</span>
 <span class="cstat-no" title="statement not covered" >    if (!payment) <span class="cstat-no" title="statement not covered" >return null;</span></span>
 <span class="cstat-no" title="statement not covered" >    return await payment.update(data);</span>
 };
 &nbsp;
-const deletePayment = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >as</span>ync (id) =&gt; {</span>
+const deletePayment = <span class="fstat-no" title="function not covered" >as</span>ync (id) =&gt; {
     const payment = <span class="cstat-no" title="statement not covered" >await Payment.findByPk(id);</span>
 <span class="cstat-no" title="statement not covered" >    if (!payment) <span class="cstat-no" title="statement not covered" >return null;</span></span>
 <span class="cstat-no" title="statement not covered" >    await payment.destroy();</span>
 <span class="cstat-no" title="statement not covered" >    return true;</span>
 };
 &nbsp;
-const getReservationPayments = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >as</span>ync (reservationId) =&gt; {</span>
+const getReservationPayments = <span class="fstat-no" title="function not covered" >as</span>ync (reservationId) =&gt; {
 <span class="cstat-no" title="statement not covered" >    return await Payment.findAll({</span>
         where: { reservation_id: reservationId },
         include: Reservation
     });
 };
 &nbsp;
-const createIntent = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >as</span>ync (amount) =&gt; {</span>
+const createIntent = <span class="fstat-no" title="function not covered" >as</span>ync (amount) =&gt; {
   const paymentIntent = <span class="cstat-no" title="statement not covered" >await stripe.paymentIntents.create({</span>
     amount,
     currency: "eur",
@@ -250,7 +250,7 @@ export default {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-09-12T16:28:11.873Z
+                at 2025-09-14T12:13:02.893Z
             </div>
         <script src="../prettify.js"></script>
         <script>
