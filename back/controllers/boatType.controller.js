@@ -11,9 +11,18 @@ const index = async (req, res) => {
 
 const create = async (req, res) => {
   try {
-    const result = await boatTypeService.createBoatType(req.body);
+    const data = req.body;
+    
+    // Récupérer le fichier photo s'il est fourni
+    const file = req.files?.photo ? req.files.photo : null;
+    
+    console.log('Données reçues:', data);
+    console.log('Fichier reçu:', file ? { name: file.name, size: file.size, mimetype: file.mimetype } : 'Aucun fichier');
+
+    const result = await boatTypeService.createBoatType(data, file);
     res.status(201).json(result);
   } catch (error) {
+    console.error('Erreur dans le contrôleur:', error);
     res.status(500).json({ error: error.message });
   }
 };
@@ -21,6 +30,9 @@ const create = async (req, res) => {
 const show = async (req, res) => {
   try {
     const result = await boatTypeService.getBoatTypeById(req.params.id);
+    if (!result) {
+      return res.status(404).json({ error: "Type de bateau non trouvé" });
+    }
     res.json(result);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -29,7 +41,22 @@ const show = async (req, res) => {
 
 const update = async (req, res) => {
   try {
-    const result = await boatTypeService.updateBoatType(req.params.id, req.body);
+    const { id } = req.params;
+    const data = req.body;
+
+    // Récupérer le fichier photo s'il est fourni
+    const file = req.files?.photo ? req.files.photo : null;
+
+    const result = await boatTypeService.updateBoatType(
+      Number(id),
+      data,
+      file
+    );
+
+    if (!result) {
+      return res.status(404).json({ error: "Type de bateau non trouvé" });
+    }
+
     res.json(result);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -38,7 +65,10 @@ const update = async (req, res) => {
 
 const remove = async (req, res) => {
   try {
-    await boatTypeService.deleteBoatType(req.params.id);
+    const result = await boatTypeService.deleteBoatType(req.params.id);
+    if (!result) {
+      return res.status(404).json({ error: "Type de bateau non trouvé" });
+    }
     res.status(204).send();
   } catch (error) {
     res.status(500).json({ error: error.message });

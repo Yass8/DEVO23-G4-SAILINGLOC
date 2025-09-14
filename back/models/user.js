@@ -1,91 +1,137 @@
 import bcrypt from "bcrypt";
-'use strict';
+("use strict");
 import { Model } from "sequelize";
 export default (sequelize, DataTypes) => {
   class User extends Model {
     static associate(models) {
       // Relation avec Boat (un utilisateur peut posséder plusieurs bateaux)
       User.hasMany(models.Boat, {
-        foreignKey: 'user_id',
-        as: 'boats'
+        foreignKey: "user_id",
+        as: "boats",
       });
 
       // Relation avec Review (un utilisateur peut avoir plusieurs avis)
       User.hasMany(models.Review, {
-        foreignKey: 'user_id',
-        as: 'reviews'
+        foreignKey: "user_id",
+        as: "reviews",
+      });
+
+      User.hasMany(models.UserDocument, {
+        foreignKey: "user_id",
+        as: "userDocuments",
+      });
+
+      User.hasMany(models.Reservation, {
+        foreignKey: "user_id",
+        as: "reservations",
       });
     }
     checkPassword(plainPassword) {
       return bcrypt.compareSync(plainPassword, this.password);
     }
   }
-  User.init({
-    firstname: {
-      type: DataTypes.STRING,
-      validate: {
-        notEmpty: {
-          msg: 'Le prénom est obligatoire.'
+  User.init(
+    {
+      firstname: {
+        type: DataTypes.STRING,
+        validate: {
+          notEmpty: {
+            msg: "Le prénom est obligatoire.",
+          },
+          len: {
+            args: [2, 50],
+            msg: "Le prénom doit contenir entre 2 et 50 caractères.",
+          },
         },
-        len: {
-          args: [2, 50],
-          msg: 'Le prénom doit contenir entre 2 et 50 caractères.'
-        }
-      }
-    },
-    lastname: {
-      type: DataTypes.STRING,
-      validate: {
-        notEmpty: {
-          msg: 'Le nom est obligatoire.'
+      },
+      lastname: {
+        type: DataTypes.STRING,
+        validate: {
+          notEmpty: {
+            msg: "Le nom est obligatoire.",
+          },
+          len: {
+            args: [2, 50],
+            msg: "Le nom doit contenir entre 2 et 50 caractères.",
+          },
         },
-        len: {
-          args: [2, 50],
-          msg: 'Le nom doit contenir entre 2 et 50 caractères.'
-        }
-      }
-    },
-    email: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: {
-        args: true,
-        msg: 'Cet email est déjà utilisé.'
       },
-      validate: {
-        isEmail: {
-          msg: 'Veuillez entrer une adresse email valide.'
-        }
-      }
-    },
-    password: {
-      type: DataTypes.STRING,
-      set(value) {
-        const hashed = bcrypt.hashSync(value, bcrypt.genSaltSync(10));
-        this.setDataValue('password', hashed);
+      email: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: {
+          args: true,
+          msg: "Cet email est déjà utilisé.",
+        },
+        validate: {
+          isEmail: {
+            msg: "Veuillez entrer une adresse email valide.",
+          },
+        },
       },
-    },
-    roles: {
-      type: DataTypes.ARRAY(DataTypes.STRING),
-      allowNull: false,
-      defaultValue: ['locataire']
-    },
-    phone: DataTypes.STRING,
-    payment_method: DataTypes.STRING,
-    photo: DataTypes.STRING,
-    address: DataTypes.STRING,
-    is_active: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: true,
-      allowNull: false
+password: {
+  type: DataTypes.STRING,
+  allowNull: true, // ← AJOUTÉ : permettre les valeurs nulles
+  set(value) {
+    if (value) { // ← MODIFIÉ : ne hasher que si une valeur est fournie
+      const hashed = bcrypt.hashSync(value, bcrypt.genSaltSync(10));
+      this.setDataValue("password", hashed);
     }
-  }, {
-    sequelize,
-    modelName: 'User',
-    tableName: 'Users',
-    timestamps: true,
-    createdAt: 'created_at',
-    updatedAt: 'updated_at'
-  });
+  },
+},
+      roles: {
+        type: DataTypes.ARRAY(DataTypes.STRING),
+        allowNull: false,
+      },      
+ payment_method: DataTypes.STRING,
+      phone: {
+        type: DataTypes.STRING,
+        validate: {
+          is: {
+            args: /^(\+\d{1,4}[-.\s]?)?\(?\d{1,4}\)?[-.\s]?\d{1,4}[-.\s]?\d{1,9}$/,
+            msg: "Veuillez entrer un numéro de téléphone valide.",
+          },
+        },
+      },
+      birth_date: {
+        type: DataTypes.DATE,
+        validate: {
+          isDate: { msg: "Veuillez entrer une date valide." },
+          isBefore: {
+            args: new Date().toISOString().split("T")[0],
+            msg: "La date de naissance doit être dans le passé.",
+          },
+          isAdult(value) {
+            if (value) {
+              const birthDate = new Date(value);
+              const today = new Date();
+              const age = today.getFullYear() - birthDate.getFullYear();
+              const m = today.getMonth() - birthDate.getMonth();
+              if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+              }
+              if (age < 18) {
+                throw new Error("Vous devez avoir au moins 18 ans.");
+              }
+            }
+          },
+        },
+      },
+      address: DataTypes.STRING,
+      is_active: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true,
+        allowNull: false,
+      },
+    },
+    {
+      sequelize,
+      modelName: "User",
+      tableName: "Users",
+      timestamps: true,
+      createdAt: "created_at",
+      updatedAt: "updated_at",
+    }
+  );
   return User;
 };

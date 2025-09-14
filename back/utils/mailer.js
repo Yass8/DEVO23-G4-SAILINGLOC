@@ -31,7 +31,7 @@ export const sendConfirmationEmail = async (username, email, token) => {
   sendEmail(
     email,
     "Confirmation de votre compte SailingLoc",
-    confirmationEmailHtml(username, `${APPLICATION_URL}/confirmation/${token}`)
+    confirmationEmailHtml(username, `${APPLICATION_URL}/login`)
   );
 }
 

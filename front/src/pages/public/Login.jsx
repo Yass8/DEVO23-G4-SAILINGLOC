@@ -1,73 +1,83 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useRef } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import ReCAPTCHA from 'react-google-recaptcha';
 import logo from "/images/logo.png";
-import { login } from "../../services/authService";
+import { isTokenValid, login } from "../../services/authService";
 import FormError from "../../components/common/FormError";
 import PasswordInput from "../../components/common/PasswordInput";
+import { useEffect } from "react";
 
 const Login = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const recaptchaRef = useRef(null);
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-    rememberMe: false
+    rememberMe: false,
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [captchaToken, setCaptchaToken] = useState("");
+
+  useEffect(() => {
+    if (isTokenValid()) {
+      navigate('/');
+    }
+  }, [navigate]);
+
+  const SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY;
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value
-    }));
+    setFormData((prev) => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
     if (error) setError("");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!captchaToken) { setError("Veuillez cocher la case reCAPTCHA."); return; }
+
     setIsLoading(true);
     setError("");
 
     try {
-      const data = await login({
-        email: formData.email,
-        password: formData.password
-      });
-
-      // Gestion du token et de l'utilisateur
+      const data = await login({ ...formData, "g-recaptcha-response": captchaToken });
       if (data?.token || data?.accessToken) {
         localStorage.setItem("token", data.token || data.accessToken);
         localStorage.setItem("user", JSON.stringify(data.user || data));
-        
-        // Stockage du "remember me" si nécessaire
-        if (formData.rememberMe) {
-          localStorage.setItem("rememberMe", "true");
-        } else {
-          sessionStorage.setItem("token", data.token || data.accessToken);
-        }
+        if (formData.rememberMe) localStorage.setItem("rememberMe", "true");
+        else sessionStorage.setItem("token", data.token || data.accessToken);
 
-        navigate("/home");
+        const from = location.state?.from || "/";
+        navigate(from, { replace: true });
       } else {
         setError(data.message || "Erreur lors de la connexion");
       }
     } catch (err) {
       console.error("Login error:", err);
-      
-      // Gestion détaillée des erreurs
-      if (err.response) {
-        if (err.response.status === 401) {
-          setError("Email ou mot de passe incorrect");
-        } else if (err.response.data?.message) {
-          setError(err.response.data.message);
-        } else {
-          setError(`Erreur ${err.response.status}`);
+      let msg = "Une erreur est survenue.";
+      if (err.response?.status === 422) {
+        const { data } = err.response;
+        if (Array.isArray(data.errors)) {
+          msg = data.errors.map((e) => e.title || e.detail || e.message || `${e.param} : ${e.msg}`).join(", ");
+        } else if (typeof data.errors === "object") {
+          msg = Object.values(data.errors).flat().join(", ");
+        } else if (data.message) {
+          msg = data.message;
         }
+      } else if (err.response?.status === 401) {
+        msg = "Email ou mot de passe incorrect";
+      } else if (err.response?.data?.message) {
+        msg = err.response.data.message;
       } else if (err.request) {
-        setError("Pas de réponse du serveur");
+        msg = "Pas de réponse du serveur";
       } else {
-        setError(err.message || "Erreur de configuration");
+        msg = err.message || "Erreur de configuration";
       }
+      setError(msg);
+      recaptchaRef.current?.reset();
     } finally {
       setIsLoading(false);
     }
@@ -76,8 +86,13 @@ const Login = () => {
   return (
     <div className="min-h-screen bg-[#F5F1EB] flex items-center justify-center py-12 px-4">
       <div className="max-w-md w-full space-y-8">
+        {location.state?.message && (
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+            <p className="text-slate-blue">{location.state.message}</p>
+          </div>
+        )}
         <div className="text-center">
-          <img src={logo} alt="SailingLoc" className="mx-auto h-16 mb-6" />
+          <a href="/"><img src={logo} alt="SailingLoc logo" className="mx-auto h-16 mb-6" /></a>
           <h2 className="text-3xl font-bold">Connexion</h2>
           <p className="text-gray-600">Connectez-vous à votre compte SailingLoc</p>
         </div>
@@ -87,9 +102,7 @@ const Login = () => {
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                Adresse email
-              </label>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">Adresse email</label>
               <input
                 id="email"
                 name="email"
@@ -126,23 +139,28 @@ const Login = () => {
                 disabled={isLoading}
                 className="h-4 w-4 text-[#AD7C59] focus:ring-[#AD7C59] border-gray-300 rounded"
               />
-              <label htmlFor="rememberMe" className="ml-2 block text-sm text-gray-700">
-                Se souvenir de moi
-              </label>
+              <label htmlFor="rememberMe" className="ml-2 block text-sm text-gray-700">Se souvenir de moi</label>
             </div>
-            <Link
-              to="/forgot-password"
-              className="text-sm text-[#AD7C59] hover:text-[#8B5A3C] transition-colors"
-            >
+            <Link to="/forgot-password-email" className="text-sm text-[#AD7C59] hover:text-[#8B5A3C] transition-colors">
               Mot de passe oublié ?
             </Link>
           </div>
 
+          {/* reCAPTCHA v2 */}
+          <div className="flex justify-center">
+            <ReCAPTCHA
+              ref={recaptchaRef}
+              sitekey={SITE_KEY}
+              onChange={(token) => setCaptchaToken(token)}
+              theme="light"
+            />
+          </div>
+
           <button
             type="submit"
-            disabled={isLoading || !formData.email || !formData.password}
+            disabled={isLoading || !captchaToken}
             className={`w-full py-3 rounded-lg text-white font-medium ${
-              !isLoading && formData.email && formData.password
+              !isLoading && captchaToken && formData.email && formData.password
                 ? "bg-[#AD7C59] hover:bg-[#9a6b4a]"
                 : "bg-gray-300 cursor-not-allowed"
             } transition-colors`}
@@ -152,9 +170,7 @@ const Login = () => {
 
           <div className="text-center text-sm text-gray-600">
             Pas encore de compte ?{" "}
-            <Link to="/register" className="text-[#AD7C59] hover:underline">
-              Créer un compte
-            </Link>
+            <Link to="/register" className="text-[#AD7C59] hover:underline">Créer un compte</Link>
           </div>
         </form>
       </div>

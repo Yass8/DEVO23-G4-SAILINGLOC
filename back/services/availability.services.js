@@ -6,7 +6,14 @@ const getAllAvailabilities = async () => {
 };
 
 const createAvailability = async (data) => {
+    try {
+        
     return await Availability.create(data);
+    } catch (error) {
+        console.error("Erreur lors de la créatio", error);
+        
+        throw error
+    }
 };
 
 const getAvailabilityById = async (id) => {
@@ -26,9 +33,9 @@ const deleteAvailability = async (id) => {
     return true;
 };
 
-const getBoatAvailabilities = async (boatId) => {
+const getBoatAvailabilities = async (boat_id) => {
     return await Availability.findAll({
-        where: { boat_id: boatId },
+        where: { boat_id: boat_id },
         include: Boat
     });
 };

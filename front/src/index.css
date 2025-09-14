@@ -57,3 +57,20 @@
 .custom-datepicker .react-datepicker__triangle {
   display: none;
 }
+
+.react-datepicker-popper {
+  z-index: 50 !important;
+}
+
+.custom-datepicker {
+  z-index: 50 !important;
+  position: absolute !important;
+}
+
+@keyframes fade-in-up {
+  0%   { opacity: 0; transform: translateY(1.25rem); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in-up {
+  animation: fade-in-up 0.7s ease-out forwards;
+}
