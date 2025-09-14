@@ -1,4 +1,4 @@
-// tests/unit/routes/user.test.js
+import { jest } from '@jest/globals';
 import request from 'supertest';
 import express from 'express';
 import userRoutes from '../../../routes/user.routes.js';

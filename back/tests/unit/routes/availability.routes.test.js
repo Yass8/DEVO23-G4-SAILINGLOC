@@ -1,4 +1,4 @@
-// tests/unit/routes/availability.test.js
+import { jest } from '@jest/globals';
 import request from 'supertest';
 import express from 'express';
 import availabilityRoutes from '../../../routes/availability.routes.js';

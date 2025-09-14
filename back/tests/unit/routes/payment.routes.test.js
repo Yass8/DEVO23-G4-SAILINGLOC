@@ -1,4 +1,4 @@
-// tests/unit/routes/payment.test.js
+import { jest } from '@jest/globals';
 import request from 'supertest';
 import express from 'express';
 import paymentRoutes from '../../../routes/payment.routes.js';

@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">30.43% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>7/23</span>
+                <span class='fraction'>23/23</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/4</span>
+                <span class='fraction'>4/4</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/6</span>
+                <span class='fraction'>6/6</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">33.33% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>7/21</span>
+                <span class='fraction'>21/21</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -113,42 +113,42 @@
 <a name='L48'></a><a href='#L48'>48</a>
 <a name='L49'></a><a href='#L49'>49</a>
 <a name='L50'></a><a href='#L50'>50</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -164,40 +164,40 @@
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import db from "../models/index.js";
 const { Availability, Boat } = db;
 &nbsp;
-const getAllAvailabilities = <span class="fstat-no" title="function not covered" >as</span>ync () =&gt; {
-<span class="cstat-no" title="statement not covered" >    return await Availability.findAll();</span>
+const getAllAvailabilities = async () =&gt; {
+    return await Availability.findAll();
 };
 &nbsp;
-const createAvailability = <span class="fstat-no" title="function not covered" >as</span>ync (data) =&gt; {
-<span class="cstat-no" title="statement not covered" >    try {</span>
+const createAvailability = async (data) =&gt; {
+    try {
         
-<span class="cstat-no" title="statement not covered" >    return await Availability.create(data);</span>
+    return await Availability.create(data);
     } catch (error) {
-<span class="cstat-no" title="statement not covered" >        console.error("Erreur lors de la créatio", error);</span>
+        console.error("Erreur lors de la créatio", error);
         
-<span class="cstat-no" title="statement not covered" >        throw error</span>
+        throw error
     }
 };
 &nbsp;
-const getAvailabilityById = <span class="fstat-no" title="function not covered" >as</span>ync (id) =&gt; {
-<span class="cstat-no" title="statement not covered" >    return await Availability.findByPk(id);</span>
+const getAvailabilityById = async (id) =&gt; {
+    return await Availability.findByPk(id);
 };
 &nbsp;
-const updateAvailability = <span class="fstat-no" title="function not covered" >as</span>ync (id, data) =&gt; {
-    const availability = <span class="cstat-no" title="statement not covered" >await Availability.findByPk(id);</span>
-<span class="cstat-no" title="statement not covered" >    if (!availability) <span class="cstat-no" title="statement not covered" >return null;</span></span>
-<span class="cstat-no" title="statement not covered" >    return await availability.update(data);</span>
+const updateAvailability = async (id, data) =&gt; {
+    const availability = await Availability.findByPk(id);
+    if (!availability) return null;
+    return await availability.update(data);
 };
 &nbsp;
-const deleteAvailability = <span class="fstat-no" title="function not covered" >as</span>ync (id) =&gt; {
-    const availability = <span class="cstat-no" title="statement not covered" >await Availability.findByPk(id);</span>
-<span class="cstat-no" title="statement not covered" >    if (!availability) <span class="cstat-no" title="statement not covered" >return null;</span></span>
-<span class="cstat-no" title="statement not covered" >    await availability.destroy();</span>
-<span class="cstat-no" title="statement not covered" >    return true;</span>
+const deleteAvailability = async (id) =&gt; {
+    const availability = await Availability.findByPk(id);
+    if (!availability) return null;
+    await availability.destroy();
+    return true;
 };
 &nbsp;
-const getBoatAvailabilities = <span class="fstat-no" title="function not covered" >as</span>ync (boat_id) =&gt; {
-<span class="cstat-no" title="statement not covered" >    return await Availability.findAll({</span>
+const getBoatAvailabilities = async (boat_id) =&gt; {
+    return await Availability.findAll({
         where: { boat_id: boat_id },
         include: Boat
     });
@@ -217,7 +217,7 @@ export default {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-09-14T12:13:02.893Z
+                at 2025-09-14T15:42:26.742Z
             </div>
         <script src="../prettify.js"></script>
         <script>

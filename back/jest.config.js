@@ -10,9 +10,10 @@ export default {
   testMatch: ['**/tests/unit/**/*.test.js'],
   transform: {},
   testTimeout: 30000,
-  moduleNameMapping: {
+  moduleNameMapper: {
     '^(\\.{1,2}/.*)\\.js$': '$1'
   },
   clearMocks: true,
-  resetMocks: true
+  resetMocks: true,
+  moduleDirectories: ['node_modules'],
 };

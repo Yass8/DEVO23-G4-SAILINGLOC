@@ -1,4 +1,4 @@
-// tests/unit/routes/contact.test.js
+import { jest } from '@jest/globals';
 import request from 'supertest';
 import express from 'express';
 import contactRoutes from '../../../routes/contact.routes.js';
