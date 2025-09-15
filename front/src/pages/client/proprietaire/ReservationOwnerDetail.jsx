@@ -98,7 +98,7 @@ export default function ReservationOwnerDetail() {
         status,
         message: status === "refused" ? globalMessage.trim() : null,
       });
-      navigate("/reservations");
+      navigate("my-space/dashboard");
     } catch (error) {
       console.error("Erreur décision finale :", error);
     }
