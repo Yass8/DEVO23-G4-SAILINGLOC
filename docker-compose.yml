@@ -40,17 +40,16 @@ services:
       - /app/node_modules
 
   client:
-    build: ./front
+    build:
+      context: ./front
+      dockerfile: Dockerfile.prod
     container_name: client_container
     depends_on:
       - server
+    ports:
+      - "80:80"
     networks:
       - sailingLocNet
-    ports:
-      - "5173:5173"
-    volumes:
-      - ./front:/app
-      - /app/node_modules
 
 volumes:
   pg_data:
