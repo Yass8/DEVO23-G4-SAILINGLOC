@@ -1,4 +1,4 @@
-# 🌊 SailingLoc - Plateforme de Location de Voiliers
+# SailingLoc - Plateforme de Location de Voiliers
 
 Plateforme fullstack moderna de gestion et location de voiliers, avec tableau de bord administrateur complet et intégration de paiement.
 
@@ -10,7 +10,7 @@ Plateforme fullstack moderna de gestion et location de voiliers, avec tableau de
 
 ---
 
-## 📚 Table des Matières
+## Table des Matières
 
 - [Fonctionnalités](#-fonctionnalités)
 - [Architecture](#-architecture)
@@ -23,40 +23,40 @@ Plateforme fullstack moderna de gestion et location de voiliers, avec tableau de
 
 ---
 
-## ✨ Fonctionnalités
+## Fonctionnalités
 
-### 🔐 Authentification & Sécurité
+### Authentification & Sécurité
 - Authentification JWT avec refresh tokens
 - Hashage des mots de passe (bcrypt)
 - CORS et CSRF protection (Helmet)
 - Validation des données (express-validator)
 
-### 🎯 Gestion des Réservations
+### Gestion des Réservations
 - Création et gestion des réservations
 - Système de contrats numériques
 - Suivi des statuts de réservation
 
-### 💳 Paiements
+### Paiements
 - Intégration Stripe
 - Support multi-devise
 - Historique des transactions
 
-### 👥 Gestion Utilisateurs
+### Gestion Utilisateurs
 - Profils utilisateurs et propriétaires
 - Système de rôles et permissions
 - Notifications par email (Nodemailer)
 
-### ⛵ Gestion des Bateaux
+### Gestion des Bateaux
 - Catalogue de voiliers
 - Galerie d'images
 - Disponibilités et tarification
 - Ports de départ
 
-### ⭐ Système d'Avis
+### Système d'Avis
 - Avis et évaluations
 - Notation des bateaux et propriétaires
 
-### 📊 Dashboard Admin
+### Dashboard Admin
 - Interface de gestion complète
 - Statistiques et métriques
 - Gestion des utilisateurs, bateaux, réservations
@@ -64,7 +64,7 @@ Plateforme fullstack moderna de gestion et location de voiliers, avec tableau de
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ### Backend (Node.js + Express)
 ```
@@ -93,7 +93,7 @@ front/
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Backend
 - **Node.js** - Runtime JavaScript
@@ -122,7 +122,7 @@ front/
 
 ---
 
-## 🚀 Installation
+## Installation
 
 ### Prérequis
 - Docker & Docker Compose
@@ -189,7 +189,7 @@ npm run lint
 
 ---
 
-## 📁 Structure du Projet
+## Structure du Projet
 
 ### Routes API
 L'API est structurée de manière **modulaire et RESTful**. Toutes les routes sont centralisées dans `routes/routes.js` et importent chaque groupe de routes dédié à une entité métier.
@@ -206,7 +206,7 @@ Définissent la structure de la base de données avec relations entre entités (
 
 ---
 
-## 📡 API Documentation
+## API Documentation
 
 Une documentation Swagger est disponible et auto-générée :
 
@@ -223,7 +223,7 @@ http://localhost:3000/api/docs
 
 ---
 
-## ⚙️ Configuration
+## Configuration
 
 ### Variables d'Environnement
 
@@ -266,7 +266,7 @@ VITE_STRIPE_PUBLIC_KEY=pk_test_...
 
 ---
 
-## 💻 Développement
+## Développement
 
 ### Git Workflow
 ```bash
@@ -301,13 +301,13 @@ npm run test:cov       # Coverage report
 
 ---
 
-## 🎨 Design & UI
+## Design & UI
 
 **Palette de Couleurs** (Admin Panel)
-- 🟤 Mocha: `#AD7C59` - Couleur principale
-- 🔵 Slate Blue: `#4B6A88` - Éléments secondaires  
-- 🩵 Pale Blue: `#87CEEB` - Accents
-- 🟢 Sage Green: `#C1D0C4` - Éléments positifs
+-  Mocha: `#AD7C59` - Couleur principale
+-  Slate Blue: `#4B6A88` - Éléments secondaires  
+-  Pale Blue: `#87CEEB` - Accents
+-  Sage Green: `#C1D0C4` - Éléments positifs
 
 **Responsive Design**
 - Mobile-first approach
@@ -315,19 +315,13 @@ npm run test:cov       # Coverage report
 
 ---
 
-## 📝 Licence
-
-ISC License - Voir LICENSE pour plus d'informations
-
----
-
-## 👥 Équipe
+## Équipe
 
 Projet développé par le **Groupe 4** - DEVO23
 
 ---
 
-## 🤝 Support
+## Support
 
 Pour toute question ou signaler un bug :
 - Créer une [issue](https://github.com/Yass8/DEVO23-G4-SAILINGLOC/issues)
@@ -335,7 +329,7 @@ Pour toute question ou signaler un bug :
 
 ---
 
-## 📌 Roadmap
+## Roadmap
 
 - [ ] Tests e2e avec Cypress
 - [ ] PWA - Mode hors ligne
